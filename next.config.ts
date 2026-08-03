@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
    * These are development-only origins. They have no effect on a build.
    */
   allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.1.4", "*.local"],
+
+  /**
+   * A production build and a running dev server share .next and clobber each
+   * other. Setting NEXT_DIST_DIR lets a build run alongside `npm run dev`,
+   * which is what makes it possible to verify a production build without
+   * stopping whatever is already running.
+   */
+  distDir: process.env.NEXT_DIST_DIR || ".next",
 };
 
 export default nextConfig;
