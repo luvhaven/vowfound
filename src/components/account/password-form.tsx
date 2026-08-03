@@ -4,12 +4,8 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Paper } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import {
-  checkPassword,
-  SCORE_LABEL,
-  PASSWORD_HINT,
-} from "@/lib/auth/password";
+import { checkPassword, PASSWORD_HINT } from "@/lib/auth/password";
+import { PasswordRequirements } from "@/components/auth/password-requirements";
 import { changePassword } from "@/app/actions/auth";
 
 function Field({
@@ -53,49 +49,6 @@ function Field({
           {visible ? "Hide" : "Show"}
         </button>
       </div>
-    </div>
-  );
-}
-
-/** Live feedback, so nobody discovers the rules only on submit. */
-function StrengthMeter({ value }: { value: string }) {
-  const { score, problems } = React.useMemo(
-    () => checkPassword(value),
-    [value],
-  );
-  if (!value) return null;
-
-  return (
-    <div className="mt-3">
-      <div className="flex gap-1" aria-hidden>
-        {[0, 1, 2, 3].map((i) => (
-          <span
-            key={i}
-            className={cn(
-              "h-1 flex-1 rounded-full transition-colors",
-              i < score
-                ? score <= 1
-                  ? "bg-oxblood"
-                  : score === 2
-                    ? "bg-stone"
-                    : "bg-sage-ink"
-                : "bg-stone/50",
-            )}
-          />
-        ))}
-      </div>
-      <p className="engraved mt-2.5 text-slate">{SCORE_LABEL[score]}</p>
-
-      {problems.length > 0 && (
-        <ul className="mt-3 space-y-1.5" aria-live="polite">
-          {problems.map((problem) => (
-            <li key={problem} className="flex gap-2.5 text-[14px] text-slate">
-              <span aria-hidden className="mt-[0.6em] size-1 shrink-0 rounded-full bg-oxblood" />
-              {problem}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }
@@ -184,7 +137,7 @@ export function PasswordForm({ mustChange }: { mustChange: boolean }) {
               autoComplete="new-password"
               describedBy="password-hint"
             />
-            <StrengthMeter value={next} />
+            <PasswordRequirements value={next} />
           </div>
 
           <Field

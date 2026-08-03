@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { signIn, signUp, requestPasswordReset } from "@/app/actions/auth";
-import { PASSWORD_HINT } from "@/lib/auth/password";
+import { PASSWORD_HINT, checkPassword } from "@/lib/auth/password";
+import { PasswordRequirements } from "@/components/auth/password-requirements";
 
 function Field({
   id,
@@ -138,6 +139,9 @@ export function SignUpForm() {
   function submit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
+    if (!checkPassword(values.password).ok) {
+      return setError("Your password does not meet every requirement yet.");
+    }
     if (!ageConfirmed) return setError("You must confirm you are 18 or over.");
     if (!acceptTerms) return setError("Please accept the terms and privacy policy.");
 
@@ -172,15 +176,18 @@ export function SignUpForm() {
       <div className="mt-7 space-y-5">
         <Field id="fullName" label="Your name" autoComplete="name" value={values.fullName} onChange={set("fullName")} />
         <Field id="email" label="Email" type="email" autoComplete="email" value={values.email} onChange={set("email")} />
-        <Field
-          id="password"
-          label="Password"
-          type="password"
-          autoComplete="new-password"
-          hint={PASSWORD_HINT}
-          value={values.password}
-          onChange={set("password")}
-        />
+        <div>
+          <Field
+            id="password"
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            hint={PASSWORD_HINT}
+            value={values.password}
+            onChange={set("password")}
+          />
+          <PasswordRequirements value={values.password} />
+        </div>
       </div>
 
       <div className="mt-7 space-y-4">
