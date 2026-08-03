@@ -1,26 +1,792 @@
 @import "tailwindcss";
 
+/* =========================================================================
+   VowFound — a fine stationery suite rendered as an interface.
+   Dark ceremonial field. Every surface that asks something of the user
+   is a card of cotton stock. Do not invert this.
+   ========================================================================= */
+
+@theme {
+  /* --- Brand field ------------------------------------------------------ */
+  --color-ink: #17131b;
+  --color-ink-raised: #211923;
+  --color-ink-deep: #100d13;
+  --color-stock: #f3f1f4;
+  --color-stock-warm: #e9e5eb;
+  --color-oxblood: #8d3151;
+  --color-oxblood-lift: #a53d61;
+  --color-rose: #d98aa1;
+  --color-sage: #768277;
+  --color-sage-ink: #4b594d;
+  --color-stone: #d2cbd4;
+  --color-slate: #625c67;
+
+  /* --- Text on the dark field ------------------------------------------ */
+  --color-onink: #f5f2f5;
+  --color-onink-dim: #c7bec9;
+  --color-onink-faint: #978c9a;
+  --color-hairline: rgba(245, 242, 245, 0.14);
+
+  /* --- Type ------------------------------------------------------------- */
+  --font-display: var(--font-display-family), "Newsreader", Georgia, serif;
+  --font-sans: var(--font-ui-family), "Switzer", system-ui, sans-serif;
+
+  /* --- Stationery is cut, not rounded ----------------------------------- */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-3xl: 40px;
+
+  /* --- Motion budget ---------------------------------------------------- */
+  --ease-press: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-settle: cubic-bezier(0.34, 1.26, 0.64, 1);
+}
+
+/* The foil is a stroke, never a fill. Kept outside @theme so it stays a
+   raw gradient usable by the border-mask trick below. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --foil: linear-gradient(105deg, #a77c4d, #ead4a9, #a77c4d);
+  --measure: 68ch;
+  --font-display-family: "Newsreader";
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* =========================================================================
+   Base
+   ========================================================================= */
+
+* {
+  border-color: var(--color-hairline);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: clip;
+  background-color: var(--color-ink);
+  background-image:
+    radial-gradient(circle at 16% 4%, rgba(141, 49, 81, 0.11), transparent 24rem),
+    radial-gradient(circle at 88% 24%, rgba(217, 138, 161, 0.055), transparent 28rem);
+  background-attachment: fixed;
+  color: var(--color-onink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+}
+
+a,
+button,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+::selection {
+  background: var(--color-oxblood);
+  color: var(--color-stock);
+}
+
+/* Focus is a foil stroke. Always visible on anything a person can operate.
+   Elements given tabindex="-1" are focused programmatically — the assessment
+   moves focus to each question heading so it is announced — and must not draw
+   a ring, or it reads as a rendering fault. */
+:focus-visible:not([tabindex="-1"]) {
+  outline: 2px solid var(--color-rose);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* =========================================================================
+   Typographic fingerprint
+   ========================================================================= */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3.25rem, 7vw, 6.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.display-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.display-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* The engraved-invitation move. Eyebrows, labels, buttons, nav.
+   The site's typographic fingerprint — there is no fourth style. */
+.engraved {
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .engraved {
+    font-size: 13px;
+  }
+}
+
+/* Numbers should look engraved. */
+.numeral {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  letter-spacing: 0.05em;
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+/* =========================================================================
+   Foil — 1px strokes only, never a fill
+   ========================================================================= */
+
+.foil-edge {
+  position: relative;
+}
+
+.foil-edge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--foil);
+  background-size: 220% 100%;
+  background-position: 0% 0;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* One sweep, on hover, and once in the hero sequence. Nothing else. */
+.foil-sweep::before {
+  transition: background-position 700ms var(--ease-press);
+}
+
+.foil-sweep:hover::before,
+.foil-sweep:focus-visible::before,
+.foil-sweep[data-sweep="true"]::before {
+  background-position: 100% 0;
+}
+
+.hairline {
+  border: 0;
+  height: 1px;
+  background: var(--color-hairline);
+}
+
+.hairline-stock {
+  border: 0;
+  height: 1px;
+  background: var(--color-stone);
+}
+
+/* =========================================================================
+   Paper
+   ========================================================================= */
+
+/* Cotton stock has a tooth. The grain is a single inline turbulence filter —
+   no image request, and it is what stops the cards reading as flat divs. */
+.paper {
+  position: relative;
+  background-color: var(--color-stock);
+  color: var(--color-ink);
+  border-radius: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='0.055'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  box-shadow:
+    0 26px 70px rgba(7, 4, 10, 0.16),
+    inset 0 1px rgba(255, 255, 255, 0.82);
+}
+
+.paper::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(98, 92, 103, 0.1);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+/* Interior routes open like editorial folios, not generic landing-page heroes. */
+.page-header {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    var(--color-ink);
+  background-size: 8rem 8rem;
+}
+
+.page-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 38%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(16, 13, 19, 0.5));
+}
+
+.page-header-glow {
+  position: absolute;
+  width: min(56rem, 78vw);
+  aspect-ratio: 1;
+  right: -18rem;
+  top: -28rem;
+  border: 1px solid rgba(217, 138, 161, 0.08);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 5rem rgba(141, 49, 81, 0.025),
+    0 0 0 11rem rgba(217, 138, 161, 0.014);
+}
+
+.page-title {
+  max-width: 14ch;
+}
+
+.page-header-note {
+  position: relative;
+}
+
+.page-header-note::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 1px;
+  height: 4rem;
+  background: var(--foil);
+}
+
+.page-cta {
+  background:
+    radial-gradient(circle at 12% 100%, rgba(141, 49, 81, 0.12), transparent 26rem),
+    var(--color-ink-deep);
+}
+
+.assessment-field,
+.account-field {
+  position: relative;
+}
+
+.assessment-field::before,
+.account-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(173, 137, 85, 0.07), transparent 24rem),
+    linear-gradient(90deg, transparent 49.95%, rgba(245, 242, 245, 0.025) 50%, transparent 50.05%);
+}
+
+.assessment-field > *,
+.account-field > * {
+  position: relative;
+}
+
+.sticky-conversion-wrap {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* The ceremonial field wants depth, not a gradient blob. A single very soft
+   radial lift behind the fold, fixed and unanimated. */
+.field-lift {
+  position: relative;
+}
+
+.field-lift::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 32%,
+    rgba(173, 137, 85, 0.09),
+    transparent 70%
+  );
+}
+
+/* =========================================================================
+   Motion budget: hero sequence, 400ms/24px reveals, one foil sweep.
+   ========================================================================= */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 620ms var(--ease-press),
+    transform 620ms var(--ease-press);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Letterpress: a 3px press-in with a 60ms settle. */
+@keyframes letterpress {
+  0% {
+    opacity: 0;
+    transform: translateY(-3px) scale(1.012);
+  }
+  62% {
+    opacity: 1;
+    transform: translateY(3px) scale(0.997);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.letterpress {
+  animation: letterpress 520ms var(--ease-settle) both;
+}
+
+@keyframes digit-roll {
+  from {
+    opacity: 0;
+    transform: translateY(0.42em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.digit-roll {
+  display: inline-block;
+  animation: digit-roll 260ms var(--ease-press) both;
+}
+
+/* =========================================================================
+   Reduced motion: identical information, no animation.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .letterpress,
+  .digit-roll {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .foil-sweep::before {
+    background-position: 50% 0;
+  }
+
+  .hero-copy,
+  .hero-portrait,
+  .ring-orbit,
+  .services-menu-enter,
+  .mobile-menu-enter {
+    animation: none;
+  }
+}
+
+/* =========================================================================
+   Form primitives on paper
+   ========================================================================= */
+
+.field {
+  width: 100%;
+  background: #fff;
+  color: var(--color-ink);
+  border: 1px solid var(--color-stone);
+  border-radius: 12px;
+  padding: 0.75rem 0.875rem;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.5;
+  transition: border-color 160ms ease;
+}
+
+.field::placeholder {
+  color: #9a9490;
+}
+
+.field:hover {
+  border-color: #bdb3a5;
+}
+
+.field:focus {
+  border-color: var(--color-ink);
+  outline: 2px solid #e8d3a8;
+  outline-offset: 1px;
+}
+
+.field[aria-invalid="true"] {
+  border-color: var(--color-oxblood);
+}
+
+.field:-webkit-autofill,
+.field:-webkit-autofill:hover,
+.field:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-ink);
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 9999s ease-out;
+}
+
+/* Homepage composition and motion. */
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 74% 30%, rgba(217, 138, 161, 0.12), transparent 30rem),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.02), transparent 42%);
+}
+
+.home-hero-title {
+  font-size: clamp(3.25rem, 4.5vw, 4.75rem);
+  line-height: 0.92;
+}
+
+.hero-copy {
+  animation: hero-copy-in 820ms var(--ease-press) both;
+}
+
+.hero-portrait {
+  box-shadow: 0 32px 90px rgba(8, 5, 10, 0.38);
+  animation: hero-portrait-in 980ms 100ms var(--ease-press) both;
+}
+
+.hero-portrait img {
+  transition: transform 1.2s var(--ease-press);
+}
+
+.hero-portrait:hover img {
+  transform: scale(1.018);
+}
+
+.portrait-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(23, 19, 27, 0.18), transparent 34%);
+  pointer-events: none;
+}
+
+/* Sits in the quiet top corner of a photograph. Over a subject's hands or
+   face it stops reading as ornament and starts reading as an artefact, so it
+   is small, low-contrast, and kept out of the centre. */
+.ring-orbit {
+  position: absolute;
+  right: 1.75rem;
+  top: 1.75rem;
+  bottom: auto;
+  width: 5.5rem;
+  height: auto;
+  opacity: 0.55;
+  filter: drop-shadow(0 10px 22px rgba(7, 4, 10, 0.45));
+  animation: ring-breathe 7s ease-in-out infinite;
+}
+
+/* A narrow screen crops the photograph tighter, so any fixed corner lands on
+   a face. The mark is decorative and already sits in the header — the small
+   screen keeps the photograph clean. */
+@media (max-width: 767px) {
+  .ring-orbit {
+    display: none;
+  }
+}
+
+.trust-rail {
+  background: rgba(16, 13, 19, 0.5);
+}
+
+.recognition-note {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.recognition-note::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--color-oxblood);
+  transform: scaleY(0.32);
+  transform-origin: top;
+  transition: transform 420ms var(--ease-press);
+}
+
+.recognition-note:hover::before {
+  transform: scaleY(1);
+}
+
+.commitment-frame {
+  box-shadow: 0 34px 100px rgba(7, 5, 9, 0.34);
+}
+
+.commitment-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 45%, rgba(16, 13, 19, 0.38));
+}
+
+.method-rail {
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .method-rail::before {
+    content: "";
+    position: absolute;
+    top: 1.2rem;
+    left: 1rem;
+    right: 1rem;
+    height: 1px;
+    background: var(--color-hairline);
+  }
+}
+
+.method-marker {
+  position: relative;
+  width: 3.35rem;
+  height: 2.4rem;
+}
+
+.method-marker span {
+  position: absolute;
+  top: 0;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid rgba(234, 212, 169, 0.72);
+  border-radius: 999px;
+  background: var(--color-ink-raised);
+}
+
+.method-marker span:first-child {
+  left: 0;
+}
+
+.method-marker span:last-child {
+  right: 0;
+}
+
+.promise-row {
+  border-left: 1px solid var(--color-hairline);
+  padding-left: 1.5rem;
+  transition: border-color 260ms ease, transform 260ms var(--ease-press);
+}
+
+.promise-row:hover {
+  border-color: var(--color-rose);
+  transform: translateX(4px);
+}
+
+.safety-panel {
+  border: 1px solid var(--color-hairline);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(141, 49, 81, 0.22), transparent 55%),
+    rgba(255, 255, 255, 0.025);
+}
+
+.final-vow {
+  background: radial-gradient(circle at 50% 45%, rgba(141, 49, 81, 0.18), transparent 34rem);
+}
+
+.mobile-menu-enter {
+  animation: mobile-menu-in 320ms var(--ease-press) both;
+}
+
+.services-menu-enter {
+  transform-origin: 50% 0;
+  animation: services-menu-in 280ms var(--ease-press) both;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  header,
+  .sticky-conversion {
+    background: var(--color-ink-raised);
+    backdrop-filter: none;
+  }
+}
+
+@keyframes hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-portrait-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ring-breathe {
+  0%,
+  100% {
+    transform: rotate(-3deg) scale(1);
+  }
+  50% {
+    transform: rotate(2deg) scale(1.035);
+  }
+}
+
+@keyframes mobile-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes services-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .display-xl {
+    line-height: 0.94;
+  }
+
+  .ring-orbit {
+    width: 6rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .page-title {
+    font-size: 3rem;
+  }
+}
+
+/* Print: results should print as a document. */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .no-print {
+    display: none !important;
+  }
 }
