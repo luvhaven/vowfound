@@ -43,3 +43,10 @@ next-env.d.ts
 # Playwright
 /test-results/
 /playwright-report/
+
+# Throwaway debug/screenshot scripts written at the repo root during
+# development. They routinely contain live URLs and test credentials, so they
+# are ignored rather than relied on being deleted by hand.
+/*.mjs
+!eslint.config.mjs
+!postcss.config.mjs

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { signIn, signUp, requestPasswordReset } from "@/app/actions/auth";
+import { PASSWORD_HINT } from "@/lib/auth/password";
 
 function Field({
   id,
@@ -30,6 +31,7 @@ function Field({
       </label>
       <input
         id={id}
+        name={id}
         type={type}
         autoComplete={autoComplete}
         className="field mt-2.5"
@@ -38,6 +40,22 @@ function Field({
       />
       {hint && <p className="mt-2 text-[14px] text-slate">{hint}</p>}
     </div>
+  );
+}
+
+/**
+ * Until React takes over, the submit button is a plain browser submit that
+ * reloads the page and does nothing — which reads as "sign in is broken"
+ * rather than "the page is still loading". This says which it is.
+ */
+function HydrationGuard() {
+  return (
+    <noscript>
+      <p className="mt-5 border-l-2 border-oxblood pl-4 text-[15px] text-oxblood">
+        Signing in needs JavaScript. If it is switched off, or a browser
+        extension is blocking it, the form will reload and nothing will happen.
+      </p>
+    </noscript>
   );
 }
 
@@ -85,6 +103,7 @@ export function SignInForm() {
           onChange={setPassword}
         />
       </div>
+      <HydrationGuard />
       <ErrorNote message={error} />
       <div className="mt-8">
         <Button type="submit" size="lg" className="w-full" disabled={pending}>
@@ -158,7 +177,7 @@ export function SignUpForm() {
           label="Password"
           type="password"
           autoComplete="new-password"
-          hint="At least ten characters. A short sentence works well."
+          hint={PASSWORD_HINT}
           value={values.password}
           onChange={set("password")}
         />
@@ -197,6 +216,7 @@ export function SignUpForm() {
         </label>
       </div>
 
+      <HydrationGuard />
       <ErrorNote message={error} />
 
       <div className="mt-8">
