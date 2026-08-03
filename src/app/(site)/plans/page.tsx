@@ -4,20 +4,23 @@ import { PageHeader, PageCta } from "@/components/site/page-header";
 import { PlanCards } from "@/components/site/plan-cards";
 import { Guarantee } from "@/components/site/guarantee";
 import { Reveal } from "@/components/ui/reveal";
+import { resolveCurrency } from "@/lib/currency.server";
 
 export const metadata: Metadata = {
   title: "Plans",
   description:
-    "Four ways to work with us. The figure is shared with your readiness map, once we know which one you actually need.",
+    "Compare VowFound's current marriage-readiness, coaching, matchmaking, and private-concierge programme fees.",
 };
 
-export default function PlansPage() {
+export default async function PlansPage() {
+  const currency = await resolveCurrency();
+
   return (
     <>
       <PageHeader
         eyebrow="Working together"
-        title="Four ways in. Most people should start with the first."
-        standfirst="We do not quote a figure before we know what you need, because the honest recommendation for about half of the people who ask is the cheapest thing on this page."
+        title="Clear scope. Clear fees. Honest guidance."
+        standfirst="See the current fee for every way of working with us. The free assessment then recommends the smallest useful place to begin—never the largest programme we can sell."
       />
 
       <Section>
@@ -27,10 +30,10 @@ export default function PlansPage() {
               index="01 / 04"
               eyebrow="Programme architecture"
               title="Each level adds responsibility, not decorative extras."
-              body="Start with the smallest useful intervention. Move into coaching, matchmaking, or concierge support only when the evidence supports it."
+              body="Compare the scope and current fee now. Start with the smallest useful intervention, then move into coaching, matchmaking, or concierge support only when the evidence supports it."
             />
           </Reveal>
-          <PlanCards />
+          <PlanCards currency={currency} showPrices directAction={false} />
           <div className="mt-14">
             <Reveal>
               <Guarantee />
@@ -43,23 +46,23 @@ export default function PlansPage() {
         <Container width="default">
           <Reveal>
             <h2 className="display-lg text-onink">
-              Why the price is not on this page.
+              Why the assessment still comes first.
             </h2>
             <div className="measure mt-8 space-y-5 text-onink-dim">
               <p>
-                Because a number without a recommendation is just an
-                affordability test, and it sorts people by budget rather than by
-                what would help them.
+                A visible fee helps you judge basic fit. A recommendation helps
+                you avoid paying for more support than you actually need. You
+                deserve both.
               </p>
               <p>
                 Finish the assessment and your readiness map arrives with one
-                recommendation, its price, and the prices of the other three so
-                you can disagree with us. It takes twelve minutes and costs
-                nothing.
+                recommended starting point and the reasoning behind it. You can
+                compare that recommendation with every option shown above. It
+                takes twelve minutes and costs nothing.
               </p>
               <p>
                 If you would rather ask a person first, book a consultation. We
-                will tell you the figure on the call.
+                will help you decide whether any programme is useful at all.
               </p>
             </div>
           </Reveal>
@@ -67,8 +70,8 @@ export default function PlansPage() {
       </Section>
 
       <PageCta
-        title="Twelve minutes, then a number."
-        body="The assessment ends with a recommendation and what it costs, in your currency."
+        title="The fee is clear. The right fit should be too."
+        body="Begin with twelve private minutes and leave with one recommended next step—and the reasoning behind it."
       />
     </>
   );

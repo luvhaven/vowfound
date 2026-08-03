@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { FaqList } from "@/components/site/faq-list";
+import { resolvedObjections } from "@/lib/content/resolve.server";
 
 export const metadata: Metadata = {
   title: "Questions",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
     "Whether this is matchmaking, whether we can guarantee anything, and what happens if you are not ready.",
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const objections = await resolvedObjections();
+
   return (
     <>
       <PageHeader
@@ -19,7 +22,7 @@ export default function FaqPage() {
       />
       <Section>
         <Container width="default">
-          <FaqList />
+          <FaqList items={objections} />
         </Container>
       </Section>
       <PageCta

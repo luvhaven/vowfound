@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 /**
  * The brief's non-negotiables, enforced as tests rather than left as
@@ -79,8 +79,16 @@ describe("banned vocabulary", () => {
   ];
 
   it("does not appear in user-facing content", () => {
+    // The CMS guard necessarily contains the banned words, because its job is
+    // to match them. Scanning it would flag the very thing enforcing the rule.
+    const ENFORCEMENT = ["actions" + sep + "content.ts"];
+
     const contentFiles = sourceFiles.filter(
-      (f) => f.includes("content") || f.includes("components") || f.includes("app"),
+      (f) =>
+        (f.includes("content") ||
+          f.includes("components") ||
+          f.includes("app")) &&
+        !ENFORCEMENT.some((allowed) => f.endsWith(allowed)),
     );
     const offenders: string[] = [];
     for (const file of contentFiles) {

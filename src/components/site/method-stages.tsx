@@ -1,7 +1,9 @@
-import { METHOD } from "@/content/site";
+import { resolvedMethod } from "@/lib/content/resolve.server";
 import { Reveal } from "@/components/ui/reveal";
 
-export function MethodStages({ detailed = false }: { detailed?: boolean }) {
+export async function MethodStages({ detailed = false }: { detailed?: boolean }) {
+  const METHOD = await resolvedMethod();
+
   return (
     <ol className="mt-16 border-b border-hairline">
       {METHOD.map((stage, index) => (

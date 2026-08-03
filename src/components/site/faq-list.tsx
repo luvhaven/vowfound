@@ -3,8 +3,22 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import { OBJECTIONS } from "@/content/site";
 
-export function FaqList({ limit }: { limit?: number }) {
-  const items = limit ? OBJECTIONS.slice(0, limit) : OBJECTIONS;
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+
+/** Copy is resolved on the server and passed in, so an admin edit reaches
+ *  this client component without it needing database access of its own. */
+export function FaqList({
+  limit,
+  items: provided,
+}: {
+  limit?: number;
+  items?: readonly FaqItem[];
+}) {
+  const source = provided ?? OBJECTIONS;
+  const items = limit ? source.slice(0, limit) : source;
 
   return (
     <Accordion.Root type="single" collapsible className="mt-14 border-b border-hairline">

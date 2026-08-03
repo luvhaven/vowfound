@@ -217,8 +217,21 @@ export function AssessmentRunner({
 
   if (!ready) {
     return (
-      <div className="min-h-[60vh]" aria-busy="true">
-        <span className="sr-only">Loading your assessment</span>
+      <div
+        className="mx-auto grid min-h-[55vh] w-full max-w-xl place-items-center"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <Paper className="w-full px-7 py-10 text-center md:px-10 md:py-12">
+          <p className="engraved text-oxblood">Your private assessment</p>
+          <p className="display-md mt-4 text-ink">Preparing your first question.</p>
+          <div className="mx-auto mt-7 h-px w-36 overflow-hidden bg-stone" aria-hidden>
+            <span className="block h-full w-1/2 bg-oxblood motion-safe:animate-pulse" />
+          </div>
+          <p className="mt-6 text-[14px] text-slate">
+            Twelve minutes. Saved as you go. No public profile.
+          </p>
+        </Paper>
       </div>
     );
   }
@@ -243,7 +256,7 @@ export function AssessmentRunner({
 
   return (
     <div className="mx-auto w-full max-w-xl" onKeyDown={onKeyDown}>
-      {/* Progress is a hairline rule that fills. No percentage, no step count. */}
+      {/* The rule gives visual progress; the count removes uncertainty. */}
       <div className="mb-10">
         <div
           className="h-px w-full bg-hairline"
@@ -262,10 +275,12 @@ export function AssessmentRunner({
           />
         </div>
         <div className="mt-4 flex items-center justify-between">
-          <p className="engraved text-onink-faint">{question.section}</p>
-          {resumed && step > 0 && (
-            <p className="engraved text-onink-faint">Resumed where you left off</p>
-          )}
+          <p className="engraved text-onink-faint">
+            Question {step + 1} of {total}
+          </p>
+          <p className="engraved text-onink-faint">
+            {resumed && step > 0 ? "Resumed where you left off" : question.section}
+          </p>
         </div>
       </div>
 

@@ -22,5 +22,8 @@ export default defineConfig({
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
+    // Lets the suite pin a region so the currency rules can be exercised from
+    // both sides. Never set outside tests and local development.
+    env: { ALLOW_DEBUG_COUNTRY: "1" },
   },
 });

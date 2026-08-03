@@ -7,8 +7,8 @@ export const HERO = {
   eyebrow: "A private practice",
   question: "When do you want to be married?",
   support:
-    "Tell us the future you want. We'll help you understand what has been getting in the way, become ready for it, and meet people who share the intention.",
-  cta: "Begin your plan",
+    "Stop leaving marriage to chance or dating algorithms. We pinpoint what is quietly sabotaging your dating, coach you for lasting commitment, and introduce you to vetted candidates ready for marriage.",
+  cta: "Get your marriage plan",
 } as const;
 
 export const REFRAME = {
@@ -36,11 +36,11 @@ export const RECOGNITION = [
   },
   {
     title: "You have started saying you are fine with it.",
-    body: "You are not, particularly. You are tired of the conversation, and of the face people make when you have it.",
+    body: "You are not, particularly. You are tired of the conversation, and of the face people make when you have it. Saying you are fine is cheaper than saying the truth.",
   },
   {
     title: "People introduce you to people. None of them are close.",
-    body: "Everyone means well. Nobody is matching on the things that actually decide whether a marriage holds.",
+    body: "Everyone means well, and everyone is matching on the same four things: age, faith, income, availability. None of the four is what decides whether a marriage holds.",
   },
 ] as const;
 
@@ -120,20 +120,36 @@ export const OBJECTIONS = [
     a: "Then the Clarity Audit is exactly where to start.",
   },
   {
+    q: "Will anyone I know find out I am doing this?",
+    a: "Not from us. There is no directory to appear in, no profile that can be searched, and nothing about you is indexed. Another member learns your name only after you have both accepted an introduction — and if you recognise someone, you decline, they are told nothing, and it ends there.",
+  },
+  {
     q: "Who sees my information?",
-    a: "Your coach and your matchmaker, and only if they are assigned to you. Nothing is browsable. Your profile is not indexed and never appears in search. You can export or delete everything you have given us, from your account, without asking a person.",
+    a: "Your coach and your matchmaker, and only while they are assigned to you. Administrators can see what running the business requires, and every one of those reads is written to a log you can also read. You can export or delete everything from your account without asking a person.",
+  },
+  {
+    q: "What does it cost?",
+    a: "From the price of a good dinner for the audit, to a significant sum for a nine-month search. We do not put the figure before the recommendation, because half the people who ask should be buying the cheapest thing we sell. Finish the assessment and you get both at once.",
+  },
+  {
+    q: "I have tried a matchmaker before and it did not work.",
+    a: "Then you already know the failure mode: a stack of introductions and no explanation. Ask whoever it was why each name reached you. If they cannot answer, that is what went wrong, and it is the thing we do differently.",
   },
   {
     q: "Is there an app with profiles I can scroll?",
-    a: "No. There is no directory, no feed and no swiping. Introductions are made one at a time by a person who can explain the reasoning.",
+    a: "No. There is no directory, no feed and no swiping. Introductions arrive one at a time, from a person who can tell you exactly why they sent that name.",
+  },
+  {
+    q: "I am not in Lagos or London. Does this still work?",
+    a: "Yes. Coaching is remote and always has been. Introductions depend on where you are willing to meet and whether you would relocate, which is why we ask both early rather than discovering it at the end.",
   },
   {
     q: "How long does this take?",
-    a: "You set the timeline. We tell you honestly whether the work in front of you fits inside it, and we would rather say so at the start than at the end.",
+    a: "You set the timeline. We tell you honestly whether the work in front of you fits inside it, and we would rather say so on the first call than in the ninth month.",
   },
   {
     q: "What if I want to stop?",
-    a: "You can pause or leave at any time. Deleting your account removes your data, and anyone we have introduced you to loses access at the same moment.",
+    a: "Pause or leave at any time, from inside your account. Nobody rings you to talk you out of it. Deleting removes your data, and anyone we introduced you to loses access at the same moment.",
   },
 ] as const;
 

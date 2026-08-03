@@ -8,13 +8,13 @@ import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
 import { SaveTheDate } from "@/components/home/save-the-date";
-import { JourneyChooser } from "@/components/home/journey-chooser";
 import { FaqList } from "@/components/site/faq-list";
+import { resolvedObjections } from "@/lib/content/resolve.server";
 import { Guarantee } from "@/components/site/guarantee";
-import { StickyCta } from "@/components/site/sticky-cta";
 import { MethodStages } from "@/components/site/method-stages";
 import { Rings, RuleOrnament, VowMark } from "@/components/ui/ornament";
-import { RECOGNITION, REFRAME, SAFETY_POINTS } from "@/content/site";
+import { RECOGNITION, SAFETY_POINTS } from "@/content/site";
+import { getContent } from "@/lib/content/read.server";
 
 const TRUST_POINTS = [
   "Free 12-minute assessment",
@@ -38,7 +38,13 @@ const MATCHMAKING_PROMISES = [
   },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Every editable string on this page resolves through t(). A key with no
+  // override falls back to the default in the registry, so the page renders
+  // identically before anyone has opened the admin.
+  const t = await getContent();
+  const objections = await resolvedObjections();
+
   return (
     <>
       <section className="home-hero relative overflow-hidden">
@@ -51,21 +57,20 @@ export default function HomePage() {
                 headline says how this works, the subhead says what we do.
                 The photograph already carries the warmth — the headline does
                 not need to repeat it. */}
-            <p className="engraved text-onink-faint">A private practice</p>
+            <p className="engraved text-onink-faint">{t("home.hero.eyebrow")}</p>
             <h1 className="home-hero-title display-xl mt-5 text-onink md:mt-6">
-              Get married
+              {t("home.hero.title.line1")}
               <br />
-              on purpose.
+              {t("home.hero.title.line2")}
             </h1>
             <p className="mt-5 max-w-lg text-base leading-relaxed text-onink-dim md:mt-6 md:text-lg">
-              We find what has been getting in the way, help you change it, and
-              introduce you to people who want the same thing.
+              {t("home.hero.support")}
             </p>
             <div className="mt-7 flex flex-wrap gap-3 md:mt-9">
               {/* Leads into the timeline card rather than jumping past it —
                   choosing a date is the first real step, not a detour. */}
               <Button asChild size="lg">
-                <Link href="#begin">Begin your plan</Link>
+                <Link href="#begin">{t("home.hero.cta")}</Link>
               </Button>
               <Button asChild variant="quiet" size="lg">
                 <Link href="/method">See the method</Link>
@@ -73,7 +78,7 @@ export default function HomePage() {
             </div>
             {/* The cost of entry, stated where the decision is made. */}
             <p className="engraved mt-5 text-onink-faint">
-              Free · Twelve minutes · No payment to begin
+              {t("home.hero.reassurance")}
             </p>
           </div>
 
@@ -118,15 +123,13 @@ export default function HomePage() {
             <Reveal>
               <Rings size={78} className="mb-8" />
               <h2 className="display-lg max-w-lg text-onink">
-                Give your future a date.
+                {t("home.begin.title")}
               </h2>
               <p className="mt-6 max-w-md text-onink-dim">
-                Choose the season you hope to be married. We will work backward
-                from it with honesty.
+                {t("home.begin.body")}
               </p>
               <p className="mt-8 max-w-sm text-sm leading-relaxed text-onink-faint">
-                This is not a countdown or a promise. It gives the work a real
-                horizon.
+                {t("home.begin.note")}
               </p>
               <div className="mt-8 border-t border-hairline pt-6">
                 <p className="text-sm font-semibold text-onink">
@@ -151,11 +154,10 @@ export default function HomePage() {
           <Reveal>
             <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-16">
               <h2 className="display-lg text-onink">
-                You do not need more attention. You need a better pattern.
+                {t("home.recognition.title")}
               </h2>
               <p className="text-onink-dim lg:pb-2">
-                We start with the part dating apps cannot see: what keeps
-                repeating, and what a good marriage will ask of you.
+                {t("home.recognition.standfirst")}
               </p>
             </div>
           </Reveal>
@@ -165,10 +167,10 @@ export default function HomePage() {
               <Reveal key={item.title} delay={(index % 2) * 80}>
                 <article className="recognition-note">
                   <h3 className="display text-[1.55rem] leading-tight text-onink md:text-[1.8rem]">
-                    {item.title}
+                    {t(`home.recognition.${index}.title`)}
                   </h3>
                   <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-onink-dim">
-                    {item.body}
+                    {t(`home.recognition.${index}.body`)}
                   </p>
                 </article>
               </Reveal>
@@ -184,28 +186,11 @@ export default function HomePage() {
           <Reveal>
             <div className="text-center">
               <RuleOrnament className="mx-auto mb-10 opacity-70" />
-              <h2 className="display-lg text-onink">{REFRAME.heading}</h2>
+              <h2 className="display-lg text-onink">{t("home.reframe.heading")}</h2>
               <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-onink-dim">
-                {REFRAME.body}
+                {t("home.reframe.body")}
               </p>
             </div>
-          </Reveal>
-        </Container>
-      </Section>
-
-      <Section id="starting-point">
-        <Container width="wide">
-          <Reveal>
-            <h2 className="display-lg max-w-3xl text-onink">
-              Start with what feels most true.
-            </h2>
-            <p className="mt-6 max-w-xl text-onink-dim">
-              You do not need to understand every service before taking the
-              first useful step.
-            </p>
-          </Reveal>
-          <Reveal delay={80} className="mt-12">
-            <JourneyChooser />
           </Reveal>
         </Container>
       </Section>
@@ -369,7 +354,7 @@ export default function HomePage() {
               can honestly promise.
             </p>
           </Reveal>
-          <FaqList limit={4} />
+          <FaqList limit={4} items={objections} />
           <Reveal>
             <div className="mt-10">
               <Button asChild variant="quiet">
@@ -404,8 +389,6 @@ export default function HomePage() {
           </Reveal>
         </Container>
       </Section>
-
-      <StickyCta />
     </>
   );
 }

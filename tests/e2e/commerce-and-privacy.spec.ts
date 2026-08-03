@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("currency", () => {
-  test("only one currency is ever on screen, and the override persists", async ({
+  test("outside Nigeria there is no naira price and no way to reach one", async ({
     page,
   }) => {
     await page.goto("/checkout/clarity-audit");
@@ -10,15 +10,47 @@ test.describe("currency", () => {
     await expect(body).toContainText("$79");
     await expect(body).not.toContainText("₦");
 
-    await page.getByRole("button", { name: /switch to naira/i }).click();
+    // Local pricing is not an option anyone may opt into.
+    await expect(
+      page.getByRole("button", { name: /switch to naira/i }),
+    ).toHaveCount(0);
+  });
 
+  test("a forged currency cookie does not buy local pricing", async ({
+    page,
+    context,
+  }) => {
+    await context.addCookies([
+      {
+        name: "vf_currency",
+        value: "NGN",
+        url: "http://127.0.0.1:3100",
+      },
+    ]);
+
+    await page.goto("/checkout/clarity-audit");
+    await expect(page.locator("body")).toContainText("$79");
+    await expect(page.locator("body")).not.toContainText("₦");
+  });
+
+  test("inside Nigeria naira is offered, and only one currency shows", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      extraHTTPHeaders: { "x-debug-country": "NG" },
+    });
+    const page = await context.newPage();
+
+    await page.goto("/checkout/clarity-audit");
+    const body = page.locator("body");
     await expect(body).toContainText("₦60,000");
     await expect(body).not.toContainText("$79");
 
-    // Persisted across a navigation.
-    await page.goto("/checkout/ready-in-90");
-    await expect(page.locator("body")).toContainText("₦450,000");
-    await expect(page.locator("body")).not.toContainText("$1,200");
+    await page.getByRole("button", { name: /switch to dollars/i }).click();
+    await expect(body).toContainText("$79");
+    await expect(body).not.toContainText("₦");
+
+    await context.close();
   });
 });
 

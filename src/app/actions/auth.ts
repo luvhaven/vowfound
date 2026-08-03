@@ -6,14 +6,19 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient, supabaseConfigured } from "@/lib/supabase/admin";
 import { rateLimit } from "@/lib/rate-limit";
+import { passwordField } from "@/lib/auth/password";
 import { SITE_URL } from "@/lib/brand";
 
 const credentials = z.object({
   email: z.string().email().max(320),
-  password: z.string().min(10, "Use at least ten characters.").max(200),
+  // Sign-in accepts whatever is on the account; only new passwords are held
+  // to the policy, so tightening it never locks an existing member out.
+  password: z.string().min(1).max(200),
 });
 
 const signUpSchema = credentials.extend({
+  // A new password is held to the full policy.
+  password: passwordField,
   fullName: z.string().min(1).max(120),
   // Adult-only. Confirmed at signup and recorded as a consent event.
   ageConfirmed: z.literal(true),
@@ -112,4 +117,113 @@ export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
+}
+
+const changeSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Enter your current password."),
+    newPassword: passwordField,
+    confirmPassword: z.string(),
+  })
+  .refine((v) => v.newPassword === v.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Both new password fields must match.",
+  })
+  .refine((v) => v.newPassword !== v.currentPassword, {
+    path: ["newPassword"],
+    message: "Choose a password you have not used here before.",
+  });
+
+/**
+ * Changing a password requires proving you know the current one, even though
+ * the session already exists. Without that, anyone who finds an unlocked
+ * laptop owns the account permanently.
+ */
+export async function changePassword(input: unknown) {
+  const parsed = changeSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      error: parsed.error.issues[0]?.message ?? "Check the form.",
+    };
+  }
+  if (!supabaseConfigured()) {
+    return { ok: false as const, error: "Accounts are not connected here." };
+  }
+  if (!(await limiter("password-change"))) {
+    return { ok: false as const, error: "Too many attempts. Wait a few minutes." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) return { ok: false as const, error: "Not signed in." };
+
+  // Re-authenticate. signInWithPassword on the current session verifies the
+  // old password without granting anything new.
+  const { error: reauthError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: parsed.data.currentPassword,
+  });
+  if (reauthError) {
+    return { ok: false as const, error: "That current password is not right." };
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.newPassword,
+    data: { must_change_password: false },
+  });
+  if (error) return { ok: false as const, error: error.message };
+
+  const db = createAdminClient();
+  await db.from("audit_logs").insert({
+    actor_id: user.id,
+    action: "password.changed",
+    subject_table: "auth.users",
+    subject_user_id: user.id,
+  });
+
+  revalidatePath("/", "layout");
+  return { ok: true as const };
+}
+
+/** Set after a reset link, where there is no old password to prove. */
+export async function setNewPassword(input: unknown) {
+  const parsed = z
+    .object({
+      newPassword: passwordField,
+      confirmPassword: z.string(),
+    })
+    .refine((v) => v.newPassword === v.confirmPassword, {
+      path: ["confirmPassword"],
+      message: "Both fields must match.",
+    })
+    .safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      error: parsed.error.issues[0]?.message ?? "Check the form.",
+    };
+  }
+  if (!supabaseConfigured()) {
+    return { ok: false as const, error: "Accounts are not connected here." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false as const, error: "That link has expired." };
+
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.newPassword,
+    data: { must_change_password: false },
+  });
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath("/", "layout");
+  return { ok: true as const };
 }

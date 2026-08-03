@@ -12,10 +12,12 @@ import { CurrencyAmount } from "@/components/ui/currency-amount";
 export function PlanCards({
   currency,
   showPrices = false,
+  directAction = showPrices,
   recommended,
 }: {
   currency?: Currency;
   showPrices?: boolean;
+  directAction?: boolean;
   recommended?: string;
 }) {
   return (
@@ -88,7 +90,7 @@ export function PlanCards({
                   )}
 
                   <div className="mt-6">
-                    {showPrices && currency ? (
+                    {showPrices && currency && directAction ? (
                       <Button
                         asChild
                         variant={isRecommended ? "primary" : "onpaper"}
@@ -101,7 +103,7 @@ export function PlanCards({
                       </Button>
                     ) : (
                       <Button asChild variant="onpaper" size="md" className="w-full">
-                        <Link href="/assessment">Start the assessment</Link>
+                        <Link href="/assessment">Start free assessment</Link>
                       </Button>
                     )}
                   </div>

@@ -17,8 +17,10 @@ export async function detectCountry(): Promise<string | null> {
     h.get("x-vercel-ip-country") ??
     h.get("cf-ipcountry") ??
     h.get("x-country-code") ??
-    // Local development only. Never present in production.
-    (process.env.NODE_ENV !== "production"
+    // Explicit opt-in for local work and end-to-end tests. Off unless
+    // ALLOW_DEBUG_COUNTRY is set, so a deployed environment cannot be talked
+    // into local pricing by a request header.
+    (process.env.ALLOW_DEBUG_COUNTRY === "1"
       ? h.get("x-debug-country")
       : null) ??
     null

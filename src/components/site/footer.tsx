@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
+import { usePathname } from "next/navigation";
+import { ArrowUpRight } from "@phosphor-icons/react";
 import { BRAND, CONTACT_EMAIL } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { BrandLockup } from "@/components/site/brand-lockup";
@@ -43,6 +46,23 @@ const LEGAL_LINKS = [
 ] as const;
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/checkout/")) {
+    return (
+      <footer className="border-t border-hairline bg-ink-deep">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 px-6 py-8 text-[12px] text-onink-faint sm:flex-row sm:items-center sm:justify-between md:px-10">
+          <p>Private checkout. Payment details are handled by our payment provider.</p>
+          <nav aria-label="Checkout support" className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link href="/legal/terms" className="transition-colors hover:text-onink">Terms</Link>
+            <Link href="/legal/privacy-policy" className="transition-colors hover:text-onink">Privacy</Link>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="transition-colors hover:text-onink">Need help?</a>
+          </nav>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer className="border-t border-hairline bg-ink-deep">
       <div className="mx-auto w-full max-w-7xl px-6 py-16 md:px-10 md:py-24">

@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/account/appointments", label: "Appointments" },
   { href: "/account/billing", label: "Billing" },
   { href: "/account/privacy", label: "Privacy" },
+  { href: "/account/security", label: "Security" },
 ];
 
 export function AccountNav() {
