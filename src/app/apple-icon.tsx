@@ -5,7 +5,8 @@ export const contentType = "image/png";
 
 /**
  * iOS wants a PNG, and it sits on a home screen at real size. Same mark as
- * icon.svg, drawn with geometry rather than type so no font has to load.
+ * public/brand/vowfound-favicon.svg, drawn with geometry rather than type so
+ * no font has to load.
  */
 export default function AppleIcon() {
   return new ImageResponse(
