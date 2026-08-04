@@ -1,16 +1,18 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import ringsImage from "../../../../public/images/vowfound-rings.png";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper, PaperInset } from "@/components/ui/paper";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Private matchmaking",
   description:
     "Two stages. Hard requirements eliminate, weighted preferences rank, and a matchmaker makes every final decision.",
-};
+  path: "/matchmaking",
+  image: "/images/vowfound-rings.png",
+});
 
 const DIMENSIONS = [
   "Values",

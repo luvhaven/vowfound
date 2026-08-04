@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import { Container, Section, Eyebrow, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { SAFETY_POINTS } from "@/content/site";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Safety and verification",
   description:
     "Adults only. Verified identities. Mutual consent before any identity is revealed. Nothing browsable, nothing indexed.",
-};
+  path: "/safety",
+});
 
 const VERIFICATION = [
   {

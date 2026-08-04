@@ -1,17 +1,27 @@
-import type { Metadata } from "next";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { ContactForm } from "@/components/site/contact-form";
 import { CONTACT_EMAIL, PRIVACY_EMAIL } from "@/lib/brand";
+import { ALL_SERVICES } from "@/content/services";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Contact",
   description: "Ask a question. A person reads and answers it.",
-};
+  path: "/contact",
+});
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ service?: string }>;
+}) {
+  const requested = (await searchParams).service;
+  const defaultService = ALL_SERVICES.some((service) => service.id === requested)
+    ? requested
+    : undefined;
   return (
     <>
       <PageHeader
@@ -25,7 +35,7 @@ export default function ContactPage() {
           <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
             <Reveal className="lg:col-span-7">
               <Paper className="p-7 md:p-9">
-                <ContactForm />
+                <ContactForm defaultService={defaultService} />
               </Paper>
             </Reveal>
 

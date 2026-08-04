@@ -1,21 +1,49 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { startCheckout } from "@/app/actions/checkout";
+import { trackEvent } from "@/lib/analytics/client";
 
 export function CheckoutForm({
   slug,
   applicationOnly,
+  checkoutAvailable,
 }: {
   slug: string;
   applicationOnly: boolean;
+  checkoutAvailable: boolean;
 }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [confirmed, setConfirmed] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+
+  if (!checkoutAvailable) {
+    return (
+      <div className="grid min-h-96 content-center">
+        <p className="engraved text-oxblood">Private enrolment</p>
+        <h2 className="display-md mt-4 text-ink">
+          Let us open this properly for you.
+        </h2>
+        <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-slate">
+          Online enrolment for this programme is opening soon. Book a private
+          consultation or send us a note; we will confirm fit, scope, and a
+          secure payment route directly.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/book">Book a consultation</Link>
+          </Button>
+          <Button asChild variant="onpaper">
+            <Link href="/contact">Send a private note</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -35,6 +63,9 @@ export function CheckoutForm({
     }
 
     startTransition(async () => {
+      trackEvent(applicationOnly ? "application_submit" : "checkout_start", {
+        product: slug,
+      });
       const result = await startCheckout({
         slug,
         email,
@@ -45,8 +76,8 @@ export function CheckoutForm({
         setError(
           result.error === "provider_not_configured"
             ? applicationOnly
-              ? "Applications are not connected on this environment yet. Book a consultation and we will take it from there."
-              : "Payments are not connected on this environment yet. Book a consultation and we will take it from there."
+              ? "Applications are temporarily unavailable. Book a consultation and we will take it from there."
+              : "Online payment is temporarily unavailable. Book a consultation and we will take it from there."
             : applicationOnly
               ? "We could not submit the application. Try again in a moment."
               : "We could not open the payment page. Try again in a moment.",

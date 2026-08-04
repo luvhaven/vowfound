@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { PlateSignature } from "@/components/ui/plates";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Coaching",
   description:
     "Specific, unsentimental readiness coaching. What you tolerate, how you present, and the thing that happens at week six.",
-};
+  path: "/coaching",
+});
 
 const WORK = [
   {

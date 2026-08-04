@@ -5,11 +5,13 @@ import { z } from "zod";
 import { sendEmail } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
 import { CONTACT_EMAIL } from "@/lib/brand";
+import { createAdminClient, supabaseConfigured } from "@/lib/supabase/admin";
 
 const schema = z.object({
   name: z.string().min(1).max(120),
   email: z.string().email().max(320),
   message: z.string().min(10).max(4000),
+  service: z.string().trim().max(80).optional(),
   company: z.string().max(0).optional(),
 });
 
@@ -23,15 +25,33 @@ export async function sendContactMessage(input: unknown) {
   const allowed = await rateLimit(`contact:${h.get("x-forwarded-for") ?? "local"}`, 5, 3600);
   if (!allowed) return { ok: false as const };
 
-  const { name, email, message } = parsed.data;
+  const { name, email, message, service } = parsed.data;
 
-  await sendEmail({
+  let persisted = false;
+  if (supabaseConfigured()) {
+    const db = createAdminClient();
+    const { error } = await db.from("leads").insert({
+      email,
+      full_name: name,
+      source: `contact:${service || "general"}`,
+    });
+    persisted = !error;
+    if (error) console.error("[contact] lead insert failed", error);
+  }
+
+  const delivery = await sendEmail({
     to: CONTACT_EMAIL,
     replyTo: email,
     subject: `Question from ${name}`,
     heading: "A question from the contact form",
-    body: [`From: ${name} <${email}>`, message],
+    body: [
+      `From: ${name} <${email}>`,
+      `Interest: ${service || "Not sure yet"}`,
+      message,
+    ],
   });
 
-  return { ok: true as const };
+  return delivery.ok || persisted
+    ? { ok: true as const }
+    : { ok: false as const };
 }

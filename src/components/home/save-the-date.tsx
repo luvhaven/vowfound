@@ -14,6 +14,7 @@ import {
 } from "@/lib/timeline";
 import { recordTimelineIntent } from "@/app/actions/timeline";
 import { Rings } from "@/components/ui/ornament";
+import { trackEvent } from "@/lib/analytics/client";
 
 /* The one orchestrated sequence on the site. 900ms, three beats:
    1. the month typesets with a letterpress impression
@@ -62,6 +63,7 @@ export function SaveTheDate() {
     // Reset here rather than in the effect: the sequence restarts because the
     // user chose again, which is an event, not a synchronised value.
     setStage(reduced ? 4 : 0);
+    trackEvent("timeline_select", { timeline: v });
     void recordTimelineIntent(v);
   }
 

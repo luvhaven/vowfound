@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { signIn, signUp, requestPasswordReset } from "@/app/actions/auth";
 import { PASSWORD_HINT, checkPassword } from "@/lib/auth/password";
 import { PasswordRequirements } from "@/components/auth/password-requirements";
+import { trackEvent } from "@/lib/analytics/client";
 
 function Field({
   id,
@@ -85,6 +86,7 @@ export function SignInForm() {
     start(async () => {
       const result = await signIn({ email, password });
       if (result.ok) {
+        trackEvent("sign_in", { method: "email" });
         const requested = params.get("next");
         const destination =
           requested?.startsWith("/") && !requested.startsWith("//")
@@ -158,7 +160,10 @@ export function SignUpForm() {
       const result = await signUp({ ...values, ageConfirmed, acceptTerms });
       if (!result.ok) setError(result.error);
       else if (result.needsConfirmation) setSent(true);
-      else router.push("/account");
+      else {
+        trackEvent("sign_up", { method: "email" });
+        router.push("/account");
+      }
     });
   }
 

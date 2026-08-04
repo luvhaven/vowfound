@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import type { Icon } from "@phosphor-icons/react";
@@ -23,12 +22,20 @@ import {
   type ServiceIcon,
   type ServiceOffering,
 } from "@/content/services";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  breadcrumbJsonLd,
+  createPageMetadata,
+  servicesJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Marriage Services",
   description:
     "Marriage readiness, coaching, curated matchmaking, concierge search, verification, image support, photography, and private guidance.",
-};
+  path: "/services",
+  image: "/images/vowfound-rings.png",
+});
 
 const SERVICE_ICONS = {
   audit: ClipboardText,
@@ -44,6 +51,13 @@ const SERVICE_ICONS = {
 export default function ServicesPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
+      <JsonLd data={servicesJsonLd()} />
       <PageHeader
         eyebrow="Marriage services"
         title="Support for the path to marriage."
@@ -158,6 +172,9 @@ function ServiceRow({
       </div>
       <Link
         href={service.actionHref}
+        data-analytics-event="service_select"
+        data-analytics-service={service.id}
+        data-analytics-placement="services_page"
         className={cn(
           "inline-flex items-center gap-2 text-[14px] font-medium text-onink transition-colors hover:text-rose",
           specialist ? "mt-7" : "md:mt-1",

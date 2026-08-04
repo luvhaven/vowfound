@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Container, Section } from "@/components/ui/layout";
 import { PageCta, PageHeader } from "@/components/site/page-header";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getArticle } from "@/lib/content.server";
+import { absoluteUrl, breadcrumbJsonLd } from "@/lib/seo";
+import { BRAND, SITE_URL } from "@/lib/brand";
 
 export async function generateMetadata({
   params,
@@ -12,9 +15,28 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticle(slug);
   if (!article) return { title: "Not found" };
+  const url = absoluteUrl(`/journal/${article.slug}`);
+  const description = article.standfirst ?? undefined;
   return {
     title: article.title,
-    description: article.standfirst ?? undefined,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      siteName: BRAND,
+      title: article.title,
+      description,
+      url,
+      publishedTime: article.published_at ?? undefined,
+      authors: article.author_name ? [article.author_name] : undefined,
+      images: ["/images/vowfound-commitment.png"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description,
+      images: ["/images/vowfound-commitment.png"],
+    },
   };
 }
 
@@ -27,8 +49,35 @@ export default async function ArticlePage({
   const article = await getArticle(slug);
   if (!article) notFound();
 
+  const articleUrl = absoluteUrl(`/journal/${article.slug}`);
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Journal", path: "/journal" },
+          { name: article.title, path: `/journal/${article.slug}` },
+        ])}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.title,
+          description: article.standfirst,
+          datePublished: article.published_at,
+          dateModified: article.published_at,
+          mainEntityOfPage: articleUrl,
+          image: absoluteUrl("/images/vowfound-commitment.png"),
+          author: {
+            "@type": article.author_name ? "Person" : "Organization",
+            name: article.author_name ?? BRAND,
+          },
+          publisher: { "@id": `${SITE_URL}/#organization` },
+          inLanguage: "en",
+        }}
+      />
       <article>
         <PageHeader
           eyebrow="Journal / Field note"

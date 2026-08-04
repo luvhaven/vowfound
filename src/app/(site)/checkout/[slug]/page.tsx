@@ -10,6 +10,7 @@ import { CurrencyAmount } from "@/components/ui/currency-amount";
 import { productBySlug, priceFor, PRODUCTS } from "@/lib/products";
 import { resolveCurrency, currencyOptions } from "@/lib/currency.server";
 import { VowMark } from "@/components/ui/ornament";
+import { providerFor } from "@/lib/payments";
 
 export function generateStaticParams() {
   return PRODUCTS.map((p) => ({ slug: p.slug }));
@@ -41,6 +42,8 @@ export default async function CheckoutPage({
     resolveCurrency(),
     currencyOptions(),
   ]);
+  const checkoutAvailable =
+    Boolean(product.applicationOnly) || providerFor(currency).isConfigured();
 
   return (
     <Section>
@@ -64,6 +67,7 @@ export default async function CheckoutPage({
             <CheckoutForm
               slug={product.slug}
               applicationOnly={product.applicationOnly ?? false}
+              checkoutAvailable={checkoutAvailable}
             />
           </Paper>
 

@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { FaqList } from "@/components/site/faq-list";
 import { resolvedObjections } from "@/lib/content/resolve.server";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Questions",
   description:
     "Whether this is matchmaking, whether we can guarantee anything, and what happens if you are not ready.",
-};
+  path: "/faq",
+});
 
 export default async function FaqPage() {
   const objections = await resolvedObjections();
