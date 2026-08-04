@@ -51,7 +51,7 @@ export function organizationJsonLd() {
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
-      url: absoluteUrl("/icon.png"),
+      url: absoluteUrl("/api/brand/logo"),
     },
     description:
       "A private marriage-readiness, coaching and curated-matchmaking practice for adults who intend to marry.",

@@ -37,8 +37,9 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: SITE_URL },
   icons: {
-    icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
-    apple: "/apple-icon.png",
+    icon: [{ url: "/api/brand/favicon" }],
+    shortcut: "/api/brand/favicon",
+    apple: "/api/brand/apple-icon",
   },
   verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
     ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
