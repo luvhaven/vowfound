@@ -73,7 +73,6 @@ function ErrorNote({ message }: { message: string | null }) {
 }
 
 export function SignInForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -85,8 +84,18 @@ export function SignInForm() {
     setError(null);
     start(async () => {
       const result = await signIn({ email, password });
-      if (result.ok) router.push(params.get("next") ?? "/account");
-      else setError(result.error);
+      if (result.ok) {
+        const requested = params.get("next");
+        const destination =
+          requested?.startsWith("/") && !requested.startsWith("//")
+            ? requested
+            : result.destination;
+
+        // A real navigation guarantees that middleware observes the session
+        // cookie written by the server action. A client-router transition can
+        // otherwise reuse a signed-out route payload from before submission.
+        window.location.assign(destination);
+      } else setError(result.error);
     });
   }
 

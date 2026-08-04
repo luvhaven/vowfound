@@ -31,6 +31,12 @@ export default async function AdminLayout({
             <span className="engraved text-rose">Operations</span>
           </div>
           <div className="flex items-center gap-5">
+            <Link
+              href="/account?view=folio"
+              className="engraved hidden text-onink-faint transition-colors hover:text-onink md:block"
+            >
+              Client folio
+            </Link>
             <span className="engraved hidden text-onink-faint sm:block">
               {viewer.email}
             </span>

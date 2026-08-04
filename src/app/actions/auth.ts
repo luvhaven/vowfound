@@ -86,16 +86,58 @@ export async function signIn(input: unknown) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  let data;
+  let error;
+  try {
+    ({ data, error } = await supabase.auth.signInWithPassword(parsed.data));
+  } catch {
+    return {
+      ok: false as const,
+      error: "Secure sign-in is temporarily unreachable. Check your connection and try again.",
+    };
+  }
 
   // Deliberately identical for a wrong password and an unknown address, so
   // this form cannot be used to discover who has an account.
   if (error) {
+    if (
+      error.status === 0 ||
+      error.name === "AuthRetryableFetchError" ||
+      /fetch|network|abort|timed out/i.test(error.message)
+    ) {
+      return {
+        ok: false as const,
+        error: "Secure sign-in is temporarily unreachable. Check your connection and try again.",
+      };
+    }
+    if (error.code === "email_not_confirmed") {
+      return {
+        ok: false as const,
+        error: "Confirm your email address before signing in.",
+      };
+    }
     return { ok: false as const, error: "That email and password do not match." };
   }
 
+  let destination = "/account";
+
+  // Staff should enter the workspace they actually use. The destination is
+  // derived from database roles after authentication; it is never trusted from
+  // form input or user-editable profile metadata.
+  if (data.user) {
+    const db = createAdminClient();
+    const { data: roles } = await db
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user.id)
+      .in("role", ["administrator", "super_administrator"])
+      .limit(1);
+
+    if (roles?.length) destination = "/admin";
+  }
+
   revalidatePath("/", "layout");
-  return { ok: true as const };
+  return { ok: true as const, destination };
 }
 
 export async function requestPasswordReset(input: unknown) {

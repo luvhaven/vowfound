@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
+import { fetchSupabase } from "@/lib/supabase/fetch";
 
 /**
  * Service-role client. Bypasses RLS.
@@ -23,6 +24,7 @@ export function createAdminClient() {
 
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: fetchSupabase },
   });
 }
 

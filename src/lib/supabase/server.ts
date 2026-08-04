@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { fetchSupabase } from "@/lib/supabase/fetch";
 
 /** Request-scoped client that acts as the signed-in user. RLS applies. */
 export async function createClient() {
@@ -10,6 +11,7 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      global: { fetch: fetchSupabase },
       cookies: {
         getAll() {
           return cookieStore.getAll();

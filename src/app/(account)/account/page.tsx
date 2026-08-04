@@ -1,12 +1,26 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Paper } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
 import { ReadinessMapView } from "@/components/assessment/readiness-map";
 import { resolveCurrency } from "@/lib/currency.server";
 import { getMemberOverview } from "@/lib/account.server";
 import { WorkspaceHeader } from "@/components/ui/workspace-header";
+import { getViewer } from "@/lib/admin.server";
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
+  const [{ view }, viewer] = await Promise.all([searchParams, getViewer()]);
+
+  // The unqualified account landing page is the member destination. Staff who
+  // arrive here through an old bookmark or stale post-login redirect should
+  // enter Operations instead. `?view=folio` keeps deliberate member-view QA
+  // available from the admin header.
+  if (viewer?.isAdmin && view !== "folio") redirect("/admin");
+
   const [currency, overview] = await Promise.all([
     resolveCurrency(),
     getMemberOverview(),
