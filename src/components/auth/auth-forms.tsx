@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { signIn, signUp, requestPasswordReset } from "@/app/actions/auth";
 import { PASSWORD_HINT, checkPassword } from "@/lib/auth/password";
 import { PasswordRequirements } from "@/components/auth/password-requirements";
+import { trackEvent } from "@/lib/analytics/client";
 
 function Field({
   id,
@@ -16,6 +17,7 @@ function Field({
   hint,
   value,
   onChange,
+  error,
 }: {
   id: string;
   label: string;
@@ -24,6 +26,7 @@ function Field({
   hint?: string;
   value: string;
   onChange: (v: string) => void;
+  error?: string;
 }) {
   return (
     <div>
@@ -38,8 +41,11 @@ function Field({
         className="field mt-2.5"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
       />
-      {hint && <p className="mt-2 text-[14px] text-slate">{hint}</p>}
+      {hint && <p id={`${id}-hint`} className="mt-2 text-[14px] text-slate">{hint}</p>}
+      {error && <p id={`${id}-error`} role="alert" className="mt-2 text-[13px] text-oxblood">{error}</p>}
     </div>
   );
 }
@@ -73,7 +79,6 @@ function ErrorNote({ message }: { message: string | null }) {
 }
 
 export function SignInForm() {
-  const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -85,8 +90,19 @@ export function SignInForm() {
     setError(null);
     start(async () => {
       const result = await signIn({ email, password });
-      if (result.ok) router.push(params.get("next") ?? "/account");
-      else setError(result.error);
+      if (result.ok) {
+        trackEvent("sign_in", { method: "email" });
+        const requested = params.get("next");
+        const destination =
+          requested?.startsWith("/") && !requested.startsWith("//")
+            ? requested
+            : result.destination;
+
+        // A real navigation guarantees that middleware observes the session
+        // cookie written by the server action. A client-router transition can
+        // otherwise reuse a signed-out route payload from before submission.
+        window.location.assign(destination);
+      } else setError(result.error);
     });
   }
 
@@ -129,27 +145,54 @@ export function SignUpForm() {
   const [ageConfirmed, setAge] = React.useState(false);
   const [acceptTerms, setTerms] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<Partial<Record<keyof typeof values, string>>>({});
+  const [showPassword, setShowPassword] = React.useState(false);
   const [sent, setSent] = React.useState(false);
   const [pending, start] = React.useTransition();
 
   function set(key: keyof typeof values) {
-    return (v: string) => setValues((prev) => ({ ...prev, [key]: v }));
+    return (v: string) => {
+      setValues((prev) => ({ ...prev, [key]: v }));
+      setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
+      setError(null);
+    };
   }
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
-    if (!checkPassword(values.password).ok) {
-      return setError("Your password does not meet every requirement yet.");
+    const nextErrors: Partial<Record<keyof typeof values, string>> = {};
+    if (values.fullName.trim().length < 2) nextErrors.fullName = "Enter the name you would like us to use.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) nextErrors.email = "Enter a valid email address.";
+    if (!checkPassword(values.password).ok) nextErrors.password = "Complete the password requirements below.";
+    setFieldErrors(nextErrors);
+    const firstInvalid = (Object.keys(nextErrors)[0] as keyof typeof values | undefined);
+    if (firstInvalid) {
+      requestAnimationFrame(() => document.getElementById(firstInvalid)?.focus());
+      return;
     }
-    if (!ageConfirmed) return setError("You must confirm you are 18 or over.");
-    if (!acceptTerms) return setError("Please accept the terms and privacy policy.");
+    if (!ageConfirmed) {
+      setError("You must confirm you are 18 or over.");
+      requestAnimationFrame(() => document.getElementById("signup-age")?.focus());
+      return;
+    }
+    if (!acceptTerms) {
+      setError("Please accept the terms and privacy policy.");
+      requestAnimationFrame(() => document.getElementById("signup-terms")?.focus());
+      return;
+    }
 
     start(async () => {
       const result = await signUp({ ...values, ageConfirmed, acceptTerms });
       if (!result.ok) setError(result.error);
-      else if (result.needsConfirmation) setSent(true);
-      else router.push("/account");
+      else if (result.needsConfirmation) {
+        trackEvent("sign_up", { method: "email", confirmation: "required" });
+        setSent(true);
+      }
+      else {
+        trackEvent("sign_up", { method: "email" });
+        router.push("/account");
+      }
     });
   }
 
@@ -167,32 +210,57 @@ export function SignUpForm() {
 
   return (
     <form onSubmit={submit} noValidate>
-      <h1 className="display-md text-ink">Create your account</h1>
-      <p className="mt-4 text-[15px] leading-relaxed text-slate">
+      <div className="flex items-start justify-between gap-6">
+        <div>
+          <p className="engraved text-oxblood">One private space</p>
+          <h1 className="display-md mt-3 text-ink">Create your account</h1>
+        </div>
+        <span className="numeral display text-[1.7rem] text-stone" aria-hidden>01</span>
+      </div>
+      <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-slate">
         An account keeps your readiness map, your plan and your appointments in
         one place. Nothing about you becomes visible to anyone else.
       </p>
 
-      <div className="mt-7 space-y-5">
-        <Field id="fullName" label="Your name" autoComplete="name" value={values.fullName} onChange={set("fullName")} />
-        <Field id="email" label="Email" type="email" autoComplete="email" value={values.email} onChange={set("email")} />
+      <div className="mt-6 space-y-5">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field id="fullName" label="Your name" autoComplete="name" value={values.fullName} onChange={set("fullName")} error={fieldErrors.fullName} />
+          <Field id="email" label="Email" type="email" autoComplete="email" value={values.email} onChange={set("email")} error={fieldErrors.email} />
+        </div>
         <div>
-          <Field
+          <div className="flex items-baseline justify-between gap-4">
+            <label htmlFor="password" className="engraved block text-slate">Password</label>
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              className="engraved text-[9px] text-slate underline decoration-stone underline-offset-4 hover:text-ink"
+              aria-controls="password"
+              aria-pressed={showPassword}
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <input
             id="password"
-            label="Password"
-            type="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
             autoComplete="new-password"
-            hint={PASSWORD_HINT}
+            className="field mt-2.5"
             value={values.password}
-            onChange={set("password")}
+            onChange={(event) => set("password")(event.target.value)}
+            aria-invalid={Boolean(fieldErrors.password)}
+            aria-describedby={fieldErrors.password ? "password-error" : "password-hint"}
           />
+          <p id="password-hint" className="mt-2 text-[13px] text-slate">{PASSWORD_HINT}</p>
+          {fieldErrors.password && <p id="password-error" role="alert" className="mt-2 text-[13px] text-oxblood">{fieldErrors.password}</p>}
           <PasswordRequirements value={values.password} />
         </div>
       </div>
 
-      <div className="mt-7 space-y-4">
-        <label className="flex cursor-pointer items-start gap-3">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <label className="flex cursor-pointer items-start gap-3 rounded-[10px] border border-stone bg-white/35 px-4 py-3">
           <input
+            id="signup-age"
             type="checkbox"
             checked={ageConfirmed}
             onChange={(e) => setAge(e.target.checked)}
@@ -202,8 +270,9 @@ export function SignUpForm() {
             I am 18 or over.
           </span>
         </label>
-        <label className="flex cursor-pointer items-start gap-3">
+        <label className="flex cursor-pointer items-start gap-3 rounded-[10px] border border-stone bg-white/35 px-4 py-3">
           <input
+            id="signup-terms"
             type="checkbox"
             checked={acceptTerms}
             onChange={(e) => setTerms(e.target.checked)}
@@ -226,13 +295,13 @@ export function SignUpForm() {
       <HydrationGuard />
       <ErrorNote message={error} />
 
-      <div className="mt-8">
+      <div className="mt-6">
         <Button type="submit" size="lg" className="w-full" disabled={pending}>
           {pending ? "Creating" : "Create account"}
         </Button>
       </div>
 
-      <p className="mt-7 text-[15px] text-slate">
+      <p className="mt-5 text-center text-[14px] text-slate">
         Already have one?{" "}
         <Link href="/sign-in" className="underline decoration-stone underline-offset-4">
           Sign in

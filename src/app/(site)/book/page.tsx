@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper, PaperInset } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Book a consultation",
   description:
     "Sixty minutes with a coach about your readiness map, your situation and whether we are any use to you.",
-};
+  path: "/book",
+});
 
 export default function BookPage() {
   const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
@@ -50,19 +51,22 @@ export default function BookPage() {
                 ) : (
                   <>
                     <p className="mt-5 text-[16px] leading-relaxed text-slate">
-                      Live booking is not connected on this environment yet. Set
-                      NEXT_PUBLIC_BOOKING_URL to your Cal.com event link and this
-                      becomes a working calendar.
+                      We are opening consultation times individually at the
+                      moment. Send a private note and we will reply with suitable
+                      times in your timezone.
                     </p>
                     <PaperInset className="mt-6">
                       <p className="text-[15px] leading-relaxed text-slate">
-                        Until then, take the assessment. It ends with a booking
-                        step and the coach will already have read your map.
+                        If you take the assessment first, the coach can read your
+                        map before the call and spend the hour on what matters.
                       </p>
                     </PaperInset>
-                    <div className="mt-7">
+                    <div className="mt-7 flex flex-wrap gap-3">
                       <Button asChild size="lg">
-                        <Link href="/assessment">Take the assessment</Link>
+                        <Link href="/contact">Request a consultation</Link>
+                      </Button>
+                      <Button asChild size="lg" variant="onpaper">
+                        <Link href="/assessment">Take the assessment first</Link>
                       </Button>
                     </div>
                   </>

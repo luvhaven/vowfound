@@ -11,8 +11,8 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[0.82fr_1.18fr]">
-      <aside className="relative hidden overflow-hidden border-r border-hairline bg-ink-deep p-12 lg:flex lg:min-h-screen lg:flex-col xl:p-16">
+    <div className="min-h-screen lg:grid lg:grid-cols-[0.9fr_1.1fr]">
+      <aside className="relative hidden overflow-hidden border-r border-hairline bg-ink-deep p-12 lg:sticky lg:top-0 lg:flex lg:h-dvh lg:self-start lg:flex-col xl:p-16">
         <Link href="/" aria-label="VowFound home" className="relative z-10 text-onink">
           <BrandLockup />
         </Link>
@@ -20,16 +20,16 @@ export default function AuthLayout({
           size={430}
           className="pointer-events-none absolute -bottom-20 -right-32 opacity-[0.09]"
         />
-        <div className="relative z-10 mt-auto max-w-lg">
+        <div className="relative z-10 my-auto max-w-lg py-12">
           <p className="engraved text-rose">The private side of VowFound</p>
-          <h2 className="display-lg mt-7 text-onink">
+          <h2 className="display-lg mt-6 text-balance text-onink">
             Your relationship work belongs to you.
           </h2>
-          <p className="mt-7 max-w-md text-[16px] leading-relaxed text-onink-dim">
+          <p className="mt-6 max-w-md text-[16px] leading-relaxed text-onink-dim">
             No public profile. No browsing. Your map, appointments, and plan
             stay inside one private client space.
           </p>
-          <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 border-t border-hairline pt-6">
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-hairline pt-6">
             {TRUST_LINE.map((item) => (
               <span key={item} className="engraved text-onink-faint">
                 {item}
@@ -46,10 +46,10 @@ export default function AuthLayout({
           </Link>
         </header>
 
-        <main id="main" className="flex flex-1 items-center justify-center px-6 py-10 md:px-10">
-          <div className="w-full max-w-lg">
-            <p className="engraved mb-5 text-onink-faint">Private client access</p>
-            <Paper className="px-7 py-10 md:px-10 md:py-12">
+        <main id="main" className="flex flex-1 items-start justify-center px-6 py-8 md:px-10 lg:items-center lg:py-10">
+          <div className="w-full max-w-xl">
+            <p className="engraved mb-4 text-onink-faint">Private client access</p>
+            <Paper className="px-7 py-8 md:px-9 md:py-9">
               <Suspense fallback={<div className="min-h-64" aria-busy="true" />}>
                 {children}
               </Suspense>

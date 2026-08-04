@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader } from "@/components/site/page-header";
 import { LEGAL_DOCS, type LegalSlug } from "@/content/legal";
+import { createPageMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
   return Object.keys(LEGAL_DOCS).map((doc) => ({ doc }));
@@ -16,7 +17,11 @@ export async function generateMetadata({
   const { doc } = await params;
   const entry = LEGAL_DOCS[doc as LegalSlug];
   if (!entry) return { title: "Not found" };
-  return { title: entry.title, description: entry.standfirst };
+  return createPageMetadata({
+    title: entry.title,
+    description: entry.standfirst,
+    path: `/legal/${doc}`,
+  });
 }
 
 export default async function LegalPage({

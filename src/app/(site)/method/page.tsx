@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { MethodStages } from "@/components/site/method-stages";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "The method",
   description:
     "Five stages, in order: See Clearly, Become Ready, Define the Right Fit, Meet Intentionally, Build Toward Commitment.",
-};
+  path: "/method",
+});
 
 export default function MethodPage() {
   return (

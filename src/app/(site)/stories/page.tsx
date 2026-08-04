@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Stories",
   description:
     "We have not published any yet, and these are the rules we will publish them under.",
-};
+  path: "/stories",
+});
 
 const RULES = [
   {

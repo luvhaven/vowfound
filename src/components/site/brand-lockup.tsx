@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/brand";
-import { VowMark } from "@/components/ui/ornament";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function BrandLockup({
@@ -11,7 +11,15 @@ export function BrandLockup({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
-      <VowMark size={compact ? 34 : 40} />
+      <Image
+        src="/api/brand/logo"
+        alt=""
+        aria-hidden
+        width={compact ? 34 : 40}
+        height={compact ? 24 : 28}
+        unoptimized
+        className="object-contain"
+      />
       <span className="display text-[1.35rem] tracking-tight md:text-[1.5rem]">
         {BRAND}
       </span>

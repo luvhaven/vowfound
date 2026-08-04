@@ -10,6 +10,7 @@ import { CurrencyAmount } from "@/components/ui/currency-amount";
 import { productBySlug, priceFor, PRODUCTS } from "@/lib/products";
 import { resolveCurrency, currencyOptions } from "@/lib/currency.server";
 import { VowMark } from "@/components/ui/ornament";
+import { providerFor } from "@/lib/payments";
 
 export function generateStaticParams() {
   return PRODUCTS.map((p) => ({ slug: p.slug }));
@@ -41,10 +42,12 @@ export default async function CheckoutPage({
     resolveCurrency(),
     currencyOptions(),
   ]);
+  const checkoutAvailable =
+    Boolean(product.applicationOnly) || providerFor(currency).isConfigured();
 
   return (
     <Section>
-      <Container width="default">
+      <Container width="wide">
         <div className="grid gap-8 border-b border-hairline pb-10 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <p className="engraved text-rose">
@@ -59,15 +62,16 @@ export default async function CheckoutPage({
           </div>
         </div>
 
-        <div className="mt-10 grid min-w-0 gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-start">
+        <div className="mt-10 grid min-w-0 gap-7 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-start xl:gap-10">
           <Paper className="min-w-0 p-7 md:p-9">
             <CheckoutForm
               slug={product.slug}
               applicationOnly={product.applicationOnly ?? false}
+              checkoutAvailable={checkoutAvailable}
             />
           </Paper>
 
-          <div className="min-w-0 space-y-6 md:sticky md:top-28">
+          <div className="min-w-0 lg:sticky lg:top-24">
             <Paper className="p-7">
               <p className="engraved text-slate">
                 {product.applicationOnly ? "Programme under consideration" : "What you are buying"}
@@ -125,20 +129,23 @@ export default async function CheckoutPage({
               </PaperInset>
             </Paper>
 
-            <Guarantee />
-
-            <p className="text-[14px] leading-relaxed text-onink-faint">
-              By continuing you agree to the{" "}
-              <Link
-                href="/legal/terms"
-                className="underline decoration-onink-faint underline-offset-4"
-              >
-                terms
-              </Link>{" "}
-              and confirm you are 18 or over.
-            </p>
           </div>
         </div>
+
+        <div className="mt-8">
+          <Guarantee />
+        </div>
+
+        <p className="mt-6 text-center text-[13px] leading-relaxed text-onink-faint">
+          By continuing you agree to the{" "}
+          <Link
+            href="/legal/terms"
+            className="underline decoration-onink-faint underline-offset-4"
+          >
+            terms
+          </Link>{" "}
+          and confirm you are 18 or over.
+        </p>
       </Container>
     </Section>
   );

@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { BRAND, PRIVACY_EMAIL } from "@/lib/brand";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Privacy",
   description:
     "What we hold, who can see it, how long we keep it, and how to remove all of it yourself.",
-};
+  path: "/privacy",
+});
 
 const WHO_SEES = [
   {

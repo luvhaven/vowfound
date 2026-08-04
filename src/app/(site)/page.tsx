@@ -47,7 +47,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="home-hero relative overflow-hidden">
+      <section className="home-hero relative overflow-hidden" data-analytics-section="hero">
         <Container
           width="wide"
           className="grid min-h-[calc(100dvh-4rem)] items-center gap-7 py-7 md:gap-10 md:py-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10"
@@ -70,7 +70,14 @@ export default async function HomePage() {
               {/* Leads into the timeline card rather than jumping past it —
                   choosing a date is the first real step, not a detour. */}
               <Button asChild size="lg">
-                <Link href="#begin">{t("home.hero.cta")}</Link>
+                <Link
+                  href="#begin"
+                  data-analytics-event="cta_click"
+                  data-analytics-label="begin_plan"
+                  data-analytics-placement="hero"
+                >
+                  {t("home.hero.cta")}
+                </Link>
               </Button>
               <Button asChild variant="quiet" size="lg">
                 <Link href="/method">See the method</Link>
@@ -117,7 +124,11 @@ export default async function HomePage() {
       </section>
 
       {/* Anchor target for the hero CTA. scroll-mt clears the sticky header. */}
-      <Section id="begin" className="relative scroll-mt-24 overflow-hidden">
+      <Section
+        id="begin"
+        data-analytics-section="marriage_horizon"
+        className="relative scroll-mt-24 overflow-hidden"
+      >
         <Container width="wide">
           <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-20">
             <Reveal>
@@ -149,7 +160,11 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section id="recognition" className="bg-ink-raised">
+      <Section
+        id="recognition"
+        data-analytics-section="recognition"
+        className="bg-ink-raised"
+      >
         <Container width="wide">
           <Reveal>
             <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-16">
@@ -223,7 +238,7 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section id="method" className="bg-ink-raised">
+      <Section id="method" data-analytics-section="method" className="bg-ink-raised">
         <Container width="wide">
           <Reveal>
             <p className="engraved text-onink-faint">The VowFound method</p>
@@ -244,7 +259,7 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section id="matchmaking">
+      <Section id="matchmaking" data-analytics-section="matchmaking">
         <Container width="wide">
           <div className="grid gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-20">
             <Reveal>

@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { FaqList } from "@/components/site/faq-list";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "How it works",
   description:
     "What actually happens, from the assessment to an introduction, and who is involved at each point.",
-};
+  path: "/how-it-works",
+});
 
 const STEPS = [
   ["01", "You take the assessment", "Twelve minutes, one question at a time, saved as you go. Nothing is shared and you do not need an account to start.", "You, alone"],

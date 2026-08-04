@@ -33,11 +33,21 @@ export function PasswordRequirements({
 
   const met = rules.filter((r) => r.met === true).length;
   const started = value.length > 0;
+  const essentialRules = rules.slice(0, 5);
+  const safetyRules = rules.slice(5);
+  const safetyMet = started ? safetyRules.every((rule) => rule.met) : null;
 
   return (
-    <div className={cn("mt-4", className)}>
+    <details open={started || undefined} className={cn("mt-3 rounded-[10px] border border-stone/80 bg-white/25 px-4 py-3", className)}>
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
+        <span className="engraved text-slate">Password requirements</span>
+        <span className="numeral text-[11px] text-slate/80">
+          {started ? `${met} of ${rules.length}` : "View rules"}
+        </span>
+      </summary>
+      <div className="mt-3 border-t border-stone/70 pt-3">
       {showMeter && started && (
-        <div className="mb-4">
+        <div className="mb-3">
           <div className="flex gap-1" aria-hidden>
             {[0, 1, 2, 3].map((i) => (
               <span
@@ -59,19 +69,10 @@ export function PasswordRequirements({
         </div>
       )}
 
-      <p className="engraved text-slate">
-        Your password needs
-        {started && (
-          <span className="numeral ml-2 text-slate/80">
-            {met} of {rules.length}
-          </span>
-        )}
-      </p>
-
       {/* One live region for the whole list: announcing each tick separately
           would talk over someone still typing. */}
-      <ul className="mt-3 grid gap-2 sm:grid-cols-2" aria-live="polite">
-        {rules.map((rule) => (
+      <ul className="grid gap-x-5 gap-y-1.5 sm:grid-cols-2" aria-live="polite">
+        {essentialRules.map((rule) => (
           <li
             key={rule.id}
             className={cn(
@@ -84,14 +85,28 @@ export function PasswordRequirements({
             <span>{rule.label}</span>
           </li>
         ))}
+        <li className={cn(
+          "flex items-start gap-2.5 text-[14px] leading-snug sm:col-span-2",
+          safetyMet === true ? "text-sage-ink/75" : "text-slate",
+        )}>
+          <Mark met={safetyMet} />
+          <span>No common phrases, sequences, or repeated characters</span>
+        </li>
       </ul>
 
+      {started && safetyMet === false && (
+        <p className="mt-2 text-[12px] leading-relaxed text-oxblood">
+          {safetyRules.filter((rule) => rule.met === false).map((rule) => rule.label).join(" · ")}
+        </p>
+      )}
+
       {ok && (
-        <p className="engraved mt-4 text-sage-ink">
+        <p className="engraved mt-3 text-sage-ink">
           That will do nicely.
         </p>
       )}
-    </div>
+      </div>
+    </details>
   );
 }
 

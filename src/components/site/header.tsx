@@ -1,14 +1,15 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMotionValueEvent, useScroll } from "motion/react";
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { VowMark } from "@/components/ui/ornament";
 import { BrandLockup } from "@/components/site/brand-lockup";
+import { trackEvent } from "@/lib/analytics/client";
 import {
   ALL_SERVICES,
   CORE_SERVICES,
@@ -106,9 +107,7 @@ function HeaderInner({ pathname }: { pathname: string }) {
   const servicesActive =
     pathname === "/services" ||
     ALL_SERVICES.some(
-      (item) =>
-        pathname === item.href.split("#")[0] ||
-        pathname === item.actionHref.split(/[?#]/)[0],
+      (item) => pathname === item.href.split("#")[0],
     );
 
   if (pathname.startsWith("/checkout/")) {
@@ -170,7 +169,12 @@ function HeaderInner({ pathname }: { pathname: string }) {
             <button
               ref={servicesButtonRef}
               type="button"
-              onClick={() => setServicesOpen((value) => !value)}
+              onClick={() =>
+                setServicesOpen((value) => {
+                  if (!value) trackEvent("services_menu_open", { placement: "header" });
+                  return !value;
+                })
+              }
               aria-expanded={servicesOpen}
               aria-haspopup="true"
               aria-controls="services-panel"
@@ -195,40 +199,61 @@ function HeaderInner({ pathname }: { pathname: string }) {
             {servicesOpen && (
               <div
                 id="services-panel"
-                className="absolute left-1/2 top-full z-10 w-[min(55rem,calc(100vw-2.5rem))] -translate-x-1/2 pt-4"
+                className="absolute left-1/2 top-full z-10 w-[min(63rem,calc(100vw-2.5rem))] -translate-x-1/2 pt-4"
               >
-                <div className="services-menu-enter overflow-hidden rounded-[24px] border border-onink/12 bg-ink-raised shadow-[0_30px_90px_rgba(7,4,10,0.58)]">
-                  <div className="grid grid-cols-[0.72fr_1.28fr]">
-                    <div className="relative overflow-hidden border-r border-hairline bg-oxblood/15 p-7">
-                      <VowMark
-                        size={116}
-                        className="ring-orbit pointer-events-none -bottom-5 -right-7 opacity-[0.18]"
-                      />
-                      <div className="relative flex h-full min-h-[18rem] flex-col">
-                        <p className="engraved text-rose">Recommended first step</p>
-                        <p className="display mt-5 text-[1.7rem] leading-[1.05] text-onink">
+                <div className="services-menu-enter overflow-hidden rounded-[20px] border border-onink/12 bg-ink-raised shadow-[0_34px_110px_rgba(7,4,10,0.68)]">
+                  <div className="grid grid-cols-[19rem_1fr]">
+                    <div className="relative flex flex-col overflow-hidden border-r border-hairline bg-ink-deep/70">
+                      <figure className="relative h-36 overflow-hidden border-b border-hairline">
+                        <Image
+                          src="/images/vowfound-rings.png"
+                          alt="Wedding bands beside a handwritten vow"
+                          fill
+                          sizes="304px"
+                          className="object-cover object-[center_58%] transition-transform duration-700 hover:scale-[1.025]"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-ink-deep via-ink-deep/20 to-transparent" />
+                        <p className="engraved absolute bottom-4 left-5 text-stock/80">
+                          A considered place to begin
+                        </p>
+                      </figure>
+                      <div className="flex flex-1 flex-col p-6">
+                        <p className="engraved text-rose">Your readiness map</p>
+                        <p className="display mt-4 text-[1.65rem] leading-[1.04] text-onink">
                           Know what would help before you buy it.
                         </p>
-                        <p className="mt-5 text-[13px] leading-[1.7] text-onink-dim">
-                          Twelve private minutes. One readiness map and one
-                          recommended place to begin.
+                        <p className="mt-4 text-[12px] leading-[1.65] text-onink-dim">
+                          Twelve private minutes. Eight dimensions. One useful
+                          recommendation, with no payment to begin.
                         </p>
-                        <div className="mt-auto pt-7">
-                          <Button asChild size="sm">
-                            <Link href="/assessment">Start free assessment</Link>
+                        <div className="mt-auto pt-6">
+                          <Button asChild size="sm" className="w-full">
+                            <Link
+                              href="/assessment"
+                              data-analytics-event="cta_click"
+                              data-analytics-label="start_assessment"
+                              data-analytics-placement="services_menu"
+                            >
+                              Start free assessment
+                            </Link>
                           </Button>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <div className="flex items-center justify-between gap-5 border-b border-hairline px-6 py-4">
-                        <p className="engraved text-[9px] text-onink-faint">All marriage services</p>
+                      <div className="flex items-end justify-between gap-5 border-b border-hairline px-6 py-4">
+                        <div>
+                          <p className="engraved text-[9px] text-rose">Choose by outcome</p>
+                          <p className="mt-1 text-[12px] text-onink-faint">
+                            Readiness first. Specialist support only when useful.
+                          </p>
+                        </div>
                         <Link
                           href="/services"
-                          className="group inline-flex items-center gap-2 text-[12px] font-medium text-onink transition-colors hover:text-rose"
+                          className="group inline-flex shrink-0 items-center gap-2 text-[12px] font-medium text-onink transition-colors hover:text-rose"
                         >
-                          View all
+                          Compare all services
                           <ArrowUpRight
                             aria-hidden
                             className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -238,11 +263,13 @@ function HeaderInner({ pathname }: { pathname: string }) {
                       <div className="grid grid-cols-2">
                         <ServiceMenuGroup
                           title="Core practice"
+                          description="The work that changes the outcome"
                           services={CORE_SERVICES}
                           pathname={pathname}
                         />
                         <ServiceMenuGroup
                           title="Specialist support"
+                          description="Focused help around the edges"
                           services={SPECIALIST_SERVICES}
                           pathname={pathname}
                           className="border-l border-hairline"
@@ -251,9 +278,9 @@ function HeaderInner({ pathname }: { pathname: string }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-6 border-t border-hairline bg-ink-deep/45 px-7 py-4">
+                  <div className="flex items-center justify-between gap-6 border-t border-hairline bg-ink-deep/55 px-6 py-4">
                     <p className="text-[12px] text-onink-faint">
-                      Prefer to understand the approach first?
+                      Not ready to choose? Read how the practice works.
                     </p>
                     <div className="flex shrink-0 items-center gap-5">
                       {SUPPORTING_LINKS.map((item) => (
@@ -430,19 +457,24 @@ function HeaderInner({ pathname }: { pathname: string }) {
 
 function ServiceMenuGroup({
   title,
+  description,
   services,
   pathname,
   className,
 }: {
   title: string;
+  description: string;
   services: readonly ServiceOffering[];
   pathname: string;
   className?: string;
 }) {
   return (
     <div className={cn("p-4", className)}>
-      <p className="engraved px-3 pb-2 text-[9px] text-onink-faint">{title}</p>
-      <div className="grid gap-0.5">
+      <div className="px-2.5 pb-3">
+        <p className="engraved text-[9px] text-onink">{title}</p>
+        <p className="mt-1 text-[10px] text-onink-faint">{description}</p>
+      </div>
+      <div className="grid gap-1">
         {services.map((service) => {
           const Icon = SERVICE_ICONS[service.icon];
           const baseHref = service.href.split("#")[0];
@@ -452,14 +484,17 @@ function ServiceMenuGroup({
             <Link
               key={service.id}
               href={service.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "group grid grid-cols-[1.75rem_1fr] gap-2.5 rounded-[10px] px-2.5 py-2.5 transition-[background-color,transform] duration-300 hover:translate-x-0.5 hover:bg-onink/5",
+               aria-current={active ? "page" : undefined}
+               data-analytics-event="service_select"
+               data-analytics-service={service.id}
+               data-analytics-placement="services_menu"
+               className={cn(
+                 "group grid grid-cols-[2.6rem_1fr] gap-3 rounded-[12px] px-2.5 py-2.5 transition-[background-color,transform] duration-300 hover:translate-x-0.5 hover:bg-onink/5",
                 active && "bg-onink/5",
               )}
             >
-              <span className="mt-0.5 flex size-7 items-center justify-center rounded-full border border-onink/12 text-rose transition-colors group-hover:border-rose/45 group-hover:text-onink">
-                <Icon aria-hidden className="size-3.5" weight="regular" />
+              <span className="foil-edge flex size-10 items-center justify-center rounded-[10px] bg-onink/[0.035] text-rose transition-[background-color,color,transform] duration-300 group-hover:-rotate-2 group-hover:bg-rose/10 group-hover:text-onink">
+                <Icon aria-hidden className="size-[1.35rem]" weight="duotone" />
               </span>
               <span className="min-w-0">
                 <span className="flex items-baseline justify-between gap-3">
@@ -471,6 +506,9 @@ function ServiceMenuGroup({
                       {service.availability}
                     </span>
                   )}
+                </span>
+                <span className="mt-0.5 block line-clamp-1 text-[10px] leading-4 text-onink-faint">
+                  {service.description}
                 </span>
               </span>
             </Link>
@@ -498,9 +536,14 @@ function MobileServiceGroup({
             <Link
               key={service.id}
               href={service.href}
+              data-analytics-event="service_select"
+              data-analytics-service={service.id}
+              data-analytics-placement="mobile_menu"
               className="group rounded-[12px] border border-onink/10 bg-onink/[0.025] p-3 transition-colors hover:bg-onink/5"
             >
-              <Icon aria-hidden className="size-4 text-rose" weight="regular" />
+              <span className="foil-edge flex size-9 items-center justify-center rounded-[9px] bg-onink/[0.035] text-rose">
+                <Icon aria-hidden className="size-5" weight="duotone" />
+              </span>
               <span className="mt-2 block text-[13px] font-medium leading-5 text-onink">
                 {service.shortName}
               </span>

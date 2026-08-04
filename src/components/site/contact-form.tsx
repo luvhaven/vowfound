@@ -7,6 +7,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { sendContactMessage } from "@/app/actions/contact";
 import { VowMark } from "@/components/ui/ornament";
+import { trackEvent } from "@/lib/analytics/client";
+import { ALL_SERVICES } from "@/content/services";
 
 const schema = z.object({
   name: z.string().min(1, "Tell us what to call you."),
@@ -15,13 +17,14 @@ const schema = z.object({
     .string()
     .min(10, "A sentence or two is enough, but we do need a sentence or two.")
     .max(4000),
+  service: z.string().max(80).optional(),
   // Bots fill this. People never see it.
   company: z.string().max(0).optional(),
 });
 
 type Values = z.infer<typeof schema>;
 
-export function ContactForm() {
+export function ContactForm({ defaultService }: { defaultService?: string }) {
   const [sent, setSent] = React.useState(false);
   const [failed, setFailed] = React.useState<string | null>(null);
 
@@ -30,7 +33,10 @@ export function ContactForm() {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<Values>({ resolver: zodResolver(schema) });
+  } = useForm<Values>({
+    resolver: zodResolver(schema),
+    defaultValues: { service: defaultService ?? "" },
+  });
   const messageLength = useWatch({
     control,
     name: "message",
@@ -39,8 +45,10 @@ export function ContactForm() {
 
   async function onSubmit(values: Values) {
     setFailed(null);
+    trackEvent("contact_submit", { placement: "contact_form" });
     const result = await sendContactMessage(values);
     if (result.ok) {
+      trackEvent("contact_success", { placement: "contact_form" });
       setSent(true);
     } else {
       setFailed(
@@ -76,6 +84,20 @@ export function ContactForm() {
       </div>
 
       <div className="mt-7 space-y-6">
+        <div>
+          <label htmlFor="service" className="engraved block text-slate">
+            What are you considering?
+          </label>
+          <select id="service" className="field mt-2.5" {...register("service")}>
+            <option value="">I am not sure yet</option>
+            {ALL_SERVICES.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div>
           <label htmlFor="name" className="engraved block text-slate">
             Your name

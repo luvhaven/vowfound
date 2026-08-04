@@ -13,6 +13,7 @@ import {
 } from "@/lib/assessment/questions";
 import { isTimelineValue } from "@/lib/timeline";
 import { saveProgress, completeAssessment } from "@/app/actions/assessment";
+import { trackEvent } from "@/lib/analytics/client";
 
 const STORAGE_KEY = "vf.assessment.v1";
 const RESULT_KEY = "vf.readiness.v1";
@@ -56,6 +57,15 @@ export function AssessmentRunner({
   const [submitting, setSubmitting] = React.useState(false);
   const [resumed, setResumed] = React.useState(false);
   const headingRef = React.useRef<HTMLHeadingElement>(null);
+  const startTracked = React.useRef(false);
+
+  React.useEffect(() => {
+    if (startTracked.current) return;
+    startTracked.current = true;
+    trackEvent("assessment_start", {
+      timeline_prefilled: Boolean(initialTimeline),
+    });
+  }, [initialTimeline]);
 
   /* --- resume ------------------------------------------------------------
      localStorage cannot be read during render without a hydration mismatch,
@@ -188,6 +198,9 @@ export function AssessmentRunner({
       } catch {
         // Falls through to the results page, which handles a missing copy.
       }
+      trackEvent("assessment_complete", {
+        recommended_product: result.map.recommendedProduct,
+      });
       router.push("/assessment/results");
       return;
     }

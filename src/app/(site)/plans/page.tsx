@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { PlanCards } from "@/components/site/plan-cards";
 import { Guarantee } from "@/components/site/guarantee";
 import { Reveal } from "@/components/ui/reveal";
 import { resolveCurrency } from "@/lib/currency.server";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Plans",
   description:
     "Compare VowFound's current marriage-readiness, coaching, matchmaking, and private-concierge programme fees.",
-};
+  path: "/plans",
+});
 
 export default async function PlansPage() {
   const currency = await resolveCurrency();

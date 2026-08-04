@@ -11,6 +11,9 @@ import "./globals.css";
 import { switzer } from "@/lib/fonts";
 import { BRAND, SITE_URL, TAGLINE } from "@/lib/brand";
 import { FoilDefs } from "@/components/ui/ornament";
+import { Analytics } from "@/components/analytics/analytics";
+import { JsonLd } from "@/components/seo/json-ld";
+import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -20,6 +23,27 @@ export const metadata: Metadata = {
   },
   description:
     "A private marriage-readiness, coaching and curated-matchmaking practice for adults who intend to marry. No swiping. No public browsing. A human makes every introduction.",
+  applicationName: BRAND,
+  authors: [{ name: BRAND, url: SITE_URL }],
+  creator: BRAND,
+  publisher: BRAND,
+  category: "Relationship services",
+  keywords: [
+    "marriage readiness",
+    "private matchmaking",
+    "relationship coaching",
+    "marriage coaching",
+    "curated introductions",
+  ],
+  alternates: { canonical: SITE_URL },
+  icons: {
+    icon: [{ url: "/api/brand/favicon" }],
+    shortcut: "/api/brand/favicon",
+    apple: "/api/brand/apple-icon",
+  },
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
   openGraph: {
     type: "website",
     siteName: BRAND,
@@ -62,6 +86,9 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <Analytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={websiteJsonLd()} />
         {children}
       </body>
     </html>

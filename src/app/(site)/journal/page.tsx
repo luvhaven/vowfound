@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { listPublishedArticles } from "@/lib/content.server";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Journal",
   description:
     "Notes on readiness, positioning, and what actually decides whether a marriage holds.",
-};
+  path: "/journal",
+});
 
 export const revalidate = 300;
 

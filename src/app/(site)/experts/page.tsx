@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { EXPERT_ROLES } from "@/content/site";
+import { createPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "The people who do the work",
   description:
     "Four roles: matchmakers, readiness coaches, clinical advisers and safety reviewers.",
-};
+  path: "/experts",
+});
 
 export default function ExpertsPage() {
   return (

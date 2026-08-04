@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSessionUser } from "@/lib/supabase/server";
+import { getViewer } from "@/lib/admin.server";
 import { signOut } from "@/app/actions/auth";
 import { AccountNav } from "@/components/account/account-nav";
 import { BrandLockup } from "@/components/site/brand-lockup";
@@ -15,8 +15,8 @@ export default async function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getSessionUser();
-  if (!user) redirect("/sign-in?next=/account");
+  const viewer = await getViewer();
+  if (!viewer) redirect("/sign-in?next=/account");
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -26,7 +26,16 @@ export default async function AccountLayout({
             <BrandLockup compact />
           </Link>
           <div className="flex items-center gap-5">
-            <span className="engraved hidden text-onink-faint sm:block">Client folio</span>
+            {viewer.isAdmin ? (
+              <Link
+                href="/admin"
+                className="engraved rounded-[8px] border border-rose/35 bg-rose/10 px-4 py-2.5 text-rose transition-colors hover:border-rose/60 hover:bg-rose/15"
+              >
+                Admin dashboard
+              </Link>
+            ) : (
+              <span className="engraved hidden text-onink-faint sm:block">Client folio</span>
+            )}
             <form action={signOut}>
               <button
                 type="submit"
