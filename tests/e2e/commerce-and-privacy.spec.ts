@@ -55,16 +55,60 @@ test.describe("currency", () => {
 });
 
 test.describe("pricing discipline", () => {
-  test("no price appears in the hero, the nav or the plans page", async ({
-    page,
-  }) => {
+  test("the site never opens with a price", async ({ page }) => {
+    // The rule is that price does not lead — not that it is hidden. Someone
+    // who has decided should be able to find and pay a fee.
     await page.goto("/");
     const hero = page.locator("section").first();
     await expect(hero).not.toContainText(/[₦$]\s?\d/);
     await expect(page.locator("header")).not.toContainText(/[₦$]\s?\d/);
+  });
 
+  test("every page that shows a price also offers a way to pay it", async ({
+    page,
+  }) => {
+    // /plans once quoted ₦60,000 above a button that went to the assessment.
+    // The buyer saw a price and could not pay it.
+    for (const path of ["/plans"]) {
+      await page.goto(path);
+      const body = await page.locator("body").innerText();
+      const priced = /[₦$]\s?[\d,]{2,}/.test(body);
+
+      if (priced) {
+        const checkoutLinks = page.locator('a[href^="/checkout/"]');
+        expect(
+          await checkoutLinks.count(),
+          `${path} shows a price but links to no checkout`,
+        ).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  test("a buyer who already knows what they want can reach checkout", async ({
+    page,
+  }) => {
     await page.goto("/plans");
-    await expect(page.locator("body")).not.toContainText(/[₦$]\s?\d{2,}/);
+    const buy = page.locator('a[href="/checkout/clarity-audit"]').first();
+    await expect(buy).toBeVisible();
+    await buy.click();
+
+    await expect(page).toHaveURL(/\/checkout\/clarity-audit/);
+    // The checkout must state what is being bought, for how much.
+    await expect(page.locator("body")).toContainText(/clarity audit/i);
+    await expect(page.locator("body")).toContainText(/[₦$]\s?[\d,]{2,}/);
+  });
+
+  test("service pages give a convinced reader somewhere to go", async ({
+    page,
+  }) => {
+    for (const path of ["/coaching", "/matchmaking"]) {
+      await page.goto(path);
+      const toFees = page.locator('a[href^="/plans#"]');
+      expect(
+        await toFees.count(),
+        `${path} offers no route to the fee`,
+      ).toBeGreaterThan(0);
+    }
   });
 });
 

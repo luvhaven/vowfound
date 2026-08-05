@@ -68,12 +68,23 @@ export function PageHeader({
 }
 
 /** A closing conversion block. Every page ends with one. */
+/**
+ * `plan` is how a page that has just argued for a specific programme lets a
+ * convinced reader act on it. Without it, every service page ended in the same
+ * two options — take the assessment, or book a call — and somebody who already
+ * knew what they wanted had nowhere to go.
+ *
+ * It links to the fee in context rather than straight into checkout: the price,
+ * what is included, and the payment step all sit on one screen there.
+ */
 export function PageCta({
   title,
   body,
+  plan,
 }: {
   title: string;
   body: string;
+  plan?: { slug: string; label: string };
 }) {
   return (
     <section className="page-cta border-t border-hairline py-16 md:py-24 lg:py-28">
@@ -99,6 +110,14 @@ export function PageCta({
                 <Button asChild variant="onpaper" size="lg">
                   <Link href="/book">Book a consultation</Link>
                 </Button>
+                {plan && (
+                  <Link
+                    href={`/plans#${plan.slug}`}
+                    className="engraved mt-1 text-center text-slate underline decoration-stone underline-offset-4 transition-colors hover:text-ink lg:text-left"
+                  >
+                    {plan.label}
+                  </Link>
+                )}
               </div>
             </div>
           </div>

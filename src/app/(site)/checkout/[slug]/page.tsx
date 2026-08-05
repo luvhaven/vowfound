@@ -42,8 +42,19 @@ export default async function CheckoutPage({
     resolveCurrency(),
     currencyOptions(),
   ]);
+  const provider = providerFor(currency);
   const checkoutAvailable =
-    Boolean(product.applicationOnly) || providerFor(currency).isConfigured();
+    Boolean(product.applicationOnly) || provider.isConfigured();
+
+  if (!checkoutAvailable) {
+    // A buyer reached a paid programme and cannot pay. In development that is
+    // expected; in production it means a key is missing or expired and every
+    // sale is being lost. It must not fail silently either way.
+    console.error(
+      `[checkout] ${provider.name} is not configured for ${currency} — ` +
+        `"${product.name}" cannot be paid for online.`,
+    );
+  }
 
   return (
     <Section>
@@ -120,9 +131,23 @@ export default async function CheckoutPage({
                     </>
                   ) : (
                     <>
-                      Paid securely through{" "}
-                      {currency === "NGN" ? "Paystack" : "Stripe"}. We never
-                      see or store your card details.
+                      {/* At these amounts the method decides whether the sale
+                          completes: card limits are the usual reason a payment
+                          this size fails, so transfer is named first. */}
+                      {currency === "NGN" ? (
+                        <>
+                          Pay by <strong className="text-ink">bank transfer</strong>,
+                          card or USSD. Transfer is usually the simplest for an
+                          amount like this, and avoids card limits.
+                        </>
+                      ) : (
+                        <>
+                          Pay by <strong className="text-ink">card</strong> or
+                          bank transfer.
+                        </>
+                      )}{" "}
+                      Handled securely by Flutterwave. We never see or store
+                      your card details.
                     </>
                   )}
                 </p>

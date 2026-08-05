@@ -125,6 +125,7 @@ export default function CoachingPage() {
       <PageCta
         title="The first session is a reading of your map."
         body="Take the assessment, and the diagnostic call has something specific to be about."
+        plan={{ slug: "ready-in-90", label: "See the coaching fee" }}
       />
     </>
   );

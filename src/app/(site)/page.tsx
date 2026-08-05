@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import heroImage from "../../../public/images/vowfound-hero.png";
+import heroImage from "../../../public/images/vowfound-hero-global.webp";
 import ringsImage from "../../../public/images/vowfound-rings.png";
 import commitmentImage from "../../../public/images/vowfound-commitment.png";
 import { Container, Section } from "@/components/ui/layout";
@@ -92,7 +92,7 @@ export default async function HomePage() {
           <figure className="hero-portrait relative min-h-[15rem] overflow-hidden rounded-[24px] md:min-h-[38rem]">
             <Image
               src={heroImage}
-              alt="A married couple sharing a quiet laugh at home"
+              alt="A newly married couple sharing a quiet laugh at home"
               fill
               priority
               placeholder="blur"

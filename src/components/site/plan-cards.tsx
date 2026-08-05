@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PRODUCTS, priceFor, type Currency } from "@/lib/products";
+import { PRODUCTS, priceFor, formatPrice, type Currency } from "@/lib/products";
 import { Paper, PaperInset } from "@/components/ui/paper";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
@@ -7,17 +7,20 @@ import { CurrencyAmount } from "@/components/ui/currency-amount";
 
 /**
  * Programme architecture is presented as a progression, not four pricing
- * towers. Pricing remains exclusive to results and checkout.
+ * towers.
+ *
+ * showPrices governs both the fee and the action, deliberately as one switch.
+ * They were separate once, and the result was a page that quoted ₦60,000 above
+ * a button leading to the assessment — the buyer saw a price and could not pay
+ * it. Tying them together makes that state unrepresentable.
  */
 export function PlanCards({
   currency,
   showPrices = false,
-  directAction = showPrices,
   recommended,
 }: {
   currency?: Currency;
   showPrices?: boolean;
-  directAction?: boolean;
   recommended?: string;
 }) {
   return (
@@ -89,18 +92,32 @@ export function PlanCards({
                     </PaperInset>
                   )}
 
+                  {/* A price with no way to pay is the single worst thing this
+                      card can do. Wherever a fee is shown, the button beneath
+                      it goes to checkout — the assessment stays available
+                      underneath for anyone not ready to choose. */}
                   <div className="mt-6">
-                    {showPrices && currency && directAction ? (
-                      <Button
-                        asChild
-                        variant={isRecommended ? "primary" : "onpaper"}
-                        size="md"
-                        className="w-full"
-                      >
-                        <Link href={`/checkout/${product.slug}`}>
-                          {product.applicationOnly ? "Apply" : "Continue"}
+                    {showPrices && currency ? (
+                      <>
+                        <Button
+                          asChild
+                          variant={isRecommended ? "primary" : "onpaper"}
+                          size="md"
+                          className="w-full"
+                        >
+                          <Link href={`/checkout/${product.slug}`}>
+                            {product.applicationOnly
+                              ? "Apply for this"
+                              : `Pay ${formatPrice(priceFor(product, currency), currency)}`}
+                          </Link>
+                        </Button>
+                        <Link
+                          href="/assessment"
+                          className="mt-3 block text-center text-[13px] leading-relaxed text-slate underline decoration-stone underline-offset-4 hover:text-ink"
+                        >
+                          Not sure this is the one? Take the free assessment
                         </Link>
-                      </Button>
+                      </>
                     ) : (
                       <Button asChild variant="onpaper" size="md" className="w-full">
                         <Link href="/assessment">Start free assessment</Link>

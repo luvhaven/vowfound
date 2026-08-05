@@ -63,6 +63,7 @@ export function AudienceLayout({ page }: { page: AudiencePage }) {
       <PageCta
         title="The assessment asks everyone the same questions."
         body="What changes is what your answers reveal, and which intervention would genuinely help."
+        plan={{ slug: "clarity-audit", label: "See fees and start" }}
       />
     </>
   );

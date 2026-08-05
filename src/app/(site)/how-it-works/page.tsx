@@ -121,6 +121,7 @@ export default function HowItWorksPage() {
       <PageCta
         title="Start with the part that asks nothing of you but honesty."
         body="The assessment takes twelve private minutes and gives you a useful answer before any sales conversation begins."
+        plan={{ slug: "clarity-audit", label: "See fees and start" }}
       />
     </>
   );

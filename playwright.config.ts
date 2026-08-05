@@ -24,6 +24,14 @@ export default defineConfig({
     timeout: 240_000,
     // Lets the suite pin a region so the currency rules can be exercised from
     // both sides. Never set outside tests and local development.
-    env: { ALLOW_DEBUG_COUNTRY: "1" },
+    env: {
+      ALLOW_DEBUG_COUNTRY: "1",
+      // Its own build directory, so the suite can run while a dev server holds
+      // .next. The dummy provider key makes checkout render its real payment
+      // step rather than the unconfigured fallback.
+      NEXT_DIST_DIR: ".next-e2e",
+      FLUTTERWAVE_SECRET_KEY: "FLWSECK_TEST-e2e",
+      FLUTTERWAVE_SECRET_HASH: "e2e-hash",
+    },
   },
 });

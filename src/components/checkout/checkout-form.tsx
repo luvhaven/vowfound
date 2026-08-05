@@ -21,24 +21,34 @@ export function CheckoutForm({
   const [error, setError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
 
+  /**
+   * Shown when the payment provider is not configured for this currency.
+   *
+   * The wording matters more than it looks. This said "opening soon", which
+   * tells a buyer the programme does not exist yet — so a missing or expired
+   * API key would silently read as "not launched" and cost every sale without
+   * surfacing an error anywhere. It now offers the route that genuinely still
+   * works at these amounts: a bank transfer arranged directly, which an
+   * administrator records against the same ledger.
+   */
   if (!checkoutAvailable) {
     return (
       <div className="grid min-h-96 content-center">
-        <p className="engraved text-oxblood">Private enrolment</p>
+        <p className="engraved text-oxblood">Enrol by transfer</p>
         <h2 className="display-md mt-4 text-ink">
-          Let us open this properly for you.
+          Card payment for this programme is not open yet.
         </h2>
         <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-slate">
-          Online enrolment for this programme is opening soon. Book a private
-          consultation or send us a note; we will confirm fit, scope, and a
-          secure payment route directly.
+          You can still take the place. Ask for the account details and pay by
+          bank transfer — for an amount like this it is what most clients use
+          anyway. We confirm your place the day the transfer lands.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/book">Book a consultation</Link>
+            <Link href={`/contact?about=${slug}`}>Request transfer details</Link>
           </Button>
           <Button asChild variant="onpaper">
-            <Link href="/contact">Send a private note</Link>
+            <Link href="/book">Book a consultation first</Link>
           </Button>
         </div>
       </div>

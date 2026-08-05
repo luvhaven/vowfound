@@ -34,7 +34,7 @@ export default async function PlansPage() {
               body="Compare the scope and current fee now. Start with the smallest useful intervention, then move into coaching, matchmaking, or concierge support only when the evidence supports it."
             />
           </Reveal>
-          <PlanCards currency={currency} showPrices directAction={false} />
+          <PlanCards currency={currency} showPrices />
           <div className="mt-14">
             <Reveal>
               <Guarantee />

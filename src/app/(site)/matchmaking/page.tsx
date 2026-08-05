@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ringsImage from "../../../../public/images/vowfound-rings.png";
+import matchmakingImage from "../../../../public/images/vowfound-matchmaking-mature.webp";
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
@@ -11,7 +11,7 @@ export const metadata = createPageMetadata({
   description:
     "Two stages. Hard requirements eliminate, weighted preferences rank, and a matchmaker makes every final decision.",
   path: "/matchmaking",
-  image: "/images/vowfound-rings.png",
+  image: "/images/vowfound-matchmaking-mature.webp",
 });
 
 const DIMENSIONS = [
@@ -72,12 +72,12 @@ export default function MatchmakingPage() {
               <div className="relative overflow-hidden rounded-[24px] border border-hairline bg-ink-raised">
                 <div className="relative aspect-[16/10] min-h-[24rem]">
                   <Image
-                    src={ringsImage}
-                    alt="Wedding bands beside handwritten vows and a deep red flower"
+                    src={matchmakingImage}
+                    alt="A mature newly married couple sharing a quiet moment outside their ceremony"
                     fill
                     placeholder="blur"
                     sizes="(max-width: 1024px) 100vw, 58vw"
-                    className="object-cover"
+                    className="object-cover object-center transition-transform duration-700 hover:scale-[1.02]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-deep via-ink-deep/45 to-transparent" />
                 </div>
@@ -167,6 +167,7 @@ export default function MatchmakingPage() {
       <PageCta
         title="Matchmaking starts at stage four, not stage one."
         body="We do not take matchmaking clients who have skipped the readiness work. The assessment is where that is decided."
+        plan={{ slug: "match", label: "See the matchmaking fee" }}
       />
     </>
   );

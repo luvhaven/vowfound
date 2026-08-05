@@ -34,7 +34,7 @@ export const metadata = createPageMetadata({
   description:
     "Marriage readiness, coaching, curated matchmaking, concierge search, verification, image support, photography, and private guidance.",
   path: "/services",
-  image: "/images/vowfound-rings.png",
+  image: "/images/vowfound-services-latino.webp",
 });
 
 const SERVICE_ICONS = {
@@ -92,11 +92,11 @@ export default function ServicesPage() {
               <div className="lg:sticky lg:top-28">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] border border-hairline">
                   <Image
-                    src="/images/vowfound-rings.png"
-                    alt="Two wedding bands beside handwritten stationery and a deep red flower"
+                    src="/images/vowfound-services-latino.webp"
+                    alt="A newly married couple walking together after an intimate garden ceremony"
                     fill
                     sizes="(max-width: 1024px) 100vw, 42vw"
-                    className="object-cover"
+                    className="object-cover object-[center_42%] transition-transform duration-700 hover:scale-[1.02]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-deep/45 via-transparent to-transparent" />
                 </div>

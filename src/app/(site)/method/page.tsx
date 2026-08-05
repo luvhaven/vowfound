@@ -59,6 +59,7 @@ export default function MethodPage() {
       <PageCta
         title="Stage one is free and takes twelve minutes."
         body="The assessment is the whole of stage one's diagnostic. You do not have to buy anything to find out what it says."
+        plan={{ slug: "clarity-audit", label: "See fees and start" }}
       />
     </>
   );
