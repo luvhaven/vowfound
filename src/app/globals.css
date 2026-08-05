@@ -790,3 +790,45 @@ p {
     display: none !important;
   }
 }
+
+/* =========================================================================
+   Fields on the dark field
+   =========================================================================
+   The admin sits on ink rather than on stock, so a white input would glare.
+   Same geometry as .field, inverted, with the foil focus ring kept — that
+   ring is how focus reads on this site and it should not change by surface. */
+
+.field-dark {
+  width: 100%;
+  background: rgba(245, 242, 245, 0.04);
+  color: var(--color-onink);
+  border: 1px solid var(--color-hairline);
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.field-dark::placeholder {
+  color: var(--color-onink-faint);
+}
+
+.field-dark:hover {
+  border-color: rgba(245, 242, 245, 0.28);
+}
+
+.field-dark:focus {
+  border-color: rgba(245, 242, 245, 0.45);
+  background: rgba(245, 242, 245, 0.06);
+  outline: 2px solid var(--color-rose);
+  outline-offset: 2px;
+}
+
+/* A native select renders its options with the page's colours, so the option
+   list needs the dark treatment too or it opens as white-on-white. */
+.field-dark option {
+  background: var(--color-ink-raised);
+  color: var(--color-onink);
+}

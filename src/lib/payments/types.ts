@@ -33,7 +33,7 @@ export interface VerifiedEvent {
  * providerFor(). Nothing else in the application changes.
  */
 export interface PaymentProvider {
-  readonly name: "stripe" | "paystack";
+  readonly name: "stripe" | "paystack" | "flutterwave";
   readonly currency: Currency;
   isConfigured(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;

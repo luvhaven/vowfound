@@ -15,6 +15,7 @@ import {
 import { parseListParams } from "@/lib/admin/query";
 import { listRows, countRows } from "@/lib/admin/data.server";
 import { formatPrice, type Currency } from "@/lib/products";
+import { OfflinePaymentForm } from "@/components/admin/offline-payment-form";
 
 const BASE = "/admin/payments";
 
@@ -70,7 +71,7 @@ export default async function AdminPaymentsPage({
       <WorkspaceHeader
         eyebrow="Settled and pending"
         title="Payments"
-        body="Written only by verified provider webhooks. Nothing on this screen can create, alter or refund a charge — that happens in Stripe and Paystack, and arrives back here."
+        body="Card and transfer payments are written only by verified provider webhooks; nothing here can alter or refund one. The exception is a bank transfer received outside the gateway, which an administrator records below against their own name."
         detail={`${total} records`}
       />
 
@@ -89,6 +90,10 @@ export default async function AdminPaymentsPage({
           }
           hint="Settled, never converted between currencies"
         />
+      </div>
+
+      <div className="mt-10">
+        <OfflinePaymentForm />
       </div>
 
       <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
@@ -110,7 +115,7 @@ export default async function AdminPaymentsPage({
         {rows.length === 0 ? (
           <EmptyState
             title="No payments"
-            body="Charges appear the moment a provider webhook is verified. Add sandbox keys to .env.local to exercise the flow."
+            body="Charges appear the moment a provider webhook is verified. Add Flutterwave keys to .env.local to exercise the flow, or record a bank transfer above."
           />
         ) : (
           <div className="overflow-x-auto rounded-[12px] border border-hairline bg-onink/[0.018] px-5">

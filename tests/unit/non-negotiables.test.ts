@@ -117,6 +117,8 @@ describe("no secret reaches the browser", () => {
       "SUPABASE_SECRET_KEY",
       "STRIPE_SECRET_KEY",
       "PAYSTACK_SECRET_KEY",
+      "FLUTTERWAVE_SECRET_KEY",
+      "FLUTTERWAVE_SECRET_HASH",
       "RESEND_API_KEY",
       "STRIPE_WEBHOOK_SECRET",
     ];

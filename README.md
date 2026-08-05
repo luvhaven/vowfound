@@ -122,13 +122,40 @@ cookie and always wins. **Only one currency ever reaches a screen** — the
 switcher names the other option, it never prices it. An end-to-end test asserts
 this.
 
-NGN routes to Paystack, USD routes to Stripe, both behind `PaymentProvider`
-in `src/lib/payments/types.ts`. A third provider is one new file and one line
-in `providerFor()`.
+**Flutterwave collects both currencies**, behind `PaymentProvider` in
+`src/lib/payments/types.ts`. Stripe and Paystack remain implemented and can be
+selected per currency with `PAYMENT_PROVIDER_NGN` / `PAYMENT_PROVIDER_USD`, so
+a suspension or an outage is an environment variable rather than a deploy. An
+unrecognised value falls back to Flutterwave instead of taking checkout
+offline.
+
+Why Flutterwave rather than a second NGN-only processor: it settles USD in USD
+rather than converting to naira, and it carries Nigerian bank-transfer rails.
+Both matter here. A ₦1,200,000 programme is not a card transaction, and
+Nigerian cards routinely cannot clear a USD charge at all, so **bank transfer
+is offered first for naira** and card second.
 
 Webhooks land on `/api/webhooks/[provider]`, verify the signature against the
 raw body, and answer `202` to anything unsigned or unrecognised so a prober
 learns nothing from the response.
+
+Flutterwave's signature is a shared secret compared verbatim, which proves the
+sender but says nothing about the body — a valid hash on a tampered payload
+still verifies. So **the webhook is treated as a hint, never an instruction**:
+the transaction is re-read from Flutterwave's API, and the amount and currency
+are checked against the pending row before anything is marked paid. A mismatch
+is parked as `failed` with a reason and written to the audit log rather than
+banked.
+
+### Payments that never touch a gateway
+
+Concierge is ₦3,500,000 / $8,500. Nobody puts that on a debit card, so an
+administrator can record a bank transfer at `/admin/payments`. It lands in the
+same ledger as a gateway payment, so billing history and revenue stay true,
+and it is deliberately harder to create than a charge: the amount comes from
+the catalogue rather than being typed, a bank reference is required, the
+recording administrator is named, and a unique index on
+`(provider, provider_reference)` stops the same transfer being banked twice.
 
 Pricing appears only after the assessment results, and never in the hero, the
 nav or the plans page. An end-to-end test asserts that too.
@@ -160,7 +187,8 @@ plainly that there are none and why.
 - [x] RLS on every table, verified by test
 - [x] Role checks in the database, not only the UI
 - [x] Service-role key server-only, never in a client component
-- [x] Webhook signatures verified against the raw body, timing-safe for Paystack
+- [x] Webhook signatures verified against the raw body, timing-safe for Paystack and Flutterwave
+- [x] Flutterwave transactions re-read from the API; amount and currency checked against the quote before settling
 - [x] Rate limiting on contact, auth and checkout
 - [x] Sign-in gives one answer for a wrong password and an unknown address
 - [x] Password reset gives the same answer whether or not the account exists
@@ -179,7 +207,7 @@ plainly that there are none and why.
 - [x] Every admin read of member data written to `audit_logs`
 - [x] Members can read the audit entries that concern them
 - [x] Private storage only, signed expiring URLs
-- [ ] Data processing agreements with Supabase, Stripe, Paystack, Resend
+- [ ] Data processing agreements with Supabase, Flutterwave, Resend
 - [ ] Legal review of `src/content/legal.ts` in every operating jurisdiction
 
 ## Production readiness checklist
