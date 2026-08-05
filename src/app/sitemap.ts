@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/brand";
+import { CANONICAL_ORIGIN } from "@/lib/brand";
 import { LEGAL_DOCS } from "@/content/legal";
 import { listPublishedArticles } from "@/lib/content.server";
 
@@ -41,17 +41,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...PUBLIC_ROUTES.map((route) => ({
-      url: `${SITE_URL}${route}`,
+      url: `${CANONICAL_ORIGIN}${route}`,
       changeFrequency: route === "" ? "weekly" as const : "monthly" as const,
       priority: route === "" ? 1 : HIGH_INTENT_ROUTES.has(route) ? 0.8 : 0.6,
     })),
     ...Object.keys(LEGAL_DOCS).map((doc) => ({
-      url: `${SITE_URL}/legal/${doc}`,
+      url: `${CANONICAL_ORIGIN}/legal/${doc}`,
       changeFrequency: "yearly" as const,
       priority: 0.3,
     })),
     ...articles.map((article) => ({
-      url: `${SITE_URL}/journal/${article.slug}`,
+      url: `${CANONICAL_ORIGIN}/journal/${article.slug}`,
       lastModified: article.published_at
         ? new Date(article.published_at)
         : undefined,

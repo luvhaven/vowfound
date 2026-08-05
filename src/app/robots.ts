@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/brand";
+import { CANONICAL_ORIGIN } from "@/lib/brand";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -21,6 +21,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: `${CANONICAL_ORIGIN}/sitemap.xml`,
   };
 }

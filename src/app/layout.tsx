@@ -9,14 +9,14 @@ import "@fontsource/newsreader/latin-600.css";
 import "@fontsource/newsreader/latin-600-italic.css";
 import "./globals.css";
 import { switzer } from "@/lib/fonts";
-import { BRAND, SITE_URL, TAGLINE } from "@/lib/brand";
+import { BRAND, CANONICAL_ORIGIN, TAGLINE } from "@/lib/brand";
 import { FoilDefs } from "@/components/ui/ornament";
 import { Analytics } from "@/components/analytics/analytics";
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: new URL(CANONICAL_ORIGIN),
   title: {
     default: `${BRAND} | ${TAGLINE}`,
     template: `%s | ${BRAND}`,
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description:
     "A private marriage-readiness, coaching and curated-matchmaking practice for adults who intend to marry. No swiping. No public browsing. A human makes every introduction.",
   applicationName: BRAND,
-  authors: [{ name: BRAND, url: SITE_URL }],
+  authors: [{ name: BRAND, url: CANONICAL_ORIGIN }],
   creator: BRAND,
   publisher: BRAND,
   category: "Relationship services",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     "marriage coaching",
     "curated introductions",
   ],
-  alternates: { canonical: SITE_URL },
+  alternates: { canonical: CANONICAL_ORIGIN },
   icons: {
     icon: [{ url: "/api/brand/favicon" }],
     shortcut: "/api/brand/favicon",

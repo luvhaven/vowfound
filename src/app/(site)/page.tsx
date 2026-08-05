@@ -8,6 +8,9 @@ import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
 import { SaveTheDate } from "@/components/home/save-the-date";
+import { AssessmentComparison } from "@/components/home/assessment-comparison";
+import { IntroductionReasonPreview } from "@/components/home/introduction-reason-preview";
+import { HumanAccountability } from "@/components/home/human-accountability";
 import { FaqList } from "@/components/site/faq-list";
 import { resolvedObjections } from "@/lib/content/resolve.server";
 import { Guarantee } from "@/components/site/guarantee";
@@ -53,38 +56,56 @@ export default async function HomePage() {
           className="grid min-h-[calc(100dvh-4rem)] items-center gap-7 py-7 md:gap-10 md:py-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10"
         >
           <div className="hero-copy relative z-10 max-w-xl">
-            {/* Three lines, three jobs. The eyebrow says who we are, the
-                headline says how this works, the subhead says what we do.
-                The photograph already carries the warmth — the headline does
-                not need to repeat it. */}
-            <p className="engraved text-onink-faint">{t("home.hero.eyebrow")}</p>
+            {/* The eyebrow names the category, because "Get married on
+                purpose" is a promise rather than a description — on its own it
+                could be a church, a coach or a wedding planner. The photograph
+                carries the warmth, so the words carry the meaning. */}
+            <p className="engraved text-rose">{t("home.hero.eyebrow")}</p>
             <h1 className="home-hero-title display-xl mt-5 text-onink md:mt-6">
               {t("home.hero.title.line1")}
               <br />
               {t("home.hero.title.line2")}
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-onink-dim md:mt-6 md:text-lg">
+            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-onink-dim md:mt-6 md:text-lg">
               {t("home.hero.support")}
             </p>
-            <div className="mt-7 flex flex-wrap gap-3 md:mt-9">
-              {/* Leads into the timeline card rather than jumping past it —
-                  choosing a date is the first real step, not a detour. */}
+            {/* Qualifies the reader. Someone who is not this should be able to
+                leave here rather than after twelve minutes of assessment. */}
+            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-onink-faint">
+              {t("home.hero.audience")}
+            </p>
+
+            {/* One decision, not two. The secondary is a link precisely so it
+                cannot compete for the same click. */}
+            <div className="mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center md:mt-9">
               <Button asChild size="lg">
                 <Link
                   href="#begin"
                   data-analytics-event="cta_click"
-                  data-analytics-label="begin_plan"
+                  data-analytics-label="begin_assessment"
                   data-analytics-placement="hero"
                 >
                   {t("home.hero.cta")}
                 </Link>
               </Button>
-              <Button asChild variant="quiet" size="lg">
-                <Link href="/method">See the method</Link>
-              </Button>
+              <Link
+                href="/how-it-works"
+                className="engraved whitespace-nowrap text-onink-dim underline decoration-onink-faint/50 underline-offset-[6px] transition-colors hover:text-onink"
+                data-analytics-event="cta_click"
+                data-analytics-label="how_it_works"
+                data-analytics-placement="hero"
+              >
+                {t("home.hero.secondaryCta")}
+              </Link>
             </div>
-            {/* The cost of entry, stated where the decision is made. */}
-            <p className="engraved mt-5 text-onink-faint">
+
+            {/* What actually happens next, so the button is not a leap. */}
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-onink-dim">
+              {t("home.hero.next")}
+            </p>
+            {/* Four objections answered in one line. That is persuasion, not
+                metadata, so it does not get the faint treatment. */}
+            <p className="engraved mt-4 max-w-md leading-[1.9] text-onink-dim">
               {t("home.hero.reassurance")}
             </p>
           </div>
@@ -238,6 +259,57 @@ export default async function HomePage() {
         </Container>
       </Section>
 
+      {/* Two products were both called a readiness map, which made the paid
+          one look like the free one with a price attached. */}
+      <Section id="assessment" data-analytics-section="assessment">
+        <Container width="wide">
+          <Reveal>
+            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-16">
+              <h2 className="display-lg text-onink">
+                Everyone starts in the same place. Not everyone needs the same
+                thing next.
+              </h2>
+              <p className="text-[17px] leading-relaxed text-onink-dim lg:pb-2">
+                The assessment is free and always will be. What it produces is a
+                snapshot, not a professional reading — and the difference
+                matters enough to be explicit about it.
+              </p>
+            </div>
+          </Reveal>
+          <div className="mt-14">
+            <AssessmentComparison />
+          </div>
+        </Container>
+      </Section>
+
+      {/* The written reason is the whole differentiator, and it stays abstract
+          until somebody can see one. */}
+      <Section className="bg-ink-raised" data-analytics-section="deliverable">
+        <Container width="wide">
+          <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
+            <Reveal>
+              <p className="engraved text-rose">What arrives</p>
+              <h2 className="display-lg mt-6 text-onink">
+                Matchmaking should feel personal because it is.
+              </h2>
+              <div className="measure mt-7 space-y-5 text-[17px] leading-relaxed text-onink-dim">
+                <p>
+                  An introduction is not a name in an inbox. It comes with the
+                  reasoning: where your intentions meet, which of your
+                  requirements are satisfied, and what is worth asking about
+                  early rather than discovering at month nine.
+                </p>
+                <p>
+                  You can decline any of them without explaining yourself, and
+                  nothing identifying is exchanged until you both accept.
+                </p>
+              </div>
+            </Reveal>
+            <IntroductionReasonPreview />
+          </div>
+        </Container>
+      </Section>
+
       <Section id="method" data-analytics-section="method" className="bg-ink-raised">
         <Container width="wide">
           <Reveal>
@@ -310,6 +382,14 @@ export default async function HomePage() {
               </Reveal>
             </div>
           </div>
+        </Container>
+      </Section>
+
+      {/* Credibility without a founder's face. The practice is deliberately
+          not personality-led, so responsibility is described by role. */}
+      <Section id="accountability" data-analytics-section="accountability">
+        <Container width="wide">
+          <HumanAccountability />
         </Container>
       </Section>
 

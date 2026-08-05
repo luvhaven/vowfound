@@ -47,10 +47,13 @@ const SERVICE_ICONS = {
   advisor: ChatTeardropText,
 } satisfies Record<ServiceIcon, Icon>;
 
+/* The journal has nothing published in it, and promoting an empty page from
+   the primary navigation costs more trust than the link earns. It returns
+   when there is something to read. */
 const SUPPORTING_LINKS = [
   { href: "/method", label: "Our method" },
   { href: "/safety", label: "Safety & privacy" },
-  { href: "/journal", label: "Journal" },
+  { href: "/faq", label: "Questions" },
 ] as const;
 
 export function Header() {

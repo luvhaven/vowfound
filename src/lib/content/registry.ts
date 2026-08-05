@@ -1,4 +1,4 @@
-import { HERO, REFRAME, RECOGNITION, METHOD, OBJECTIONS } from "@/content/site";
+import { REFRAME, RECOGNITION, METHOD, OBJECTIONS } from "@/content/site";
 
 /**
  * Everything an editor may change, declared once.
@@ -49,8 +49,9 @@ export const CONTENT_GROUPS: ContentGroup[] = [
       {
         key: "home.hero.eyebrow",
         label: "Eyebrow",
+        help: "Names the category in six words. A visitor who reads nothing else should still know what this is.",
         kind: "line",
-        fallback: HERO.eyebrow,
+        fallback: "Private marriage readiness and human-led matchmaking",
       },
       {
         key: "home.hero.title.line1",
@@ -65,25 +66,49 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         fallback: "on purpose.",
       },
       {
+        key: "home.hero.audience",
+        label: "Who it is for",
+        help: "Qualifies without excluding. A visitor should be able to tell in one line whether this is aimed at them.",
+        kind: "line",
+        fallback:
+          "For serious professionals and values-led adults approaching marriage with intention.",
+      },
+      {
         key: "home.hero.support",
         label: "Supporting sentence",
         help: "Says what we actually do. The photograph already carries the warmth.",
         kind: "paragraph",
         fallback:
-          "We find what has been getting in the way, help you change it, and introduce you to people who want the same thing.",
+          "Understand the patterns shaping your relationships, become ready for the marriage you want, and meet carefully considered people who share your intentions.",
       },
       {
         key: "home.hero.cta",
         label: "Primary button",
         kind: "line",
-        fallback: "Begin your plan",
+        fallback: "Begin my private assessment",
+      },
+      {
+        key: "home.hero.secondaryCta",
+        label: "Secondary link",
+        help: "Deliberately a link rather than a button. Two equal buttons split the decision.",
+        kind: "line",
+        fallback: "See how VowFound works",
+      },
+      {
+        key: "home.hero.next",
+        label: "What happens after the button",
+        help: "Removes the fear of an unknown commitment. Must describe the free snapshot, not the paid map.",
+        kind: "line",
+        fallback:
+          "Twelve private minutes. You receive a preliminary readiness snapshot and a recommended starting point.",
       },
       {
         key: "home.hero.reassurance",
-        label: "Cost of entry",
-        help: "Sits under the button, where the decision is made.",
+        label: "Trust line",
+        help: "Sits under the button, where the decision is made. Each clause answers an objection.",
         kind: "line",
-        fallback: "Free · Twelve minutes · No payment to begin",
+        fallback:
+          "Confidential · No public profiles · No swiping · Every introduction reviewed by a person",
       },
     ],
   },

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { ALL_SERVICES } from "@/content/services";
-import { BRAND, SITE_URL, TAGLINE } from "@/lib/brand";
+import { BRAND, CANONICAL_ORIGIN, TAGLINE } from "@/lib/brand";
 
 const DEFAULT_IMAGE = "/images/vowfound-hero.png";
 
 export function absoluteUrl(path = "/") {
-  return new URL(path, SITE_URL).toString();
+  return new URL(path, CANONICAL_ORIGIN).toString();
 }
 
 export function createPageMetadata({
@@ -46,9 +46,9 @@ export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": `${SITE_URL}/#organization`,
+    "@id": `${CANONICAL_ORIGIN}/#organization`,
     name: BRAND,
-    url: SITE_URL,
+    url: CANONICAL_ORIGIN,
     logo: {
       "@type": "ImageObject",
       url: absoluteUrl("/api/brand/logo"),
@@ -64,11 +64,11 @@ export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": `${SITE_URL}/#website`,
-    url: SITE_URL,
+    "@id": `${CANONICAL_ORIGIN}/#website`,
+    url: CANONICAL_ORIGIN,
     name: BRAND,
     description: TAGLINE,
-    publisher: { "@id": `${SITE_URL}/#organization` },
+    publisher: { "@id": `${CANONICAL_ORIGIN}/#organization` },
     inLanguage: "en",
   };
 }
@@ -101,7 +101,7 @@ export function servicesJsonLd() {
         name: service.name,
         description: service.detail,
         url: absoluteUrl(service.href),
-        provider: { "@id": `${SITE_URL}/#organization` },
+        provider: { "@id": `${CANONICAL_ORIGIN}/#organization` },
         audience: {
           "@type": "Audience",
           audienceType: "Adults intending to marry",

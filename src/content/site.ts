@@ -12,35 +12,45 @@ export const HERO = {
 } as const;
 
 export const REFRAME = {
-  heading: "You are not unlucky. You are unadvised.",
-  body: "Nobody has sat you down and told you the truth about how you come across, who you keep attracting, and why the last one didn't work. Your friends are too kind. Your family is too invested. The internet is too loud.",
+  /* "You are not unlucky. You are unadvised." kept the two-beat rhythm but
+     told the reader what was wrong with them before they had asked. This
+     keeps the structure and the insight, and leaves the diagnosis open. */
+  heading: "It may not be bad luck. It may be a pattern nobody has named.",
+  body: "Few people get a clear, unbiased account of how they come across, who they tend to choose, or what quietly went wrong last time. People who care about us do not always know how to give that, and the internet is too loud to be useful. An independent view is a different thing, and it is most of the work.",
 } as const;
 
 /* The situations clients actually arrive in. Specific, or they are worthless. */
+/* Recognition, not diagnosis.
+   These are read by strangers, and an earlier version told them what their
+   own history meant — "you will meet it again", "you are not, particularly".
+   Being right about some readers is not worth being presumptuous with all of
+   them, and a reader who feels assessed by a homepage does not trust the
+   assessment that follows. Each of these now describes something that may be
+   true and leaves the reader to decide whether it is. */
 export const RECOGNITION = [
   {
-    title: "You keep meeting the same person in different bodies.",
-    body: "Different name, different city, the same three months and the same ending. You have noticed. You have not been able to name it.",
+    title: "Different people. Familiar endings.",
+    body: "Different name, different city, and yet something about how it finishes can feel like it has happened before. A pattern is not a flaw. It is simply something that has not been named yet.",
   },
   {
-    title: "You are respected at work and unreadable in private.",
-    body: "The composure that makes you good at your job reads as distance across a table. Nobody close to you is willing to tell you that.",
+    title: "Respected at work. Harder to read in private.",
+    body: "The composure that serves you professionally can be received differently across a table. It is the kind of thing people who love you rarely know how to say.",
   },
   {
-    title: "The last one was serious and it still ended.",
-    body: "You did nothing obviously wrong. Something quieter went wrong, and it has never been named for you. Until it is, you will meet it again.",
+    title: "The last one was serious, and it still ended.",
+    body: "Often nothing obvious went wrong. Something quieter did, and it may never have been named for you — which makes it difficult to account for next time.",
   },
   {
-    title: "You are ready. The people around you are not.",
-    body: "This is not a standards problem, whatever you have been told. You are choosing from a group that was never filtered for intent.",
+    title: "You may be ready before the people you are meeting are.",
+    body: "That is usually not a standards problem, whatever you have been told. It can simply be a group that was never filtered for intent.",
   },
   {
-    title: "You have started saying you are fine with it.",
-    body: "You are not, particularly. You are tired of the conversation, and of the face people make when you have it. Saying you are fine is cheaper than saying the truth.",
+    title: "Saying you are fine is easier than the longer answer.",
+    body: "Not because it is untrue, but because the conversation is tiring, and so is the face people make when you have it.",
   },
   {
-    title: "People introduce you to people. None of them are close.",
-    body: "Everyone means well, and everyone is matching on the same four things: age, faith, income, availability. None of the four is what decides whether a marriage holds.",
+    title: "The introductions you get are kind, but rarely close.",
+    body: "Everyone means well, and most matching happens on four things: age, faith, income, availability. None of the four is what decides whether a marriage holds.",
   },
 ] as const;
 
