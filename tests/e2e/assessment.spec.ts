@@ -2,7 +2,10 @@ import { test, expect, type Page } from "@playwright/test";
 
 /** Answers whatever the current question is, then continues. */
 async function answerCurrentQuestion(page: Page) {
-  const radios = page.locator('input[type="radio"]');
+  // The choices are Radix radio buttons, not native inputs — matching only
+  // input[type=radio] silently found nothing, so the loop kept pressing
+  // Continue on an unanswered question until the test timed out.
+  const radios = page.locator('input[type="radio"], [role="radio"]');
   const checkboxes = page.locator('input[type="checkbox"]:not([disabled])');
   const textarea = page.locator("textarea");
   const textInput = page.locator('input[type="text"], input[type="email"]');

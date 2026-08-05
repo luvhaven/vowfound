@@ -187,7 +187,22 @@ export function AssessmentRunner({
 
     if (nextStep >= total) {
       setSubmitting(true);
-      const result = await completeAssessment({ step: nextStep, answers });
+
+      // The action reaches the database over the network. If that throws —
+      // a timeout, a dropped connection — an uncaught rejection leaves the
+      // button reading "Reading your answers" for ever, at the exact moment
+      // someone has just handed over twelve minutes and their email.
+      let result: Awaited<ReturnType<typeof completeAssessment>>;
+      try {
+        result = await completeAssessment({ step: nextStep, answers });
+      } catch {
+        setSubmitting(false);
+        setError(
+          "We could not reach the server to save that. Your answers are still here — try once more.",
+        );
+        return;
+      }
+
       if (!result.ok) {
         setSubmitting(false);
         setError("Something went wrong saving that. Try once more.");

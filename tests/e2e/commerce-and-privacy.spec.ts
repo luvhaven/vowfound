@@ -199,3 +199,53 @@ test.describe("keyboard and reduced motion", () => {
     await context.close();
   });
 });
+
+test.describe("the confirmation page tells the truth", () => {
+  test("does not announce success to anyone who guesses the URL", async ({
+    page,
+  }) => {
+    await page.goto("/checkout/ready-in-90/confirmation");
+    const body = page.locator("body");
+    await expect(body).not.toContainText(/is yours/i);
+    await expect(body).not.toContainText(/your place is recorded/i);
+    await expect(body).toContainText(/still confirming/i);
+  });
+
+  test("cannot be talked into success by a query parameter", async ({
+    page,
+  }) => {
+    // A provider redirect carries status=successful. Trusting it would let
+    // anyone confirm their own payment by editing the address bar.
+    await page.goto(
+      "/checkout/ready-in-90/confirmation?status=successful&tx_ref=made-up&transaction_id=1",
+    );
+    await expect(page.locator("body")).not.toContainText(/is yours/i);
+  });
+
+  test("says plainly when a payment was cancelled, and offers a way through", async ({
+    page,
+  }) => {
+    await page.goto(
+      "/checkout/ready-in-90/confirmation?status=cancelled&tx_ref=vf-x&transaction_id=1",
+    );
+    const body = page.locator("body");
+    await expect(body).toContainText(/did not go through/i);
+    await expect(body).toContainText(/no money has left your account/i);
+    // A failed card at this amount is usually a limit, so transfer is offered.
+    await expect(page.locator('a[href^="/contact"]')).toHaveCount(1);
+  });
+
+  test("an application confirms without claiming a payment", async ({ page }) => {
+    await page.goto("/checkout/private-concierge/confirmation");
+    const body = page.locator("body");
+    await expect(body).toContainText(/no payment has been taken/i);
+    await expect(body).not.toContainText(/still confirming/i);
+  });
+});
+
+test.describe("checkout is not a dead end", () => {
+  test("offers a way back to compare programmes", async ({ page }) => {
+    await page.goto("/checkout/ready-in-90");
+    await expect(page.locator('a[href="/plans"]').first()).toBeVisible();
+  });
+});

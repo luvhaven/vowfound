@@ -59,7 +59,18 @@ export default async function CheckoutPage({
   return (
     <Section>
       <Container width="wide">
-        <div className="grid gap-8 border-b border-hairline pb-10 md:grid-cols-[1fr_auto] md:items-end">
+        {/* Checkout had no way out. Somebody who picked the wrong programme,
+            or who wanted the other currency, could only use the browser's back
+            button — and the header is stripped down on this route, so there
+            was no navigation at all. */}
+        <Link
+          href="/plans"
+          className="engraved inline-flex items-center gap-2 text-onink-faint transition-colors hover:text-onink"
+        >
+          <span aria-hidden>&larr;</span> All programmes and fees
+        </Link>
+
+        <div className="mt-8 grid gap-8 border-b border-hairline pb-10 md:grid-cols-[1fr_auto] md:items-end">
           <div>
             <p className="engraved text-rose">
               {product.applicationOnly ? "Private application" : "Secure enrolment"}
