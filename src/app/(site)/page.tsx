@@ -66,18 +66,19 @@ export default async function HomePage() {
               <br />
               {t("home.hero.title.line2")}
             </h1>
+            {/* One paragraph, not three. An earlier version stacked a
+                supporting sentence, an audience line, a what-happens-next line
+                and a trust line beneath the headline — four blocks of small
+                text competing for the same glance, which is how a hero stops
+                being read at all. The audience and the mechanism now live
+                inside these two sentences. */}
             <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-onink-dim md:mt-6 md:text-lg">
               {t("home.hero.support")}
-            </p>
-            {/* Qualifies the reader. Someone who is not this should be able to
-                leave here rather than after twelve minutes of assessment. */}
-            <p className="mt-4 max-w-md text-[15px] leading-relaxed text-onink-faint">
-              {t("home.hero.audience")}
             </p>
 
             {/* One decision, not two. The secondary is a link precisely so it
                 cannot compete for the same click. */}
-            <div className="mt-7 flex flex-col items-start gap-4 sm:flex-row sm:items-center md:mt-9">
+            <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center md:mt-10">
               <Button asChild size="lg">
                 <Link
                   href="#begin"
@@ -99,13 +100,9 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            {/* What actually happens next, so the button is not a leap. */}
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-onink-dim">
-              {t("home.hero.next")}
-            </p>
-            {/* Four objections answered in one line. That is persuasion, not
-                metadata, so it does not get the faint treatment. */}
-            <p className="engraved mt-4 max-w-md leading-[1.9] text-onink-dim">
+            {/* The single line under the button: what it costs, how long it
+                takes, and the two objections that stop people clicking. */}
+            <p className="engraved mt-6 max-w-lg text-onink-dim">
               {t("home.hero.reassurance")}
             </p>
           </div>

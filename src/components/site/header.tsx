@@ -9,6 +9,7 @@ import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { BrandLockup } from "@/components/site/brand-lockup";
+import { useDialogBehaviour } from "@/lib/use-dialog-behaviour";
 import { trackEvent } from "@/lib/analytics/client";
 import {
   ALL_SERVICES,
@@ -64,6 +65,17 @@ export function Header() {
 
 function HeaderInner({ pathname }: { pathname: string }) {
   const [open, setOpen] = React.useState(false);
+  const mobilePanelRef = React.useRef<HTMLDivElement>(null);
+  const mobileTriggerRef = React.useRef<HTMLButtonElement>(null);
+  const closeMobile = React.useCallback(() => setOpen(false), []);
+
+  // Focus trap, Escape, scroll lock and focus restoration for the mobile menu.
+  useDialogBehaviour({
+    open,
+    onClose: closeMobile,
+    panelRef: mobilePanelRef,
+    triggerRef: mobileTriggerRef,
+  });
   const [servicesOpen, setServicesOpen] = React.useState(false);
 
   // On the home page the hero already carries the ask, so the header CTA only
@@ -360,6 +372,10 @@ function HeaderInner({ pathname }: { pathname: string }) {
       {open && (
         <div
           id="mobile-nav"
+          ref={mobilePanelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
           className="mobile-menu-enter max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-hairline bg-ink/96 px-6 py-7 backdrop-blur-xl lg:hidden"
         >
           <nav aria-label="Primary mobile" className="mx-auto flex max-w-2xl flex-col gap-7">
