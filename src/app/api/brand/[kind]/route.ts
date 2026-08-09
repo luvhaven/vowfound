@@ -10,7 +10,7 @@ const CONFIG = {
   },
   favicon: {
     field: "favicon_url",
-    fallback: "/brand/vowfound-favicon.svg",
+    fallback: "/brand/vowfound-favicon.ico",
   },
   "apple-icon": {
     field: "apple_icon_url",

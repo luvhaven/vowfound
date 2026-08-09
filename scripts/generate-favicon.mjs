@@ -5,12 +5,12 @@ import pngToIco from "png-to-ico";
 import sharp from "sharp";
 
 const workspace = resolve(import.meta.dirname, "..");
-const source = join(workspace, "src", "app", "icon.svg");
-const destination = join(workspace, "src", "app", "favicon.ico");
+const source = join(workspace, "public", "brand", "vowfound-favicon.svg");
+const destination = join(workspace, "public", "brand", "vowfound-favicon.ico");
 const temporary = await mkdtemp(join(tmpdir(), "vowfound-favicon-"));
 
 try {
-  const sizes = [16, 32, 48];
+  const sizes = [16, 32, 48, 64];
   const pngs = await Promise.all(
     sizes.map(async (size) => {
       const output = join(temporary, `favicon-${size}.png`);
