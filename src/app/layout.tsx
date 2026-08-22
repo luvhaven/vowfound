@@ -37,11 +37,8 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: CANONICAL_ORIGIN },
   icons: {
-    // Search crawlers need a stable, public URL. /favicon.ico resolves to the
-    // current admin-managed favicon without sending Googlebot through /api,
-    // which is intentionally blocked in robots.txt.
-    icon: [{ url: "/favicon.ico" }],
-    shortcut: "/favicon.ico",
+    icon: [{ url: "/api/brand/favicon" }],
+    shortcut: "/api/brand/favicon",
     apple: "/api/brand/apple-icon",
   },
   verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
