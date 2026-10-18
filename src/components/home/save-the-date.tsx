@@ -117,8 +117,8 @@ export function SaveTheDate() {
                 A date we find together
               </p>
               <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-slate">
-                Deciding when is part of the work. We will come back to this
-                question at the end, once you have more to go on.
+                Deciding when can be part of the work. Your plan can begin
+                without forcing a date today.
               </p>
             </div>
           )}

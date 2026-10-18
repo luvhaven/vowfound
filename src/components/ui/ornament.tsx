@@ -13,14 +13,14 @@ export function FoilDefs() {
     <svg width="0" height="0" aria-hidden focusable="false" className="absolute">
       <defs>
         <linearGradient id={FOIL_ID} x1="0" y1="0" x2="1" y2="0.35">
-          <stop offset="0%" stopColor="#AD8955" />
-          <stop offset="50%" stopColor="#E8D3A8" />
-          <stop offset="100%" stopColor="#AD8955" />
+          <stop offset="0%" stopColor="#858C9D" />
+          <stop offset="50%" stopColor="#F0F2F6" />
+          <stop offset="100%" stopColor="#9AA1AF" />
         </linearGradient>
         <linearGradient id={ROSE_METAL_ID} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#8D3151" />
-          <stop offset="52%" stopColor="#E2A1B5" />
-          <stop offset="100%" stopColor="#9E3B5C" />
+          <stop offset="0%" stopColor="#90264F" />
+          <stop offset="52%" stopColor="#F09ABA" />
+          <stop offset="100%" stopColor="#A93863" />
         </linearGradient>
       </defs>
     </svg>
@@ -53,14 +53,14 @@ export function VowMark({
     >
       <path
         d="M29.71 47.13A16 16 0 1 1 34.13 44.78"
-        stroke="#7D5A34"
+        stroke="#666E80"
         strokeWidth="4.2"
         strokeLinecap="round"
         opacity="0.62"
       />
       <path
         d="M34.29 16.87A16 16 0 1 1 29.87 19.22"
-        stroke="#72233F"
+        stroke="#7E2045"
         strokeWidth="4.2"
         strokeLinecap="round"
         opacity="0.72"

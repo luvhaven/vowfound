@@ -171,7 +171,7 @@ function HeaderInner({ pathname }: { pathname: string }) {
             href={PRIMARY_LINKS[0].href}
             aria-current={pathname === PRIMARY_LINKS[0].href ? "page" : undefined}
             className={cn(
-              "engraved whitespace-nowrap text-[10px] tracking-[0.08em] transition-colors duration-200",
+              "whitespace-nowrap text-[13px] font-medium transition-colors duration-200",
               pathname === PRIMARY_LINKS[0].href
                 ? "text-rose"
                 : "text-onink-dim hover:text-onink",
@@ -194,7 +194,7 @@ function HeaderInner({ pathname }: { pathname: string }) {
               aria-haspopup="true"
               aria-controls="services-panel"
               className={cn(
-                "engraved flex items-center gap-1.5 whitespace-nowrap text-[10px] tracking-[0.08em] transition-colors duration-200",
+                "flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium transition-colors duration-200",
                 servicesActive || servicesOpen
                   ? "text-rose"
                   : "text-onink-dim hover:text-onink",
@@ -214,14 +214,14 @@ function HeaderInner({ pathname }: { pathname: string }) {
             {servicesOpen && (
               <div
                 id="services-panel"
-                className="absolute left-1/2 top-full z-10 w-[min(63rem,calc(100vw-2.5rem))] -translate-x-1/2 pt-4"
+                className="fixed left-1/2 top-full z-10 max-h-[calc(100dvh-5rem)] w-[min(63rem,calc(100vw-2.5rem))] -translate-x-1/2 overflow-y-auto pt-3 pb-5"
               >
                 <div className="services-menu-enter overflow-hidden rounded-[20px] border border-onink/12 bg-ink-raised shadow-[0_34px_110px_rgba(7,4,10,0.68)]">
                   <div className="grid grid-cols-[19rem_1fr]">
                     <div className="relative flex flex-col overflow-hidden border-r border-hairline bg-ink-deep/70">
                       <figure className="relative h-36 overflow-hidden border-b border-hairline">
                         <Image
-                          src="/images/vowfound-rings.png"
+                          src="/images/vowfound-rings.webp"
                           alt="Wedding bands beside a handwritten vow"
                           fill
                           sizes="304px"
@@ -318,7 +318,7 @@ function HeaderInner({ pathname }: { pathname: string }) {
             href={PRIMARY_LINKS[1].href}
             aria-current={pathname === PRIMARY_LINKS[1].href ? "page" : undefined}
             className={cn(
-              "engraved whitespace-nowrap text-[10px] tracking-[0.08em] transition-colors duration-200",
+              "whitespace-nowrap text-[13px] font-medium transition-colors duration-200",
               pathname === PRIMARY_LINKS[1].href
                 ? "text-rose"
                 : "text-onink-dim hover:text-onink",
@@ -353,6 +353,7 @@ function HeaderInner({ pathname }: { pathname: string }) {
             </Link>
           </Button>
           <button
+            ref={mobileTriggerRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}

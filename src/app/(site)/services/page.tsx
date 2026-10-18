@@ -15,6 +15,7 @@ import {
 import { Container, Section, SectionIntro } from "@/components/ui/layout";
 import { PageCta, PageHeader } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
+import { JourneyChooser } from "@/components/home/journey-chooser";
 import { cn } from "@/lib/utils";
 import {
   CORE_SERVICES,
@@ -64,7 +65,16 @@ export default function ServicesPage() {
         standfirst="Start with readiness. Add introductions, verification, presentation, and private guidance only when they improve the outcome."
       />
 
-      <Section>
+      <Section aria-labelledby="service-start-title">
+        <Container width="wide">
+          <h2 id="service-start-title" className="display-lg max-w-2xl text-onink">Find the support that fits.</h2>
+          <p className="mt-4 max-w-xl text-onink-dim">Choose what brings you here. See a useful starting point before comparing the full range.</p>
+          <div className="mt-8"><JourneyChooser /></div>
+          <a href="#core-services" className="mt-6 inline-block text-sm text-onink-dim underline underline-offset-4 hover:text-onink">Compare all services</a>
+        </Container>
+      </Section>
+
+      <Section id="core-services" className="scroll-mt-20">
         <Container width="wide">
           <Reveal>
             <SectionIntro

@@ -40,6 +40,52 @@ export interface ContentGroup {
 
 export const CONTENT_GROUPS: ContentGroup[] = [
   {
+    id: "practitioners",
+    title: "Practitioner profiles",
+    description: "Draft slots stay hidden until a name and biography are entered. Publish only verified information with the person's permission.",
+    appearsOn: "/experts",
+    fields: [0, 1].flatMap((i) => [
+      { key: `practitioner.${i}.name`, label: `Practitioner ${i + 1}: name`, kind: "line" as const, fallback: "Add verified practitioner name" },
+      { key: `practitioner.${i}.role`, label: `Practitioner ${i + 1}: role`, kind: "line" as const, fallback: i === 0 ? "Readiness coach" : "Matchmaker" },
+      { key: `practitioner.${i}.bio`, label: `Practitioner ${i + 1}: verified biography and qualifications`, kind: "paragraph" as const, fallback: "Add verified biography and qualifications" },
+      { key: `practitioner.${i}.coverage`, label: `Practitioner ${i + 1}: languages and service coverage`, kind: "paragraph" as const, fallback: "Add verified languages and service coverage" },
+    ]),
+  },
+  {
+    id: "case-studies",
+    title: "Client case studies",
+    description:
+      "Draft slots stay hidden until a title and story are entered. Use only consented, verified client material.",
+    appearsOn: "/stories",
+    fields: [0, 1].flatMap((i) => [
+      {
+        key: `caseStudy.${i}.title`,
+        label: `Case study ${i + 1}: public title`,
+        kind: "line" as const,
+        fallback: "Add a consented case study title",
+      },
+      {
+        key: `caseStudy.${i}.context`,
+        label: `Case study ${i + 1}: starting situation and work delivered`,
+        kind: "paragraph" as const,
+        fallback: "Add the verified starting situation and work delivered",
+      },
+      {
+        key: `caseStudy.${i}.outcome`,
+        label: `Case study ${i + 1}: verified outcome and limitations`,
+        kind: "paragraph" as const,
+        fallback: "Add the verified outcome and relevant limitations",
+      },
+      {
+        key: `caseStudy.${i}.attribution`,
+        label: `Case study ${i + 1}: approved attribution`,
+        help: "For example: First name, age range, and city. Leave blank if the release does not permit attribution.",
+        kind: "line" as const,
+        fallback: "Add approved attribution or write Anonymous",
+      },
+    ]),
+  },
+  {
     id: "hero",
     title: "Home — hero",
     description:
@@ -71,13 +117,13 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         help: "Says what we actually do. The photograph already carries the warmth.",
         kind: "paragraph",
         fallback:
-          "For serious adults who intend to marry. We find what has been getting in the way, help you change it, and introduce you to people who want the same thing.",
+          "Understand what blocks commitment, become ready for it, and meet people who share your intention to marry.",
       },
       {
         key: "home.hero.cta",
         label: "Primary button",
         kind: "line",
-        fallback: "Build my marriage plan",
+        fallback: "Get my free readiness map",
       },
       {
         key: "home.hero.secondaryCta",
@@ -92,7 +138,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         help: "Sits under the button, where the decision is made. Each clause answers an objection.",
         kind: "line",
         fallback:
-          "Free · Twelve minutes · No public profile",
+          "Free · Twelve minutes · Nothing public, ever",
       },
     ],
   },

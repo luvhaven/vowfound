@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { Container, Section } from "@/components/ui/layout";
 import { PageHeader } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper, PaperInset } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
 import { createPageMetadata } from "@/lib/seo";
+import { ContactForm } from "@/components/site/contact-form";
 
 export const metadata = createPageMetadata({
   title: "Book a consultation",
@@ -21,7 +21,7 @@ export default function BookPage() {
       <PageHeader
         eyebrow="Book a consultation"
         title="Sixty minutes, about your situation specifically."
-        standfirst="Bring your readiness map if you have one. If you have not taken the assessment, the first fifteen minutes will be spent gathering what it would have told us, so it is worth doing first."
+        standfirst="Bring your readiness map if you have one. It helps us spend more of the hour on your situation, but it is not required to request a consultation."
       />
 
       <Section>
@@ -61,14 +61,7 @@ export default function BookPage() {
                         map before the call and spend the hour on what matters.
                       </p>
                     </PaperInset>
-                    <div className="mt-7 flex flex-wrap gap-3">
-                      <Button asChild size="lg">
-                        <Link href="/contact">Request a consultation</Link>
-                      </Button>
-                      <Button asChild size="lg" variant="onpaper">
-                        <Link href="/assessment">Take the assessment first</Link>
-                      </Button>
-                    </div>
+                    <div className="mt-7"><ContactForm consultation /></div>
                   </>
                 )}
               </Paper>
@@ -79,8 +72,8 @@ export default function BookPage() {
                 <p className="engraved text-rose">What happens on the call</p>
                 <ul className="mt-6 space-y-4">
                   {[
-                    ["We read your map back to you", "Including the parts you will not enjoy."],
-                    ["We ask about the last one", "Specifically about the month it changed."],
+                    ["Explore your starting point", "Your strengths, concerns, and the context behind your answers."],
+                    ["Discuss what matters to you", "Share only the relationship history you feel comfortable discussing."],
                     ["We tell you what we would do", "And whether that is us or someone else."],
                     ["You decide, afterwards", "Nobody is asked to commit on the call."],
                   ].map(([title, body]) => (

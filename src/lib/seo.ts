@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ALL_SERVICES } from "@/content/services";
 import { BRAND, CANONICAL_ORIGIN, TAGLINE } from "@/lib/brand";
 
-const DEFAULT_IMAGE = "/images/vowfound-hero.png";
+const DEFAULT_IMAGE = "/images/vowfound-hero.webp";
 
 export function absoluteUrl(path = "/") {
   return new URL(path, CANONICAL_ORIGIN).toString();

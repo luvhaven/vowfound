@@ -28,22 +28,28 @@ function Field({
   onChange: (v: string) => void;
   error?: string;
 }) {
+  const [visible, setVisible] = React.useState(false);
   return (
     <div>
-      <label htmlFor={id} className="engraved block text-slate">
+      <label htmlFor={id} className="block text-sm font-medium text-slate">
         {label}
       </label>
+      <div className="relative mt-2.5">
       <input
         id={id}
         name={id}
-        type={type}
+        type={type === "password" && visible ? "text" : type}
         autoComplete={autoComplete}
-        className="field mt-2.5"
+        className={type === "password" ? "field pr-20" : "field"}
+        autoCapitalize={type === "email" ? "none" : undefined}
+        spellCheck={type === "email" || type === "password" ? false : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
       />
+      {type === "password" && <button type="button" onClick={() => setVisible(!visible)} aria-label={visible ? "Hide password" : "Show password"} aria-pressed={visible} aria-controls={id} className="absolute inset-y-1 right-1 rounded-md px-4 text-sm font-medium text-slate hover:bg-stock">{visible ? "Hide" : "Show"}</button>}
+      </div>
       {hint && <p id={`${id}-hint`} className="mt-2 text-[14px] text-slate">{hint}</p>}
       {error && <p id={`${id}-error`} role="alert" className="mt-2 text-[13px] text-oxblood">{error}</p>}
     </div>
@@ -109,6 +115,7 @@ export function SignInForm() {
   return (
     <form onSubmit={submit} noValidate>
       <h1 className="display-md text-ink">Sign in</h1>
+      <p className="mt-3 text-[15px] text-slate">Welcome back. Your readiness map, plan, and appointments are here.</p>
       <div className="mt-7 space-y-5">
         <Field id="email" label="Email" type="email" autoComplete="email" value={email} onChange={setEmail} />
         <Field

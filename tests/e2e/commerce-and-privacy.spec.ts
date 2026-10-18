@@ -7,7 +7,7 @@ test.describe("currency", () => {
     await page.goto("/checkout/clarity-audit");
 
     const body = page.locator("body");
-    await expect(body).toContainText("$79");
+    await expect(body).toContainText("$129");
     await expect(body).not.toContainText("₦");
 
     // Local pricing is not an option anyone may opt into.
@@ -29,7 +29,7 @@ test.describe("currency", () => {
     ]);
 
     await page.goto("/checkout/clarity-audit");
-    await expect(page.locator("body")).toContainText("$79");
+    await expect(page.locator("body")).toContainText("$129");
     await expect(page.locator("body")).not.toContainText("₦");
   });
 
@@ -43,11 +43,11 @@ test.describe("currency", () => {
 
     await page.goto("/checkout/clarity-audit");
     const body = page.locator("body");
-    await expect(body).toContainText("₦60,000");
-    await expect(body).not.toContainText("$79");
+    await expect(body).toContainText("₦75,000");
+    await expect(body).not.toContainText("$129");
 
     await page.getByRole("button", { name: /switch to dollars/i }).click();
-    await expect(body).toContainText("$79");
+    await expect(body).toContainText("$129");
     await expect(body).not.toContainText("₦");
 
     await context.close();

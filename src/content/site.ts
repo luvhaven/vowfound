@@ -139,7 +139,7 @@ export const OBJECTIONS = [
   },
   {
     q: "What does it cost?",
-    a: "From the price of a good dinner for the audit, to a significant sum for a nine-month search. We do not put the figure before the recommendation, because half the people who ask should be buying the cheapest thing we sell. Finish the assessment and you get both at once.",
+    a: "Every fee is published on the plans page, in your currency, before you speak to anyone. The free assessment then recommends the smallest useful place to begin, and for many people that is the least expensive thing we offer.",
   },
   {
     q: "I have tried a matchmaker before and it did not work.",

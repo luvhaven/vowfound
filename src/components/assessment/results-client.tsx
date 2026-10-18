@@ -49,7 +49,21 @@ export function ResultsClient({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!checked) {
-    return <div className="min-h-[50vh]" aria-busy="true" />;
+    return (
+      <div className="mx-auto w-full max-w-3xl" aria-busy="true" aria-live="polite">
+        <Paper className="px-7 py-10 md:px-10 md:py-12">
+          <p className="engraved text-oxblood">Opening your private map</p>
+          <div className="mt-7 h-10 w-3/4 animate-pulse rounded-[12px] bg-stone/60" />
+          <div className="mt-5 h-4 w-full animate-pulse rounded-full bg-stone/45" />
+          <div className="mt-3 h-4 w-4/5 animate-pulse rounded-full bg-stone/45" />
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[0, 1, 2, 3].map((item) => (
+              <span key={item} className="h-20 animate-pulse rounded-[12px] bg-stock-warm" />
+            ))}
+          </div>
+        </Paper>
+      </div>
+    );
   }
 
   if (!map) {

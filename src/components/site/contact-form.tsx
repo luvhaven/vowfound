@@ -24,7 +24,7 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-export function ContactForm({ defaultService }: { defaultService?: string }) {
+export function ContactForm({ defaultService, consultation = false }: { defaultService?: string; consultation?: boolean }) {
   const [sent, setSent] = React.useState(false);
   const [failed, setFailed] = React.useState<string | null>(null);
 
@@ -35,7 +35,7 @@ export function ContactForm({ defaultService }: { defaultService?: string }) {
     formState: { errors, isSubmitting },
   } = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { service: defaultService ?? "" },
+    defaultValues: { service: defaultService ?? "", message: "" },
   });
   const messageLength = useWatch({
     control,
@@ -45,10 +45,10 @@ export function ContactForm({ defaultService }: { defaultService?: string }) {
 
   async function onSubmit(values: Values) {
     setFailed(null);
-    trackEvent("contact_submit", { placement: "contact_form" });
+    trackEvent("contact_submit", { placement: consultation ? "consultation_request" : "contact_form" });
     const result = await sendContactMessage(values);
     if (result.ok) {
-      trackEvent("contact_success", { placement: "contact_form" });
+      trackEvent("contact_success", { placement: consultation ? "consultation_request" : "contact_form" });
       setSent(true);
     } else {
       setFailed(
@@ -76,7 +76,7 @@ export function ContactForm({ defaultService }: { defaultService?: string }) {
       <div className="flex items-start justify-between gap-6 border-b border-stone pb-6">
         <div>
           <p className="engraved text-oxblood">A private note</p>
-          <h2 className="display-md mt-3 text-ink">Write to us</h2>
+          <h2 className="display-md mt-3 text-ink">{consultation ? "Request a time" : "Write to us"}</h2>
         </div>
         <p className="hidden max-w-[12rem] text-right text-[12px] leading-relaxed text-slate sm:block">
           Read by a person. Usually answered within two working days.
@@ -140,7 +140,7 @@ export function ContactForm({ defaultService }: { defaultService?: string }) {
         <div>
           <div className="flex items-baseline justify-between gap-4">
             <label htmlFor="message" className="engraved block text-slate">
-              Your question
+              {consultation ? "Your availability and question" : "Your question"}
             </label>
             <p className="numeral text-[11px] text-slate" aria-live="polite">
               {messageLength} / 4000
@@ -149,10 +149,21 @@ export function ContactForm({ defaultService }: { defaultService?: string }) {
           <textarea
             id="message"
             className="field mt-2.5 min-h-36 resize-y"
+            placeholder={
+              consultation
+                ? "Tell us your timezone, suitable days or times, and what you would like help with."
+                : undefined
+            }
             aria-invalid={Boolean(errors.message)}
             aria-describedby={errors.message ? "message-error" : undefined}
             {...register("message")}
           />
+          {consultation && !errors.message && (
+            <p className="mt-2 text-[13px] leading-relaxed text-slate">
+              Suggested details: timezone, preferred availability, and the
+              question you want the consultation to answer.
+            </p>
+          )}
           {errors.message && (
             <p id="message-error" role="alert" className="mt-2 text-[14px] text-oxblood">
               {errors.message.message}
@@ -178,7 +189,7 @@ export function ContactForm({ defaultService }: { defaultService?: string }) {
           you to marketing.
         </p>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Sending privately" : "Send privately"}
+          {isSubmitting ? "Sending privately" : consultation ? "Request consultation" : "Send privately"}
         </Button>
       </div>
     </form>

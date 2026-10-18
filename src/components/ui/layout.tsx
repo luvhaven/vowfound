@@ -13,7 +13,7 @@ export function Container({
   return (
     <div
       className={cn(
-        "mx-auto w-full px-6 md:px-10 xl:px-12",
+        "mx-auto w-full px-5 sm:px-6 md:px-10 xl:px-12",
         width === "narrow" && "max-w-2xl",
         width === "default" && "max-w-4xl",
         width === "wide" && "max-w-7xl",
@@ -33,7 +33,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn("relative py-24 md:py-32 lg:py-36", className)}
+      className={cn("relative py-20 md:py-28 lg:py-32", className)}
       {...props}
     >
       {children}
@@ -63,7 +63,6 @@ export function SectionIntro({
   eyebrow,
   title,
   body,
-  index,
   className,
 }: {
   eyebrow: string;
@@ -73,15 +72,9 @@ export function SectionIntro({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "grid gap-7 border-t border-hairline pt-7 md:grid-cols-[6rem_1fr] md:gap-10",
-        className,
-      )}
-    >
-      <p className="numeral engraved text-rose">{index ?? "VF"}</p>
+    <div className={cn("max-w-3xl", className)}>
       <div className="max-w-3xl">
-        <p className="engraved text-onink-faint">{eyebrow}</p>
+        <p className="text-sm font-medium text-rose">{eyebrow}</p>
         <h2 className="display-lg mt-5 text-onink">{title}</h2>
         {body && (
           <p className="measure mt-6 text-[17px] leading-relaxed text-onink-dim">

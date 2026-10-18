@@ -28,10 +28,12 @@ export function ReadinessMapView({
   map,
   currency,
   name,
+  showProgrammes = true,
 }: {
   map: ReadinessMap;
   currency: Currency;
   name?: string;
+  showProgrammes?: boolean;
 }) {
   const product = productBySlug(map.recommendedProduct);
 
@@ -45,11 +47,15 @@ export function ReadinessMapView({
           </h1>
           <p className="measure mt-6 text-onink-dim">{map.summary}</p>
         </div>
-        <div className="flex items-center gap-4 md:flex-col md:items-end">
+        <div className="no-print flex items-center gap-4 md:flex-col md:items-end">
           <VowMark size={82} />
-          <p className="engraved max-w-[13rem] text-onink-faint md:text-right">
-            Eight dimensions / no aggregate score
-          </p>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="text-sm font-medium text-onink-dim underline decoration-onink-faint underline-offset-4 transition-colors hover:text-onink"
+          >
+            Print or save as PDF
+          </button>
         </div>
       </header>
 
@@ -147,7 +153,7 @@ export function ReadinessMapView({
       </div>
 
       {/* --- Everything else ---------------------------------------------- */}
-      <div className="mt-20">
+      {showProgrammes && <div className="mt-20">
         <div className="flex flex-wrap items-end justify-between gap-5 border-b border-hairline pb-7">
           <div>
             <p className="engraved text-rose">The complete practice</p>
@@ -163,7 +169,7 @@ export function ReadinessMapView({
           showPrices
           recommended={map.recommendedProduct}
         />
-      </div>
+      </div>}
 
       <p className="mt-12 text-[14px] leading-relaxed text-onink-faint">
         This map is a reading of what you told us, not a diagnosis and not a

@@ -65,7 +65,7 @@ export function JourneyChooser() {
         <p className="text-sm font-medium text-onink-dim">
           Choose the sentence that feels closest.
         </p>
-        <div className="mt-6 grid gap-2" aria-label="Choose your starting point">
+        <div className="mt-6 grid gap-2" role="group" aria-label="Choose your starting point">
           {PATHS.map((path) => {
             const selected = path.id === activeId;
             return (
@@ -73,6 +73,7 @@ export function JourneyChooser() {
                 key={path.id}
                 type="button"
                 aria-pressed={selected}
+                aria-controls="journey-recommendation"
                 onClick={() => setActiveId(path.id)}
                 className={cn(
                   "group rounded-[12px] border px-5 py-5 text-left transition-[color,background-color,border-color,transform] duration-300 active:scale-[0.99]",
@@ -90,7 +91,7 @@ export function JourneyChooser() {
         </div>
       </div>
 
-      <div className="relative flex min-h-[31rem] items-center overflow-hidden bg-ink-raised p-7 md:p-12 lg:p-14">
+      <div id="journey-recommendation" className="relative flex min-h-[29rem] items-center overflow-hidden bg-ink-raised p-7 md:p-10 lg:p-12">
         <Rings
           size={180}
           className="pointer-events-none absolute -right-10 -top-4 opacity-[0.12]"
@@ -121,7 +122,7 @@ export function JourneyChooser() {
             </ul>
             <div className="mt-9">
               <Button asChild size="lg">
-                <Link href={active.href}>{active.cta}</Link>
+                <Link href={active.href} data-analytics-event="cta_click" data-analytics-label={active.id} data-analytics-placement="journey_chooser">{active.cta}</Link>
               </Button>
             </div>
           </motion.article>

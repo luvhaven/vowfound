@@ -12,7 +12,7 @@ import { BRAND, SITE_URL } from "@/lib/brand";
 /**
  * Recording money that arrived by bank transfer.
  *
- * Concierge is ₦3,500,000 / $8,500. Nobody puts that on a debit card, and
+ * Concierge is ₦4,750,000 / $12,500. Nobody puts that on a debit card, and
  * Nigerian cards frequently cannot clear a USD charge of any size. The honest
  * options were to lose those sales or to keep them off the books; this is the
  * third one. An offline payment lands in the same ledger as a gateway payment,

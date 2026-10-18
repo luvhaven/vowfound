@@ -1,0 +1,376 @@
+/* =========================================================================
+   VowFound motion and surface layer — the 2026 homepage and plans redesign.
+
+   Everything here degrades to a still, readable page: server HTML first,
+   motion only where the browser supports it and the visitor permits it.
+   Imported after globals.css, so it can read every token defined there.
+   ========================================================================= */
+
+@property --foil-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* Reading progress. A 2px rose thread across the top of long pages. */
+.scroll-thread {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 2px;
+  z-index: 70;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--color-oxblood), var(--color-rose), #f3d7e1);
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-thread {
+      animation: thread-grow 1ms linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+@keyframes thread-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* --- Hero --------------------------------------------------------------- */
+
+.hero-2027 {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Slow light, not a gradient blob: three soft sources drifting on long,
+   unrelated periods, composited on the GPU. */
+.aurora {
+  position: absolute;
+  inset: -10% 0 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  filter: blur(70px);
+}
+
+.aurora span {
+  position: absolute;
+  border-radius: 999px;
+  will-change: transform;
+}
+
+.aurora span:nth-child(1) {
+  width: 44rem;
+  height: 44rem;
+  left: 46%;
+  top: 0;
+  background: radial-gradient(circle, rgba(156, 47, 89, 0.36), transparent 62%);
+  animation: aurora-a 22s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(2) {
+  width: 34rem;
+  height: 34rem;
+  left: -8%;
+  top: 18%;
+  background: radial-gradient(circle, rgba(224, 122, 158, 0.14), transparent 64%);
+  animation: aurora-b 28s ease-in-out infinite alternate;
+}
+
+.aurora span:nth-child(3) {
+  width: 30rem;
+  height: 30rem;
+  left: 70%;
+  top: 44%;
+  background: radial-gradient(circle, rgba(140, 120, 200, 0.14), transparent 66%);
+  animation: aurora-c 34s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-a {
+  to {
+    transform: translate3d(-12%, 10%, 0) scale(1.12);
+  }
+}
+
+@keyframes aurora-b {
+  to {
+    transform: translate3d(18%, -8%, 0) scale(0.92);
+  }
+}
+
+@keyframes aurora-c {
+  to {
+    transform: translate3d(-22%, -14%, 0) scale(1.18);
+  }
+}
+
+/* Words rise out of a mask one after another, like a letter being read. */
+.kinetic {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.04em 0.12em;
+  margin: 0 -0.04em -0.12em;
+}
+
+.kinetic > span {
+  display: inline-block;
+  animation: kinetic-rise 1100ms var(--ease-press) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 120ms);
+}
+
+@keyframes kinetic-rise {
+  from {
+    transform: translateY(110%) rotate(4deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.fade-up {
+  animation: hero-copy-in 900ms var(--ease-press) both;
+  animation-delay: var(--d, 0ms);
+}
+
+.vow-italic {
+  font-style: italic;
+  font-weight: 300;
+  background: linear-gradient(100deg, #f8dfe8 0%, var(--color-rose) 48%, #c6a8f5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-frame {
+  position: relative;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow:
+    0 50px 120px rgba(6, 4, 10, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: hero-portrait-in 1200ms 160ms var(--ease-press) both;
+}
+
+.hero-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 50%, rgba(11, 12, 17, 0.66)),
+    linear-gradient(90deg, rgba(11, 12, 17, 0.22), transparent 30%);
+}
+
+/* --- Glass and foil ----------------------------------------------------- */
+
+.glass {
+  background: linear-gradient(160deg, rgba(38, 31, 44, 0.74), rgba(20, 21, 28, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 30px 80px rgba(4, 3, 8, 0.45),
+    inset 0 1px rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  backdrop-filter: blur(22px) saturate(1.3);
+}
+
+/* A slowly turning foil edge, reserved for the one card that should be seen
+   first on a screen. */
+.foil-ring {
+  position: relative;
+  isolation: isolate;
+}
+
+.foil-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--foil-angle),
+    rgba(224, 122, 158, 0.12),
+    #f1c3d4,
+    rgba(198, 168, 245, 0.7),
+    rgba(224, 122, 158, 0.12) 40%,
+    rgba(255, 255, 255, 0.06) 70%,
+    rgba(224, 122, 158, 0.12)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: foil-turn 9s linear infinite;
+}
+
+@keyframes foil-turn {
+  to {
+    --foil-angle: 360deg;
+  }
+}
+
+/* Cursor light. The card sets --mx/--my on pointer move; without JS the
+   light simply never appears. */
+.spotlight {
+  position: relative;
+}
+
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  background: radial-gradient(
+    460px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(224, 122, 158, 0.11),
+    transparent 60%
+  );
+}
+
+.spotlight:hover::after {
+  opacity: 1;
+}
+
+/* --- Marquee ------------------------------------------------------------ */
+
+.marquee {
+  display: flex;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 3rem;
+  padding-right: 3rem;
+  animation: marquee 52s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* --- Pulse check -------------------------------------------------------- */
+
+.pulse-option {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--color-hairline);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    transform 300ms var(--ease-press);
+}
+
+.pulse-option:hover {
+  border-color: rgba(224, 122, 158, 0.5);
+  background: rgba(224, 122, 158, 0.06);
+  transform: translateY(-2px);
+}
+
+.pulse-option[aria-pressed="true"] {
+  border-color: var(--color-rose);
+  background: rgba(224, 122, 158, 0.11);
+}
+
+/* --- Method story ------------------------------------------------------- */
+
+.chapter-num {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(4.5rem, 10vw, 9rem);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(224, 122, 158, 0.5);
+}
+
+/* --- Price ladder ------------------------------------------------------- */
+
+.tier {
+  border-radius: 28px;
+  border: 1px solid var(--color-hairline);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+  transition:
+    transform 500ms var(--ease-press),
+    border-color 300ms ease,
+    box-shadow 500ms var(--ease-press);
+}
+
+.tier:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 40px 90px rgba(4, 3, 8, 0.4);
+}
+
+.tier-featured {
+  border-color: transparent;
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(156, 47, 89, 0.34), transparent 60%),
+    linear-gradient(180deg, #1e1721, #15161d);
+}
+
+.tick {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.2rem;
+  border-radius: 999px;
+  background: rgba(224, 122, 158, 0.15);
+  color: var(--color-rose);
+}
+
+/* --- Reduced motion and transparency ----------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora span,
+  .kinetic > span,
+  .fade-up,
+  .hero-frame,
+  .marquee-track,
+  .foil-ring::before {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--color-ink-raised);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3.1rem, 6.2vw, 6.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+}

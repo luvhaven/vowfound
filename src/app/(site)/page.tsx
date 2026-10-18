@@ -1,304 +1,295 @@
 import Image from "next/image";
 import Link from "next/link";
 import heroImage from "../../../public/images/vowfound-hero-global.webp";
-import ringsImage from "../../../public/images/vowfound-rings.png";
-import commitmentImage from "../../../public/images/vowfound-commitment.png";
+import commitmentImage from "../../../public/images/vowfound-commitment.webp";
 import { Container, Section } from "@/components/ui/layout";
 import { Reveal } from "@/components/ui/reveal";
-import { Paper } from "@/components/ui/paper";
 import { Button } from "@/components/ui/button";
+import { Spotlight } from "@/components/ui/spotlight";
 import { SaveTheDate } from "@/components/home/save-the-date";
-import { AssessmentComparison } from "@/components/home/assessment-comparison";
+import { HeroReading } from "@/components/home/hero-reading";
+import { PulseCheck } from "@/components/home/pulse-check";
+import { MethodStory } from "@/components/home/method-story";
 import { IntroductionReasonPreview } from "@/components/home/introduction-reason-preview";
-import { HumanAccountability } from "@/components/home/human-accountability";
-import { FaqList } from "@/components/site/faq-list";
-import { resolvedObjections } from "@/lib/content/resolve.server";
+import { PriceLadder } from "@/components/site/price-ladder";
 import { Guarantee } from "@/components/site/guarantee";
-import { MethodStages } from "@/components/site/method-stages";
-import { Rings, RuleOrnament, VowMark } from "@/components/ui/ornament";
-import { RECOGNITION, SAFETY_POINTS } from "@/content/site";
+import { FaqList } from "@/components/site/faq-list";
+import { StickyCta } from "@/components/site/sticky-cta";
+import { METHOD, OBJECTIONS, RECOGNITION } from "@/content/site";
 import { getContent } from "@/lib/content/read.server";
+import { resolveCurrency } from "@/lib/currency.server";
 
-const TRUST_POINTS = [
-  "Free 12-minute assessment",
-  "Human-made introductions",
+/* Each of these answers an objection a visitor has before they have voiced
+   it. They scroll, so none of them has to fight for the hero. */
+const PRINCIPLES = [
+  "No swiping",
   "No public profile",
-  "Consent before disclosure",
+  "A person reads every map",
+  "A written reason for every introduction",
+  "Nothing shared until both say yes",
+  "Every fee published",
+  "Export or delete your data any time",
 ] as const;
 
-const MATCHMAKING_PROMISES = [
-  {
-    title: "A person chooses",
-    body: "A matchmaker reads every shortlist, makes the final call, and records the reasoning.",
-  },
-  {
-    title: "You know why",
-    body: "Every introduction comes with a clear explanation of why this person surfaced now.",
-  },
-  {
-    title: "Both people say yes",
-    body: "Names, photographs, and contact details stay private until two people accept.",
-  },
-] as const;
+/** Splits a line into words that rise one after another. */
+function Kinetic({ text, offset = 0, className }: { text: string; offset?: number; className?: string }) {
+  return (
+    <>
+      {text.split(" ").map((word, i) => (
+        <span key={`${word}-${i}`} className="kinetic">
+          <span className={className} style={{ "--i": offset + i } as React.CSSProperties}>
+            {word}
+          </span>
+          {" "}
+        </span>
+      ))}
+    </>
+  );
+}
 
 export default async function HomePage() {
   // Every editable string on this page resolves through t(). A key with no
   // override falls back to the default in the registry, so the page renders
   // identically before anyone has opened the admin.
-  const t = await getContent();
-  const objections = await resolvedObjections();
+  const [t, currency] = await Promise.all([getContent(), resolveCurrency()]);
+
+  const line1 = t("home.hero.title.line1");
+  const line2 = t("home.hero.title.line2");
+
+  const stages = METHOD.map((stage, i) => ({
+    name: t(`method.${i}.name`),
+    summary: t(`method.${i}.summary`),
+    body: stage.body,
+    outputs: stage.outputs,
+  }));
+
+  const faqs = OBJECTIONS.map((item, i) => ({ q: t(`faq.${i}.q`), a: t(`faq.${i}.a`) }));
 
   return (
     <>
-      <section className="home-hero relative overflow-hidden" data-analytics-section="hero">
+      <div className="scroll-thread" aria-hidden />
+
+      {/* --- Hero ---------------------------------------------------------- */}
+      <section className="hero-2027 overflow-hidden" data-analytics-section="hero">
+        <div className="aurora" aria-hidden>
+          <span />
+          <span />
+          <span />
+        </div>
+
         <Container
           width="wide"
-          className="grid min-h-[calc(100dvh-4rem)] items-center gap-7 py-7 md:gap-10 md:py-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10"
+          className="grid items-center gap-12 pb-16 pt-10 md:pt-14 lg:min-h-[min(calc(100svh-5rem),56rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:pb-20"
         >
-          <div className="hero-copy relative z-10 max-w-xl">
-            {/* The eyebrow names the category, because "Get married on
-                purpose" is a promise rather than a description — on its own it
-                could be a church, a coach or a wedding planner. The photograph
-                carries the warmth, so the words carry the meaning. */}
-            <p className="engraved text-rose">{t("home.hero.eyebrow")}</p>
-            <h1 className="home-hero-title display-xl mt-5 text-onink md:mt-6">
-              {t("home.hero.title.line1")}
-              <br />
-              {t("home.hero.title.line2")}
+          <div className="relative z-10">
+            <p className="engraved fade-up flex items-center gap-3 text-rose" style={{ "--d": "0ms" } as React.CSSProperties}>
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-rose opacity-60 motion-reduce:hidden" />
+                <span className="relative inline-flex size-2 rounded-full bg-rose" />
+              </span>
+              {t("home.hero.eyebrow")}
+            </p>
+
+            <h1 className="hero-title mt-7 text-onink">
+              <span className="block">
+                <Kinetic text={line1} />
+              </span>
+              <span className="block">
+                <Kinetic text={line2} offset={line1.split(" ").length} className="vow-italic" />
+              </span>
             </h1>
-            {/* One paragraph, not three. An earlier version stacked a
-                supporting sentence, an audience line, a what-happens-next line
-                and a trust line beneath the headline — four blocks of small
-                text competing for the same glance, which is how a hero stops
-                being read at all. The audience and the mechanism now live
-                inside these two sentences. */}
-            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-onink-dim md:mt-6 md:text-lg">
+
+            <p
+              className="fade-up mt-8 max-w-xl text-[18px] leading-relaxed text-onink-dim md:text-[20px]"
+              style={{ "--d": "520ms" } as React.CSSProperties}
+            >
               {t("home.hero.support")}
             </p>
 
-            {/* One decision, not two. The secondary is a link precisely so it
-                cannot compete for the same click. */}
-            <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center md:mt-10">
-              <Button asChild size="lg">
+            <div className="fade-up mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center" style={{ "--d": "680ms" } as React.CSSProperties}>
+              <Button asChild size="lg" className="h-16 px-9 text-[15px]">
                 <Link
-                  href="#begin"
+                  href="/assessment"
                   data-analytics-event="cta_click"
                   data-analytics-label="begin_assessment"
                   data-analytics-placement="hero"
                 >
                   {t("home.hero.cta")}
+                  <svg viewBox="0 0 16 16" className="size-4" aria-hidden>
+                    <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </Link>
               </Button>
               <Link
-                href="/how-it-works"
-                className="engraved whitespace-nowrap text-onink-dim underline decoration-onink-faint/50 underline-offset-[6px] transition-colors hover:text-onink"
+                href="#pulse"
+                className="group inline-flex items-center gap-2 whitespace-nowrap text-[15px] text-onink-dim transition-colors hover:text-onink"
                 data-analytics-event="cta_click"
-                data-analytics-label="how_it_works"
+                data-analytics-label="pulse_anchor"
                 data-analytics-placement="hero"
               >
-                {t("home.hero.secondaryCta")}
+                <span className="underline decoration-onink-faint/50 underline-offset-[6px] group-hover:decoration-rose">
+                  Or take the 60-second pulse
+                </span>
               </Link>
             </div>
 
-            {/* The single line under the button: what it costs, how long it
-                takes, and the two objections that stop people clicking. */}
-            <p className="engraved mt-6 max-w-lg text-onink-dim">
+            <p className="fade-up mt-6 text-[13px] tracking-wide text-onink-faint" style={{ "--d": "800ms" } as React.CSSProperties}>
               {t("home.hero.reassurance")}
             </p>
           </div>
 
-          <figure className="hero-portrait relative min-h-[15rem] overflow-hidden rounded-[24px] md:min-h-[38rem]">
-            <Image
-              src={heroImage}
-              alt="A newly married couple sharing a quiet laugh at home"
-              fill
-              priority
-              placeholder="blur"
-              sizes="(max-width: 1023px) 100vw, 58vw"
-              className="object-cover object-[58%_center]"
-            />
-            <div className="portrait-scrim" aria-hidden />
-            <VowMark size={128} className="ring-orbit" />
-          </figure>
-        </Container>
-      </section>
-
-      <section aria-label="How VowFound works" className="trust-rail border-y border-hairline">
-        <Container width="wide" className="flex flex-col lg:flex-row lg:items-stretch">
-          <div className="flex min-h-20 items-center border-b border-hairline pr-8 lg:w-56 lg:border-b-0 lg:border-r">
-            <p className="engraved text-rose">The VowFound standard</p>
-          </div>
-          <ul className="grid flex-1 grid-cols-2 lg:grid-cols-4">
-            {TRUST_POINTS.map((point) => (
-              <li
-                key={point}
-                className="flex min-h-20 items-center border-hairline px-5 text-left text-[13px] font-medium leading-relaxed text-onink-dim max-lg:[&:nth-child(odd)]:border-r lg:border-r lg:last:border-r-0"
-              >
-                {point}
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </section>
-
-      {/* Anchor target for the hero CTA. scroll-mt clears the sticky header. */}
-      <Section
-        id="begin"
-        data-analytics-section="marriage_horizon"
-        className="relative scroll-mt-24 overflow-hidden"
-      >
-        <Container width="wide">
-          <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-20">
-            <Reveal>
-              <Rings size={78} className="mb-8" />
-              <h2 className="display-lg max-w-lg text-onink">
-                {t("home.begin.title")}
-              </h2>
-              <p className="mt-6 max-w-md text-onink-dim">
-                {t("home.begin.body")}
-              </p>
-              <p className="mt-8 max-w-sm text-sm leading-relaxed text-onink-faint">
-                {t("home.begin.note")}
-              </p>
-              <div className="mt-8 border-t border-hairline pt-6">
-                <p className="text-sm font-semibold text-onink">
-                  By the end, you have:
-                </p>
-                <ul className="mt-4 grid gap-3 text-sm text-onink-dim">
-                  <li>An eight-dimension readiness map</li>
-                  <li>One priority to work on first</li>
-                  <li>A recommended way forward</li>
-                </ul>
-              </div>
-            </Reveal>
-            <Reveal delay={100}>
-              <SaveTheDate />
-            </Reveal>
-          </div>
-        </Container>
-      </Section>
-
-      <Section
-        id="recognition"
-        data-analytics-section="recognition"
-        className="bg-ink-raised"
-      >
-        <Container width="wide">
-          <Reveal>
-            <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:gap-16">
-              <h2 className="display-lg text-onink">
-                {t("home.recognition.title")}
-              </h2>
-              <p className="text-onink-dim lg:pb-2">
-                {t("home.recognition.standfirst")}
-              </p>
+          <div className="relative">
+            <figure className="hero-frame relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] lg:max-h-[46rem]">
+              <Image
+                src={heroImage}
+                alt="A newly married couple sharing a quiet laugh at home"
+                fill
+                priority
+                placeholder="blur"
+                sizes="(max-width: 1023px) 100vw, 48vw"
+                className="object-cover object-[58%_center]"
+              />
+            </figure>
+            <div
+              className="fade-up relative z-10 -mt-24 flex justify-end px-4 sm:absolute sm:-bottom-12 sm:right-6 sm:mt-0 sm:px-0 lg:-bottom-14 lg:-left-14 lg:right-auto xl:-left-20"
+              style={{ "--d": "900ms" } as React.CSSProperties}
+            >
+              <HeroReading />
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* --- Principles marquee ------------------------------------------- */}
+      <section aria-label="The VowFound standard" className="mt-10 border-y border-hairline py-6 lg:mt-0">
+        <ul className="sr-only">
+          {PRINCIPLES.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+        <div className="marquee" aria-hidden>
+          {[0, 1].map((copy) => (
+            <div key={copy} className="marquee-track">
+              {PRINCIPLES.map((p) => (
+                <span key={p} className="flex items-center gap-12 whitespace-nowrap font-display text-[1.35rem] italic text-onink-dim">
+                  {p}
+                  <span className="size-1.5 rounded-full bg-rose/70" />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- Recognition --------------------------------------------------- */}
+      <Section id="recognition" data-analytics-section="recognition">
+        <Container width="wide">
+          <Reveal className="max-w-3xl">
+            <p className="engraved text-rose">If any of this sounds familiar</p>
+            <h2 className="display-lg mt-6 text-onink">{t("home.recognition.title")}</h2>
+            <p className="measure mt-6 text-[18px] leading-relaxed text-onink-dim">
+              {t("home.recognition.standfirst")}
+            </p>
           </Reveal>
 
-          <div className="mt-16 grid gap-x-16 gap-y-12 md:grid-cols-2">
-            {RECOGNITION.slice(0, 4).map((item, index) => (
-              <Reveal key={item.title} delay={(index % 2) * 80}>
-                <article className="recognition-note">
-                  <h3 className="display text-[1.55rem] leading-tight text-onink md:text-[1.8rem]">
-                    {t(`home.recognition.${index}.title`)}
+          <div className="mt-14 grid gap-4 md:grid-cols-2">
+            {RECOGNITION.slice(0, 4).map((_, i) => (
+              <Reveal key={i} delay={i * 60}>
+                <Spotlight
+                  as="article"
+                  className="group h-full rounded-[28px] border border-hairline bg-onink/[0.02] p-8 transition-colors duration-500 hover:border-onink/20 md:p-10"
+                >
+                  <p className="numeral text-[13px] text-onink-faint">0{i + 1}</p>
+                  <h3 className="display mt-6 text-[1.75rem] text-onink md:text-[2rem]">
+                    {t(`home.recognition.${i}.title`)}
                   </h3>
-                  <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-onink-dim">
-                    {t(`home.recognition.${index}.body`)}
+                  <p className="mt-4 text-[16px] leading-relaxed text-onink-dim">
+                    {t(`home.recognition.${i}.body`)}
                   </p>
-                </article>
+                </Spotlight>
               </Reveal>
             ))}
           </div>
-        </Container>
-      </Section>
 
-      {/* The reframe. The clearest statement of why this is not a dating app,
-          placed where recognition has just done its work. */}
-      <Section className="reframe-band border-y border-hairline !py-20 md:!py-28">
-        <Container width="default">
           <Reveal>
-            <div className="text-center">
-              <RuleOrnament className="mx-auto mb-10 opacity-70" />
-              <h2 className="display-lg text-onink">{t("home.reframe.heading")}</h2>
-              <p className="mx-auto mt-8 max-w-xl text-lg leading-relaxed text-onink-dim">
-                {t("home.reframe.body")}
-              </p>
+            <div className="mt-14 grid gap-8 border-t border-hairline pt-10 lg:grid-cols-[1fr_1fr] lg:items-end">
+              <h3 className="display-md max-w-xl text-onink">{t("home.reframe.heading")}</h3>
+              <p className="text-[16px] leading-relaxed text-onink-dim">{t("home.reframe.body")}</p>
             </div>
           </Reveal>
         </Container>
       </Section>
 
-      <Section className="overflow-hidden">
+      {/* --- Pulse check --------------------------------------------------- */}
+      <Section id="pulse" className="scroll-mt-20 bg-ink-raised/60" data-analytics-section="pulse">
         <Container width="wide">
-          <div className="commitment-frame relative min-h-[34rem] overflow-hidden rounded-[24px] md:min-h-[44rem]">
-            <Image
-              src={commitmentImage}
-              alt="A newly married couple walking hand in hand through a garden"
-              fill
-              placeholder="blur"
-              sizes="(max-width: 767px) 100vw, 1200px"
-              className="object-cover object-center transition-transform duration-700 hover:scale-[1.02]"
-            />
-            <div className="commitment-scrim" aria-hidden />
-            <Reveal className="absolute inset-x-5 bottom-5 md:inset-x-auto md:bottom-8 md:left-8 md:max-w-xl">
-              <Paper className="p-7 md:p-10" foil={false}>
-                <p className="engraved text-slate">The destination matters</p>
-                <h2 className="display-lg mt-5 text-ink">
-                  The point is not more introductions.
-                </h2>
-                <p className="mt-5 text-slate">
-                  It is one good decision, made with clarity, care, and two
-                  people who mean the same thing by commitment.
-                </p>
-              </Paper>
+          <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
+            <Reveal>
+              <p className="engraved text-rose">Before anything else</p>
+              <h2 className="display-lg mt-6 text-onink">Three questions. One honest signal.</h2>
+              <p className="mt-6 max-w-md text-[17px] leading-relaxed text-onink-dim">
+                Not a personality quiz and not a score. Three questions that
+                tell you where the useful work probably starts, before you
+                commit twelve minutes to the full assessment.
+              </p>
+              <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-hairline pt-8">
+                <div>
+                  <dt className="text-[12px] text-onink-faint">Takes</dt>
+                  <dd className="numeral display-md mt-1 text-onink">60s</dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] text-onink-faint">Costs</dt>
+                  <dd className="numeral display-md mt-1 text-onink">0</dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] text-onink-faint">Stored</dt>
+                  <dd className="numeral display-md mt-1 text-onink">Never</dd>
+                </div>
+              </dl>
+            </Reveal>
+            <Reveal delay={80}>
+              <PulseCheck />
             </Reveal>
           </div>
         </Container>
       </Section>
 
-      {/* Two products were both called a readiness map, which made the paid
-          one look like the free one with a price attached. */}
-      <Section id="assessment" data-analytics-section="assessment">
+      {/* --- Method -------------------------------------------------------- */}
+      <Section id="method" data-analytics-section="method">
         <Container width="wide">
-          <Reveal>
-            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-16">
-              <h2 className="display-lg text-onink">
-                Everyone starts in the same place. Not everyone needs the same
-                thing next.
-              </h2>
-              <p className="text-[17px] leading-relaxed text-onink-dim lg:pb-2">
-                The assessment is free and always will be. What it produces is a
-                snapshot, not a professional reading — and the difference
-                matters enough to be explicit about it.
-              </p>
-            </div>
+          <Reveal className="max-w-3xl">
+            <p className="engraved text-rose">How it works</p>
+            <h2 className="display-lg mt-6 text-onink">
+              Readiness first. Then introductions worth having.
+            </h2>
+            <p className="measure mt-6 text-[18px] leading-relaxed text-onink-dim">
+              Five stages, in this order on purpose. Dating apps start at stage
+              four. Most of what decides a marriage happens before it.
+            </p>
           </Reveal>
-          <div className="mt-14">
-            <AssessmentComparison />
+          <div className="mt-16">
+            <MethodStory stages={stages} />
           </div>
         </Container>
       </Section>
 
-      {/* The written reason is the whole differentiator, and it stays abstract
-          until somebody can see one. */}
-      <Section className="bg-ink-raised" data-analytics-section="deliverable">
+      {/* --- The introduction letter -------------------------------------- */}
+      <Section className="bg-ink-raised/60" data-analytics-section="deliverable">
         <Container width="wide">
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
             <Reveal>
               <p className="engraved text-rose">What arrives</p>
-              <h2 className="display-lg mt-6 text-onink">
-                Matchmaking should feel personal because it is.
-              </h2>
+              <h2 className="display-lg mt-6 text-onink">Every introduction comes with a reason.</h2>
               <div className="measure mt-7 space-y-5 text-[17px] leading-relaxed text-onink-dim">
                 <p>
-                  An introduction is not a name in an inbox. It comes with the
-                  reasoning: where your intentions meet, which of your
-                  requirements are satisfied, and what is worth asking about
-                  early rather than discovering at month nine.
+                  Not a name in an inbox. A matchmaker writes down where your
+                  intentions meet, which of your requirements are met, and what
+                  is worth asking about early rather than discovering at month
+                  nine.
                 </p>
                 <p>
-                  You can decline any of them without explaining yourself, and
-                  nothing identifying is exchanged until you both accept.
+                  Decline any of them without explaining yourself. Nothing
+                  identifying is shared until you both accept.
                 </p>
               </div>
             </Reveal>
@@ -307,129 +298,50 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section id="method" data-analytics-section="method" className="bg-ink-raised">
+      {/* --- The destination ---------------------------------------------- */}
+      <section className="relative overflow-hidden">
+        <div className="relative min-h-[36rem] md:min-h-[46rem]">
+          <Image
+            src={commitmentImage}
+            alt="A newly married couple walking hand in hand through a garden"
+            fill
+            placeholder="blur"
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(17,18,24,0.85)_0%,rgba(17,18,24,0.2)_40%,rgba(17,18,24,0.88)_100%)]" aria-hidden />
+          <Container width="wide" className="relative flex min-h-[36rem] items-end pb-16 md:min-h-[46rem] md:pb-24">
+            <Reveal className="max-w-3xl">
+              <p className="engraved text-rose">The point</p>
+              <p className="display-lg mt-6 text-onink">
+                Not more introductions. <span className="vow-italic">One good decision,</span> made
+                with clarity, by two people who mean the same thing by commitment.
+              </p>
+            </Reveal>
+          </Container>
+        </div>
+      </section>
+
+      {/* --- Pricing ------------------------------------------------------- */}
+      <Section id="pricing" className="scroll-mt-20" data-analytics-section="pricing">
         <Container width="wide">
-          <Reveal>
-            <p className="engraved text-onink-faint">The VowFound method</p>
-            <h2 className="display-lg mt-6 max-w-3xl text-onink">
-              From honest self-knowledge to a real introduction.
-            </h2>
-          </Reveal>
-
-          <MethodStages />
-
-          <Reveal>
-            <div className="mt-14">
-              <Button asChild variant="quiet">
-                <Link href="/method">Read the full method</Link>
-              </Button>
+          <Reveal className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="engraved text-rose">Fees</p>
+              <h2 className="display-lg mt-6 text-onink">Every fee, in the open.</h2>
+              <p className="mt-6 text-[18px] leading-relaxed text-onink-dim">
+                No sales call to find out the price. Start with the smallest
+                useful step; most people should.
+              </p>
             </div>
+            <Link href="/plans" className="text-[15px] text-onink-dim underline decoration-onink-faint/50 underline-offset-[6px] hover:text-onink">
+              Compare everything in detail
+            </Link>
           </Reveal>
-        </Container>
-      </Section>
-
-      <Section id="matchmaking" data-analytics-section="matchmaking">
-        <Container width="wide">
-          <div className="grid gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:gap-20">
-            <Reveal>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-[24px]">
-                <Image
-                  src={ringsImage}
-                  alt="Two gold wedding bands beside a deep red flower and vow paper"
-                  fill
-                  placeholder="blur"
-                  sizes="(max-width: 1023px) 100vw, 54vw"
-                  className="object-cover transition-transform duration-700 hover:scale-[1.025]"
-                />
-              </div>
-            </Reveal>
-
-            <div>
-              <Reveal>
-                <h2 className="display-lg text-onink">
-                  Matchmaking should feel personal because it is.
-                </h2>
-                <p className="mt-6 text-onink-dim">
-                  No directory. No public profile. No introduction made by a
-                  system on its own.
-                </p>
-              </Reveal>
-
-              <div className="mt-10 space-y-8">
-                {MATCHMAKING_PROMISES.map((promise, index) => (
-                  <Reveal key={promise.title} delay={index * 70}>
-                    <article className="promise-row">
-                      <h3 className="display text-[1.4rem] text-onink">
-                        {promise.title}
-                      </h3>
-                      <p className="mt-2 text-[16px] leading-relaxed text-onink-dim">
-                        {promise.body}
-                      </p>
-                    </article>
-                  </Reveal>
-                ))}
-              </div>
-
-              <Reveal>
-                <div className="mt-10">
-                  <Button asChild variant="quiet">
-                    <Link href="/matchmaking">Explore matchmaking</Link>
-                  </Button>
-                </div>
-              </Reveal>
-            </div>
+          <div className="mt-14">
+            <PriceLadder currency={currency} placement="home_pricing" />
           </div>
-        </Container>
-      </Section>
-
-      {/* Credibility without a founder's face. The practice is deliberately
-          not personality-led, so responsibility is described by role. */}
-      <Section id="accountability" data-analytics-section="accountability">
-        <Container width="wide">
-          <HumanAccountability />
-        </Container>
-      </Section>
-
-      <Section id="care" className="bg-ink-raised">
-        <Container width="wide">
-          <div className="care-grid grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-            <Reveal>
-              <Paper className="h-full p-8 md:p-12" foil={false}>
-                <p className="engraved text-slate">Honest care</p>
-                <h2 className="display-lg mt-6 max-w-2xl text-ink">
-                  Someone tells you the truth, kindly.
-                </h2>
-                <p className="mt-6 max-w-2xl text-slate">
-                  Coaching is specific: how you tell your story, what you
-                  tolerate, what you avoid, and what happens when closeness
-                  becomes real.
-                </p>
-                <div className="mt-10">
-                  <Button asChild variant="onpaper">
-                    <Link href="/coaching">How coaching works</Link>
-                  </Button>
-                </div>
-              </Paper>
-            </Reveal>
-
-            <Reveal delay={90}>
-              <div className="safety-panel h-full rounded-[24px] p-8 md:p-10">
-                <Rings size={66} />
-                <h3 className="display-md mt-8 text-onink">Private stays private.</h3>
-                <p className="mt-5 text-[16px] leading-relaxed text-onink-dim">
-                  {SAFETY_POINTS[2].body}
-                </p>
-                <Link
-                  href="/safety"
-                  className="mt-8 inline-flex text-sm font-semibold text-onink underline decoration-onink-faint underline-offset-8 transition-colors hover:text-rose"
-                >
-                  See every safeguard
-                </Link>
-              </div>
-            </Reveal>
-          </div>
-
-          <div className="mt-6">
+          <div className="mt-10">
             <Reveal>
               <Guarantee />
             </Reveal>
@@ -437,50 +349,51 @@ export default async function HomePage() {
         </Container>
       </Section>
 
-      <Section id="questions">
-        <Container width="default">
-          <Reveal>
-            <h2 className="display-lg text-onink">Questions worth asking.</h2>
-            <p className="mt-6 max-w-xl text-onink-dim">
-              Clear answers about privacy, readiness, matchmaking, and what we
-              can honestly promise.
-            </p>
-          </Reveal>
-          <FaqList limit={4} items={objections} />
-          <Reveal>
-            <div className="mt-10">
-              <Button asChild variant="quiet">
-                <Link href="/faq">Read every answer</Link>
-              </Button>
+      {/* --- Questions ----------------------------------------------------- */}
+      <Section className="border-t border-hairline" data-analytics-section="faq">
+        <Container width="wide">
+          <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+            <Reveal>
+              <p className="engraved text-rose">Fair questions</p>
+              <h2 className="display-lg mt-6 text-onink">Asked before anyone pays.</h2>
+              <Link href="/faq" className="mt-8 inline-block text-[15px] text-onink-dim underline underline-offset-[6px] hover:text-onink">
+                Every question we are asked
+              </Link>
+            </Reveal>
+            <div className="[&>div]:mt-0">
+              <FaqList items={faqs} limit={6} />
             </div>
-          </Reveal>
+          </div>
         </Container>
       </Section>
 
-      <Section className="final-vow border-t border-hairline">
-        <Container width="default">
-          <Reveal>
-            <div className="text-center">
-              <Rings size={88} className="mx-auto" />
-              <h2 className="display-xl mt-8 text-onink">
-                Let marriage become more than a someday.
-              </h2>
-              <p className="mx-auto mt-6 max-w-lg text-onink-dim">
-                Begin with twelve private minutes. Leave with a clear reading
-                of what comes next.
-              </p>
-              <div className="mt-10 flex flex-wrap justify-center gap-3">
-                <Button asChild size="lg">
-                  <Link href="/assessment">Begin your plan</Link>
+      {/* --- Closing: give the future a date ------------------------------ */}
+      <Section id="begin" className="final-vow scroll-mt-24 overflow-hidden border-t border-hairline" data-analytics-section="closing">
+        <Container width="wide">
+          <div className="grid gap-14 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-20">
+            <Reveal>
+              <h2 className="display-xl text-onink">{t("home.closing.title")}</h2>
+              <p className="mt-7 max-w-lg text-[18px] leading-relaxed text-onink-dim">{t("home.closing.body")}</p>
+              <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                <Button asChild size="lg" className="h-16 px-9 text-[15px]">
+                  <Link href="/assessment" data-analytics-event="cta_click" data-analytics-label="begin_assessment" data-analytics-placement="closing">
+                    {t("home.hero.cta")}
+                  </Link>
                 </Button>
-                <Button asChild variant="quiet" size="lg">
-                  <Link href="/book">Book a consultation</Link>
-                </Button>
+                <Link href="/book" className="text-[15px] text-onink-dim underline decoration-onink-faint/50 underline-offset-[6px] hover:text-onink">
+                  Prefer to speak to a person first?
+                </Link>
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+            <Reveal delay={100}>
+              <p className="engraved mb-4 text-onink-faint">{t("home.begin.title")}</p>
+              <SaveTheDate />
+            </Reveal>
+          </div>
         </Container>
       </Section>
+
+      <StickyCta />
     </>
   );
 }

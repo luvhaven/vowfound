@@ -46,10 +46,12 @@ export default async function CheckoutPage({
   const checkoutAvailable =
     Boolean(product.applicationOnly) || provider.isConfigured();
 
-  if (!checkoutAvailable) {
+  if (!checkoutAvailable && process.env.NODE_ENV === "production") {
     // A buyer reached a paid programme and cannot pay. In development that is
-    // expected; in production it means a key is missing or expired and every
-    // sale is being lost. It must not fail silently either way.
+    // expected locally; in production it means a key is missing or expired
+    // and every sale is being lost. Keep the production diagnostic, but do
+    // not turn an intentionally unconfigured local checkout into a Next.js
+    // console-error overlay.
     console.error(
       `[checkout] ${provider.name} is not configured for ${currency} — ` +
         `"${product.name}" cannot be paid for online.`,

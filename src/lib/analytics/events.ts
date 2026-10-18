@@ -5,6 +5,8 @@ export const ANALYTICS_EVENTS = [
   "services_menu_open",
   "service_select",
   "timeline_select",
+  "pulse_start",
+  "pulse_complete",
   "assessment_start",
   "assessment_complete",
   "contact_submit",

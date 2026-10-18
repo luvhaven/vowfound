@@ -55,7 +55,7 @@ export function StickyCta() {
 
               <div className="flex shrink-0 items-center gap-2">
                 <Button asChild size="sm">
-                  <Link href="/assessment">Begin your plan</Link>
+                  <Link href="/assessment">Get my free map</Link>
                 </Button>
                 <button
                   type="button"

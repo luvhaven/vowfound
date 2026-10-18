@@ -3,6 +3,7 @@ import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { EXPERT_ROLES } from "@/content/site";
 import { createPageMetadata } from "@/lib/seo";
+import { getContent } from "@/lib/content/read.server";
 
 export const metadata = createPageMetadata({
   title: "The people who do the work",
@@ -11,17 +12,55 @@ export const metadata = createPageMetadata({
   path: "/experts",
 });
 
-export default function ExpertsPage() {
+export default async function ExpertsPage() {
+  const t = await getContent();
+  const people = [0, 1]
+    .map((i) => ({
+      name: t(`practitioner.${i}.name`),
+      role: t(`practitioner.${i}.role`),
+      bio: t(`practitioner.${i}.bio`),
+      coverage: t(`practitioner.${i}.coverage`),
+    }))
+    .filter(
+      (person) =>
+        person.name.trim() !== "Add verified practitioner name" &&
+        person.bio.trim() !== "Add verified biography and qualifications",
+    );
   return (
     <>
       <PageHeader
         eyebrow="The people who do the work"
-        title="Four roles. Named profiles appear as each seat is filled."
-        standfirst="We are not going to put invented headshots and invented credentials on this page while we are hiring. When someone joins, their name, their background and their photograph go here."
+        title="Feel confident about who supports you."
+        standfirst={
+          people.length
+            ? "Explore practitioner backgrounds and contact us to confirm availability and who would support your engagement."
+            : "Practitioner profiles are not published yet. Contact us to confirm current availability, relevant experience, and who would support your engagement before purchasing."
+        }
       />
 
       <Section>
         <Container width="wide">
+          {people.length > 0 && (
+            <div className="mb-14 grid gap-6 md:grid-cols-2">
+              {people.map((person) => (
+                <article
+                  key={person.name}
+                  className="rounded-xl border border-hairline p-8"
+                >
+                  <p className="text-sm text-rose">{person.role}</p>
+                  <h2 className="display-md mt-3">{person.name}</h2>
+                  <p className="mt-5 whitespace-pre-line text-onink-dim">
+                    {person.bio}
+                  </p>
+                  {person.coverage !== "Add verified languages and service coverage" && (
+                    <p className="mt-5 text-sm text-onink-dim">
+                      {person.coverage}
+                    </p>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
           <Reveal>
             <SectionIntro
               index="01 / 04"
@@ -41,8 +80,8 @@ export default function ExpertsPage() {
                     <p className="text-[16px] leading-relaxed text-onink-dim">
                     {item.body}
                     </p>
-                    <p className="engraved mt-6 text-rose">
-                      Profiles published when appointed
+                    <p className="mt-6 text-sm font-medium text-rose">
+                      Ask who currently holds this responsibility
                     </p>
                   </div>
                 </article>
@@ -56,20 +95,18 @@ export default function ExpertsPage() {
         <Container width="default">
           <Reveal>
             <h2 className="display-lg text-onink">
-              One structural detail worth knowing.
+              Questions to ask before you begin.
             </h2>
             <div className="measure mt-8 space-y-5 text-onink-dim">
               <p>
-                Safety reviewers do not report to anyone whose job involves
-                revenue. They can end a membership, refuse a verification, or
-                stop an introduction without asking permission from the person
-                who sold that membership.
+                Confirm who handles your engagement, who reviews safety
+                concerns, and how you can raise a complaint. Ask for relevant
+                qualifications and experience before choosing a practitioner.
               </p>
               <p>
-                Coaches also do not receive a bonus for moving you onto a
-                matchmaking programme. If your coach tells you that you are not
-                ready for stage four, that advice costs the business money,
-                which is the only arrangement under which you can trust it.
+                Review the recommended scope, fees, and any referral or sales
+                incentives. You should understand why a programme fits your
+                situation and feel free to decide against it.
               </p>
             </div>
           </Reveal>
@@ -77,8 +114,8 @@ export default function ExpertsPage() {
       </Section>
 
       <PageCta
-        title="A coach reads your map before your first call."
-        body="Take the assessment and the conversation starts with something specific rather than an introduction."
+        title="Discuss the support you need."
+        body="Ask about practitioner availability, programme scope, and whether your situation fits before choosing an engagement."
       />
     </>
   );

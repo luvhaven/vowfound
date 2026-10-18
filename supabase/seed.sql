@@ -63,25 +63,25 @@ insert into public.plans (slug, name, shape, summary, price_ngn, price_usd, band
 ('clarity-audit', 'The Clarity Audit',
  'Assessment, a 60-minute diagnostic, and a written readiness map',
  'The honest reading. What is working, what is in the way, and what to do first.',
- 60000, 79, 'audit', false, 1,
+ 75000, 129, 'audit', false, 1,
  array['The full readiness assessment', 'A 60-minute diagnostic call with a coach', 'Your written readiness map', 'One first action per obstacle']),
 
 ('ready-in-90', 'Ready in 90',
  'A 90-day readiness programme, group work plus fortnightly one-to-one',
  'For people who know roughly what is wrong and want it fixed before they meet anyone.',
- 450000, 1200, 'programme', false, 2,
+ 495000, 1450, 'programme', false, 2,
  array['Everything in the Clarity Audit', 'Six fortnightly one-to-one sessions', 'Weekly group work with a small cohort', 'Exercises with written feedback', 'Honest feedback on how you present']),
 
 ('match', 'VowFound Match',
  'The readiness programme plus curated introductions, nine months',
  'Readiness first, then a search run by a person who can explain every name they send you.',
- 1200000, 3200, 'match', false, 3,
+ 1650000, 4500, 'match', false, 3,
  array['Everything in Ready in 90', 'Verification and a private matchmaking profile', 'An assigned matchmaker for nine months', 'An agreed number of qualified introductions', 'A structured debrief after every meeting']),
 
 ('private-concierge', 'VowFound Private Concierge',
  'Private, hands-on, application only, capped cohort',
  'For clients whose situation is unusual, public, or complicated enough that a standard search will not work.',
- 3500000, 8500, 'concierge', true, 4,
+ 4750000, 12500, 'concierge', true, 4,
  array['Everything in VowFound Match', 'A named principal on your search', 'Off-platform, discreet outreach', 'Direct scheduling and travel coordination', 'A strictly capped cohort, so places are genuinely limited'])
 on conflict (slug) do nothing;
 

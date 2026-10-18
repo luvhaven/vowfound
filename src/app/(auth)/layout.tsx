@@ -11,7 +11,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[0.9fr_1.1fr]">
+    <div className="min-h-dvh lg:grid lg:grid-cols-[0.85fr_1.15fr]">
       <aside className="relative hidden overflow-hidden border-r border-hairline bg-ink-deep p-12 lg:sticky lg:top-0 lg:flex lg:h-dvh lg:self-start lg:flex-col xl:p-16">
         <Link href="/" aria-label="VowFound home" className="relative z-10 text-onink">
           <BrandLockup />
@@ -20,7 +20,7 @@ export default function AuthLayout({
           size={430}
           className="pointer-events-none absolute -bottom-20 -right-32 opacity-[0.09]"
         />
-        <div className="relative z-10 my-auto max-w-lg py-12">
+        <div className="relative z-10 mt-16 max-w-lg py-4 xl:mt-24">
           <p className="engraved text-rose">The private side of VowFound</p>
           <h2 className="display-lg mt-6 text-balance text-onink">
             Your relationship work belongs to you.
@@ -39,7 +39,7 @@ export default function AuthLayout({
         </div>
       </aside>
 
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-dvh flex-col">
         <header className="px-6 py-7 md:px-10 lg:hidden">
           <Link href="/" aria-label="VowFound home" className="text-onink">
             <BrandLockup compact />

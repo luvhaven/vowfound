@@ -8,6 +8,7 @@ import "@fontsource/newsreader/latin-500-italic.css";
 import "@fontsource/newsreader/latin-600.css";
 import "@fontsource/newsreader/latin-600-italic.css";
 import "./globals.css";
+import "./motion.css";
 import { switzer } from "@/lib/fonts";
 import { BRAND, CANONICAL_ORIGIN, TAGLINE } from "@/lib/brand";
 import { FoilDefs } from "@/components/ui/ornament";
@@ -28,6 +29,21 @@ export const metadata: Metadata = {
   creator: BRAND,
   publisher: BRAND,
   category: "Relationship services",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: BRAND,
+  },
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+  other: {
+    "theme-color": "#111218",
+    "color-scheme": "dark",
+  },
   keywords: [
     "marriage readiness",
     "private matchmaking",
@@ -52,7 +68,7 @@ export const metadata: Metadata = {
       "Tell us the future you want. We will help you understand what has been getting in the way, become ready for it, and meet people who share the intention.",
     images: [
       {
-        url: "/images/vowfound-hero.png",
+        url: "/images/vowfound-hero.webp",
         width: 1536,
         height: 1024,
         alt: "A married couple sharing a quiet laugh at home",
@@ -64,7 +80,7 @@ export const metadata: Metadata = {
     title: `${BRAND} | ${TAGLINE}`,
     description:
       "Private coaching and curated introductions for people ready for a lasting marriage.",
-    images: ["/images/vowfound-hero.png"],
+    images: ["/images/vowfound-hero.webp"],
   },
   robots: { index: true, follow: true },
 };

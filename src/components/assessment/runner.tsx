@@ -78,6 +78,11 @@ export function AssessmentRunner({
       saved?.answers !== null &&
       typeof saved?.answers === "object" &&
       !Array.isArray(saved.answers);
+    const timelinePrefill =
+      initialTimeline && isTimelineValue(initialTimeline)
+        ? initialTimeline
+        : null;
+    const hasTimelinePrefill = timelinePrefill !== null;
 
     if (saved && savedAnswersAreUsable) {
       const savedDeferTimeline = Boolean(saved.deferTimeline);
@@ -89,9 +94,12 @@ export function AssessmentRunner({
       const hasAnswers = Object.keys(saved.answers).length > 0;
 
       if (hasAnswers && savedStepIsValid) {
-        setAnswers(saved.answers);
-        setStep(saved.step);
-        setDeferTimeline(savedDeferTimeline);
+        const mergedAnswers = timelinePrefill !== null
+          ? { ...saved.answers, timeline: timelinePrefill }
+          : saved.answers;
+        setAnswers(mergedAnswers);
+        setStep(hasTimelinePrefill ? Math.max(saved.step, 1) : saved.step);
+        setDeferTimeline(hasTimelinePrefill ? false : savedDeferTimeline);
         setResumed(true);
         setReady(true);
         return;
@@ -117,14 +125,12 @@ export function AssessmentRunner({
       }
     }
 
-    if (initialTimeline && isTimelineValue(initialTimeline)) {
-      // The hero choice persists into the assessment as the first answer.
-      if (initialTimeline === "undecided") {
-        setDeferTimeline(true);
-      } else {
-        setAnswers({ timeline: initialTimeline });
-        setStep(1);
-      }
+    if (timelinePrefill !== null) {
+      // The homepage choice is the first assessment answer, including
+      // "undecided". Do not ask for the same decision a second time.
+      setAnswers({ timeline: timelinePrefill });
+      setDeferTimeline(false);
+      setStep(1);
     }
     setReady(true);
     // The App Router instance is stable. Keeping this dependency list tied to
@@ -231,18 +237,6 @@ export function AssessmentRunner({
     persist({ answers, step: prev, deferTimeline });
   }
 
-  function onKeyDown(event: React.KeyboardEvent) {
-    // Enter advances, except inside a textarea where it should make a line.
-    if (
-      event.key === "Enter" &&
-      !event.shiftKey &&
-      (event.target as HTMLElement).tagName !== "TEXTAREA"
-    ) {
-      event.preventDefault();
-      void next();
-    }
-  }
-
   if (!ready) {
     return (
       <div
@@ -280,10 +274,11 @@ export function AssessmentRunner({
     );
   }
 
-  const progress = total > 0 ? step / total : 0;
+  const currentQuestion = step + 1;
+  const progress = total > 0 ? currentQuestion / total : 0;
 
   return (
-    <div className="mx-auto w-full max-w-xl" onKeyDown={onKeyDown}>
+    <div className="mx-auto w-full max-w-xl">
       {/* The rule gives visual progress; the count removes uncertainty. */}
       <div className="mb-10">
         <div
@@ -291,7 +286,7 @@ export function AssessmentRunner({
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={total}
-          aria-valuenow={step}
+          aria-valuenow={currentQuestion}
           aria-label="Assessment progress"
         >
           <div
@@ -304,7 +299,7 @@ export function AssessmentRunner({
         </div>
         <div className="mt-4 flex items-center justify-between">
           <p className="engraved text-onink-faint">
-            Question {step + 1} of {total}
+            Question {currentQuestion} of {total}
           </p>
           <p className="engraved text-onink-faint">
             {resumed && step > 0 ? "Resumed where you left off" : question.section}
@@ -404,7 +399,7 @@ function QuestionField({
               <label
                 key={choice.value}
                 className={cn(
-                  "flex cursor-pointer items-center gap-4 rounded-[8px] border px-5 py-4 transition-colors duration-150",
+                  "flex cursor-pointer items-center gap-4 rounded-[12px] border px-5 py-4 transition-[color,background-color,border-color,box-shadow] duration-200 focus-within:ring-4 focus-within:ring-oxblood/15",
                   checked
                     ? "border-ink bg-ink text-stock"
                     : "border-stone bg-white text-ink hover:border-ink/50",
@@ -450,7 +445,7 @@ function QuestionField({
               <label
                 key={choice.value}
                 className={cn(
-                  "cursor-pointer rounded-[8px] border px-4 py-3 text-[15px] transition-colors duration-150",
+                  "cursor-pointer rounded-[12px] border px-4 py-3 text-[15px] transition-[color,background-color,border-color,box-shadow] duration-200 focus-within:ring-4 focus-within:ring-oxblood/15",
                   checked
                     ? "border-ink bg-ink text-stock"
                     : "border-stone bg-white text-ink hover:border-ink/50",
@@ -497,7 +492,7 @@ function QuestionField({
               <label
                 key={n}
                 className={cn(
-                  "numeral flex flex-1 cursor-pointer items-center justify-center rounded-[8px] border py-5 text-[18px] transition-colors duration-150",
+                  "numeral flex flex-1 cursor-pointer items-center justify-center rounded-[12px] border py-5 text-[18px] transition-[color,background-color,border-color,box-shadow] duration-200 focus-within:ring-4 focus-within:ring-oxblood/15",
                   checked
                     ? "border-ink bg-ink text-stock"
                     : "border-stone bg-white text-ink hover:border-ink/50",

@@ -2,47 +2,95 @@ import { Container, Section } from "@/components/ui/layout";
 import { PageHeader, PageCta } from "@/components/site/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Paper } from "@/components/ui/paper";
+import { SamplePlan } from "@/components/site/sample-plan";
 import { createPageMetadata } from "@/lib/seo";
+import { getContent } from "@/lib/content/read.server";
 
 export const metadata = createPageMetadata({
   title: "Stories",
   description:
-    "We have not published any yet, and these are the rules we will publish them under.",
+    "Explore illustrative readiness guidance and our standards for publishing client experiences.",
   path: "/stories",
 });
 
 const RULES = [
   {
     title: "A real person, with a written release",
-    body: "A first name they chose, and a signed release on file before anything appears. Our database will not let a story be published without one, which is a constraint rather than a promise.",
+    body: "Publish only with the client's permission, an approved display name, and a written release held privately on file.",
   },
   {
     title: "Their words, not ours",
-    body: "Lightly edited for length only. Nothing paraphrased into something more flattering, nothing composited from several clients into one convenient person.",
+    body: "Use the client's approved words. Any edits for length should preserve their meaning and be approved before publication.",
   },
   {
     title: "No stock photography of people",
-    body: "If a story has no photograph, it will have no photograph. We would rather show you white space than a person who does not exist.",
+    body: "A client photograph is optional and requires permission. Illustrative photography must never be presented as the person whose experience is described.",
   },
   {
     title: "No numbers we cannot show you",
-    body: "No success rates, no member counts, no average time to engagement. When we have enough clients for those to mean anything, we will publish the method alongside the figure.",
+    body: "Any published outcome statistic should explain the period, sample size, definition, and how the result was verified.",
   },
   {
     title: "The ones that did not work, too",
-    body: "People who finished a programme and did not marry are part of the picture. When one of them is willing to say so publicly, that goes here as well.",
+    body: "Describe the work completed and what remained unresolved. A useful engagement does not always end in marriage, and individual experiences are not guarantees.",
   },
 ];
 
-export default function StoriesPage() {
+export default async function StoriesPage() {
+  const t = await getContent();
+  const caseStudies = [0, 1]
+    .map((i) => ({
+      title: t(`caseStudy.${i}.title`),
+      context: t(`caseStudy.${i}.context`),
+      outcome: t(`caseStudy.${i}.outcome`),
+      attribution: t(`caseStudy.${i}.attribution`),
+    }))
+    .filter(
+      (story) =>
+        story.title !== "Add a consented case study title" &&
+        story.context !== "Add the verified starting situation and work delivered" &&
+        story.outcome !== "Add the verified outcome and relevant limitations",
+    );
+
   return (
     <>
       <PageHeader
         eyebrow="Stories"
-        title="We have not published any yet."
-        standfirst="This is a new practice. A wall of glowing quotes today would mean we had written them ourselves. You would be right to question that on any site."
+        title="See what useful progress can look like."
+        standfirst="Explore a sample plan before you begin. There are no published client case studies yet; the example below is fictional and demonstrates the approach."
       />
 
+      <Section><Container width="default"><SamplePlan /></Container></Section>
+      {caseStudies.length > 0 && (
+        <Section className="bg-ink-raised">
+          <Container width="wide">
+            <h2 className="display-lg max-w-2xl text-onink">
+              Client experiences
+            </h2>
+            <div className="mt-10 grid gap-6 md:grid-cols-2">
+              {caseStudies.map((story) => (
+                <article
+                  key={story.title}
+                  className="rounded-xl border border-hairline p-7 md:p-9"
+                >
+                  <h3 className="display-md text-onink">{story.title}</h3>
+                  <p className="mt-5 whitespace-pre-line text-onink-dim">
+                    {story.context}
+                  </p>
+                  <p className="mt-5 whitespace-pre-line text-onink-dim">
+                    {story.outcome}
+                  </p>
+                  {story.attribution !== "Add approved attribution or write Anonymous" && (
+                    <p className="mt-6 text-sm font-medium text-rose">
+                      {story.attribution}
+                    </p>
+                  )}
+                </article>
+              ))}
+            </div>
+          </Container>
+        </Section>
+      )}
       <Section>
         <Container width="wide">
           <Reveal>
@@ -81,8 +129,8 @@ export default function StoriesPage() {
       </Section>
 
       <PageCta
-        title="Judge us on the assessment instead."
-        body="It is free, it takes twelve minutes, and it is a much better test of whether we understand your situation than a quote from a stranger."
+        title="Start with your own situation."
+        body="Take the free assessment for a preliminary snapshot, or book a consultation to discuss the support you need."
       />
     </>
   );

@@ -96,6 +96,7 @@ export default async function AccountPage({
           map={overview.map}
           currency={currency}
           name={overview.firstName}
+          showProgrammes={false}
         />
       </div>
     </>

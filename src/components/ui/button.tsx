@@ -6,7 +6,7 @@ type Variant = "primary" | "paper" | "quiet" | "onpaper";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "engraved relative inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-[8px] border " +
+  "relative inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full border text-[14px] font-semibold tracking-[-0.005em] " +
   "transition-[color,background-color,border-color,box-shadow,transform] duration-300 select-none " +
   "hover:-translate-y-0.5 active:translate-y-px active:scale-[0.99] " +
   "disabled:pointer-events-none disabled:opacity-45";
@@ -14,7 +14,7 @@ const base =
 const variants: Record<Variant, string> = {
   // Oxblood. One per screen, maximum.
   primary:
-    "border-oxblood-lift/60 bg-oxblood text-stock shadow-[0_12px_34px_rgba(91,25,49,0.24),inset_0_1px_rgba(255,255,255,0.12)] hover:bg-oxblood-lift hover:shadow-[0_16px_40px_rgba(91,25,49,0.32),inset_0_1px_rgba(255,255,255,0.14)]",
+    "border-oxblood-lift/70 bg-oxblood text-stock shadow-[0_12px_34px_rgba(80,14,46,0.24),inset_0_1px_rgba(255,255,255,0.18)] hover:bg-oxblood-lift hover:shadow-[0_16px_42px_rgba(80,14,46,0.3),inset_0_1px_rgba(255,255,255,0.2)]",
   // A card of stock on the dark field.
   paper:
     "border-white/70 bg-stock text-ink shadow-[0_12px_30px_rgba(7,4,10,0.16),inset_0_1px_white] hover:bg-white",

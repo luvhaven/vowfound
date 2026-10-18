@@ -29,13 +29,13 @@ export async function generateMetadata({
       url,
       publishedTime: article.published_at ?? undefined,
       authors: article.author_name ? [article.author_name] : undefined,
-      images: ["/images/vowfound-commitment.png"],
+      images: ["/images/vowfound-commitment.webp"],
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
       description,
-      images: ["/images/vowfound-commitment.png"],
+      images: ["/images/vowfound-commitment.webp"],
     },
   };
 }
@@ -69,7 +69,7 @@ export default async function ArticlePage({
           datePublished: article.published_at,
           dateModified: article.published_at,
           mainEntityOfPage: articleUrl,
-          image: absoluteUrl("/images/vowfound-commitment.png"),
+          image: absoluteUrl("/images/vowfound-commitment.webp"),
           author: {
             "@type": article.author_name ? "Person" : "Organization",
             name: article.author_name ?? BRAND,
