@@ -6,7 +6,7 @@ const COLUMNS = [
   {
     title: "Find",
     links: [
-      { href: "/check", label: "Free Readiness Check" },
+      { href: "/check", label: "Readiness Check" },
       { href: "/matchmaking", label: "Matchmaking" },
       { href: "/coaching", label: "Coaching" },
       { href: "/pricing", label: "Pricing" },
@@ -36,9 +36,9 @@ export function Footer() {
   return (
     <footer className="no-print mt-auto bg-ink text-paper">
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-20 sm:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
-            <p className="h2 max-w-md">
+        <div className="grid gap-12 md:grid-cols-3 lg:grid-cols-[1.8fr_1fr_1fr_1fr]">
+          <div className="md:col-span-3 lg:col-span-1">
+            <p className="h2 max-w-md text-[clamp(2rem,3.6vw,3.25rem)]">
               Somewhere, someone is <span className="say text-butter">also</span> done with dating apps.
             </p>
             <Link href="/check" className="btn btn-lg mt-8 bg-butter text-ink shadow-[4px_4px_0_#fff6e9]">

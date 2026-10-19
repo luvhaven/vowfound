@@ -20,7 +20,7 @@ export default async function HomePage() {
       <Block field="paper" className="pb-10 pt-8 md:pb-16 md:pt-14">
         <Wrap className="relative grid items-center gap-10 lg:grid-cols-[1.3fr_0.7fr]">
           <div className="relative z-10">
-            <Eyebrow className="pop-in bg-butter">Matchmaking + coaching, for people who mean it</Eyebrow>
+            <Eyebrow className="pop-in bg-butter">Matchmaking + coaching<span className="hidden sm:inline">, for people who mean it</span></Eyebrow>
             <h1 className="mega hero-mega pop-in-solid mt-7" style={{ "--d": "80ms" } as React.CSSProperties}>
               <span className="lg:whitespace-nowrap">Less swiping.</span>
               <br />

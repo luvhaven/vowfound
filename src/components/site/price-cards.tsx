@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PRODUCTS, formatPrice, priceFor, type Currency } from "@/lib/products";
 import { Tick } from "@/components/ui/kit";
+import { Price } from "@/components/ui/price";
 import { cn } from "@/lib/utils";
 
 const TONE = {
@@ -27,7 +28,7 @@ export function PriceCards({ currency }: { currency: Currency }) {
           <article
             key={p.slug}
             id={p.slug}
-            className={cn("sticker sticker-hover relative flex scroll-mt-28 flex-col p-7", TONE[p.colour], TILT[i], featured && "xl:-translate-y-4")}
+            className={cn("sticker sticker-hover @container relative flex min-w-0 scroll-mt-28 flex-col p-7", TONE[p.colour], TILT[i], featured && "xl:-translate-y-4")}
           >
             {(featured || p.slug === "the-read") && (
               <span className={cn("label absolute -top-4 right-6 rotate-3 rounded-full border-2 border-ink px-3 py-1.5 text-ink", featured ? "bg-butter" : "bg-paper")}>
@@ -39,10 +40,7 @@ export function PriceCards({ currency }: { currency: Currency }) {
             </p>
             <h3 className="h3 mt-3 text-[2.2rem]">{p.name}</h3>
             <p className="mt-3 min-h-[3.25rem] text-[15px] font-medium leading-snug opacity-90">{p.hook}</p>
-            <p className="num mt-6 font-display text-[3rem] font-extrabold leading-none tracking-[-0.05em]">
-              {p.applicationOnly && <span className="mr-1.5 align-middle text-base font-bold tracking-normal opacity-75">from</span>}
-              {formatPrice(price, currency)}
-            </p>
+            <Price amount={price} currency={currency} from={p.applicationOnly} className="mt-6 min-h-[3.75rem] content-end" />
             <p className="mt-2 min-h-5 text-[13px] font-semibold opacity-75">
               {weekly ? `About ${formatPrice(weekly, currency)} a week` : p.applicationOnly ? "Twelve months, scope agreed first" : "Paid once"}
             </p>

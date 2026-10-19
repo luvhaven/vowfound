@@ -66,6 +66,12 @@ p {
   text-wrap: pretty;
 }
 
+/* Grid and flex children default to min-width: auto, so one long word or
+   price can widen a column past the screen. Let them shrink instead. */
+:where(.grid) > * {
+  min-width: 0;
+}
+
 /* Component classes live in the components layer so Tailwind utilities
    (hidden, sm:inline-flex, shadow-none…) can always override them. */
 @layer components {

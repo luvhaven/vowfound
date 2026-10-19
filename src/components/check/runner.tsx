@@ -106,9 +106,13 @@ export function CheckRunner() {
                       )}
                     >
                       <span className="font-display text-2xl font-extrabold sm:text-4xl">{s.value}</span>
-                      <span className="text-[10px] font-bold uppercase leading-tight tracking-wide sm:text-[12px]">{s.label}</span>
+                      <span className="sr-only sm:not-sr-only sm:text-[12px] sm:font-bold sm:uppercase sm:leading-tight sm:tracking-wide">{s.label}</span>
                     </button>
                   ))}
+                </div>
+                <div className="label mt-3 flex justify-between sm:hidden" aria-hidden>
+                  <span>← Not me</span>
+                  <span>So me →</span>
                 </div>
               </motion.div>
             ) : (

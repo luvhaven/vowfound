@@ -96,7 +96,7 @@ export function ResultsView({
               ))}
             </ul>
             <div className="mt-10 flex flex-wrap items-center gap-5">
-              <CtaButton href={`/checkout/${product.slug}`} tone="butter">
+              <CtaButton href={`/checkout/${product.slug}`} tone="butter" className="h-auto min-h-[4.25rem] whitespace-normal py-3 text-left">
                 Start {product.name} · {formatPrice(priceFor(product, currency), currency)}
               </CtaButton>
               <Link href="/pricing" className="font-bold underline decoration-2 underline-offset-4">

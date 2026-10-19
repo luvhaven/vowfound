@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { PRODUCTS, productBySlug, formatPrice, priceFor } from "@/lib/products";
+import { PRODUCTS, productBySlug, priceFor } from "@/lib/products";
 import { currencyOptions, resolveCurrency } from "@/lib/currency.server";
 import { getMember } from "@/lib/supabase/server";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { HUE, Overlap } from "@/components/art/shapes";
 import { Tick, Wrap } from "@/components/ui/kit";
+import { Price } from "@/components/ui/price";
 
 export const metadata: Metadata = { title: "Checkout", robots: { index: false, follow: false } };
 
@@ -30,13 +31,11 @@ export default async function CheckoutPage({ params }: { params: Promise<{ slug:
   return (
     <section className="py-12 md:py-20">
       <Wrap className="grid gap-10 lg:grid-cols-2 lg:items-start">
-        <div className="sticker order-2 p-8 md:p-10 lg:order-1" style={{ background: HUE[product.colour], color: dark ? "#fff6e9" : "#1a1410" }}>
+        <div className="sticker @container order-2 min-w-0 p-8 md:p-10 lg:order-1" style={{ background: HUE[product.colour], color: dark ? "#fff6e9" : "#1a1410" }}>
           <p className="label opacity-80">You&apos;re choosing</p>
           <h1 className="h1 mt-4">{product.name}</h1>
           <p className="mt-4 text-[18px] font-medium">{product.hook}</p>
-          <p className="num mt-8 font-display text-6xl font-extrabold tracking-[-0.05em]">
-            {formatPrice(priceFor(product, currency), currency)}
-          </p>
+          <Price amount={priceFor(product, currency)} currency={currency} max="3.75rem" className="mt-8" />
           <ul className="mt-8 grid gap-3 border-t-2 border-current/30 pt-6">
             {product.includes.map((line) => (
               <li key={line} className="flex gap-3 font-semibold">
