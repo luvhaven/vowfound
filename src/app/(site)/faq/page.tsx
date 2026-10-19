@@ -1,35 +1,22 @@
-import { Container, Section } from "@/components/ui/layout";
-import { PageHeader, PageCta } from "@/components/site/page-header";
-import { FaqList } from "@/components/site/faq-list";
-import { resolvedObjections } from "@/lib/content/resolve.server";
-import { createPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+import { Block, PageHero, Wrap } from "@/components/ui/kit";
+import { Faq } from "@/components/site/faq";
+import { FinalCta } from "@/components/site/final-cta";
+import { Sparkle } from "@/components/art/shapes";
+import { FAQ } from "@/lib/content";
 
-export const metadata = createPageMetadata({
-  title: "Questions",
-  description:
-    "Whether this is matchmaking, whether we can guarantee anything, and what happens if you are not ready.",
-  path: "/faq",
-});
+export const metadata: Metadata = { title: "Questions", description: "Straight answers about VowFound matchmaking, coaching, privacy and prices." };
 
-export default async function FaqPage() {
-  const objections = await resolvedObjections();
-
+export default function FaqPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="Reasonable questions"
-        title="The ones people actually ask, answered plainly."
-        standfirst="If yours is not here, ask it on the contact page and we will add it."
-      />
-      <Section>
-        <Container width="default">
-          <FaqList items={objections} />
-        </Container>
-      </Section>
-      <PageCta
-        title="The assessment answers most of the rest."
-        body="Twelve minutes, and you will know within one screen whether we know what we are talking about."
-      />
+      <PageHero eyebrow="Questions" field="lilac" title={<>Fair <span className="say font-normal">questions.</span></>} body="The ones people ask before they trust us with something this important." art={<Sparkle fill="ink" className="spin-slow" />} />
+      <Block field="paper">
+        <Wrap className="max-w-4xl">
+          <Faq items={FAQ} />
+        </Wrap>
+      </Block>
+      <FinalCta />
     </>
   );
 }

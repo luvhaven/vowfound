@@ -1,28 +1,27 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { fetchSupabase } from "@/lib/supabase/fetch";
 
-/** Request-scoped client that acts as the signed-in user. RLS applies. */
+export function supabaseConfigured() {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
+}
+
+/** Request-scoped client acting as the signed-in user. RLS applies. */
 export async function createClient() {
-  const cookieStore = await cookies();
-
+  const store = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
-      global: { fetch: fetchSupabase },
       cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
+        getAll: () => store.getAll(),
+        setAll(list) {
           try {
-            for (const { name, value, options } of cookiesToSet) {
-              cookieStore.set(name, value, options);
-            }
+            for (const { name, value, options } of list) store.set(name, value, options);
           } catch {
-            // Called from a Server Component; the middleware refreshes sessions.
+            // A Server Component cannot set cookies; the proxy refreshes them.
           }
         },
       },
@@ -30,19 +29,19 @@ export async function createClient() {
   );
 }
 
-export async function getSessionUser() {
-  // Without Supabase there is no session, so every caller must treat the
-  // request as signed out rather than throwing on a missing URL.
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  ) {
-    return null;
-  }
-
+export async function getUser() {
+  if (!supabaseConfigured()) return null;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  const { data } = await supabase.auth.getUser();
+  return data.user;
+}
+
+export type Member = { id: string; email: string; full_name: string | null; role: "member" | "staff" | "admin" };
+
+export async function getMember(): Promise<Member | null> {
+  const user = await getUser();
+  if (!user) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.from("members").select("id, email, full_name, role").eq("id", user.id).maybeSingle();
+  return (data as Member | null) ?? { id: user.id, email: user.email ?? "", full_name: null, role: "member" };
 }

@@ -1,28 +1,14 @@
 import "server-only";
 
-/**
- * In-memory fixed-window limiter. Adequate for a single instance and for
- * development; on a multi-instance deployment set UPSTASH_REDIS_REST_URL and
- * swap the body of this function for a shared counter. The call sites do not
- * change.
- */
-const buckets = new Map<string, { count: number; resetAt: number }>();
+/* A small in-memory window. It is per-instance, which is enough to stop a
+   form being hammered from one connection; it is not a security boundary. */
+const hits = new Map<string, number[]>();
 
-export async function rateLimit(
-  key: string,
-  limit: number,
-  windowSeconds: number,
-): Promise<boolean> {
+export function rateLimit(key: string, limit: number, windowSeconds: number) {
   const now = Date.now();
-  const existing = buckets.get(key);
-
-  if (!existing || existing.resetAt < now) {
-    buckets.set(key, { count: 1, resetAt: now + windowSeconds * 1000 });
-    return true;
-  }
-
-  if (existing.count >= limit) return false;
-
-  existing.count += 1;
+  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowSeconds * 1000);
+  if (recent.length >= limit) return false;
+  recent.push(now);
+  hits.set(key, recent);
   return true;
 }

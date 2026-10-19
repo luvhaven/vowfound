@@ -3,136 +3,79 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import {
-  CURRENCY_COOKIE,
-  isCurrencyAllowed,
-  priceFor,
-  productBySlug,
-  type Currency,
-} from "@/lib/products";
-import { providerFor, toMinorUnits } from "@/lib/payments";
-import { resolveCurrency, detectCountry } from "@/lib/currency.server";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient, supabaseConfigured } from "@/lib/supabase/admin";
+import { CURRENCY_COOKIE, productBySlug, toMinor, type Currency } from "@/lib/products";
+import { currencyOptions } from "@/lib/currency.server";
+import { createAdminClient, adminConfigured } from "@/lib/supabase/admin";
+import { getUser } from "@/lib/supabase/server";
+import { createPaymentLink, flutterwaveConfigured } from "@/lib/flutterwave";
+import { amountDue } from "@/lib/orders.server";
 import { rateLimit } from "@/lib/rate-limit";
 import { SITE_URL } from "@/lib/brand";
 
-/**
- * Records a currency preference — but only one the visitor's region actually
- * permits. Setting the cookie to NGN from outside Nigeria is rejected here
- * and would be rejected again at checkout even if it were not.
- */
-export async function setCurrency(next: Currency) {
-  const country = await detectCountry();
-  if (!isCurrencyAllowed(next, country)) {
-    return { ok: false as const, error: "not_available_in_your_region" };
-  }
-
-  const store = await cookies();
-  store.set(CURRENCY_COOKIE, next, {
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-  });
+export async function chooseCurrency(next: Currency) {
+  if (!(await currencyOptions()).includes(next)) return;
+  (await cookies()).set(CURRENCY_COOKIE, next, { path: "/", sameSite: "lax", maxAge: 31_536_000 });
 }
 
 const schema = z.object({
-  slug: z.string().min(1).max(64),
-  email: z.string().email().max(320),
-  name: z.string().trim().min(1).max(160).optional(),
+  slug: z.string().min(1).max(40),
+  name: z.string().trim().min(1).max(120),
+  email: z.string().trim().email().max(320),
+  currency: z.enum(["NGN", "USD"]),
 });
 
-export async function startCheckout(input: unknown) {
-  const parsed = schema.safeParse(input);
-  if (!parsed.success) return { ok: false as const, error: "invalid" };
+export type CheckoutState = { error?: string } | undefined;
 
-  const h = await headers();
-  const allowed = await rateLimit(
-    `checkout:${h.get("x-forwarded-for") ?? "local"}`,
-    10,
-    600,
-  );
-  if (!allowed) return { ok: false as const, error: "rate_limited" };
+export async function startCheckout(_: CheckoutState, form: FormData): Promise<CheckoutState> {
+  const parsed = schema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: "Please add your name and a valid email." };
 
   const product = productBySlug(parsed.data.slug);
-  if (!product) return { ok: false as const, error: "unknown_product" };
+  if (!product || product.applicationOnly) return { error: "This plan isn't available to buy directly." };
 
-  if (product.applicationOnly) {
-    if (!supabaseConfigured()) {
-      return { ok: false as const, error: "provider_not_configured" };
-    }
-
-    const db = createAdminClient();
-    const { error } = await db.from("leads").insert({
-      email: parsed.data.email,
-      full_name: parsed.data.name ?? null,
-      source: `application:${product.slug}`,
-    });
-
-    if (error) {
-      console.error("[application] lead insert failed", error);
-      return { ok: false as const, error: "provider_failed" };
-    }
-
-    redirect(`${SITE_URL}/checkout/${product.slug}/confirmation`);
+  // The currency is re-derived from region here, at the moment money moves.
+  if (!(await currencyOptions()).includes(parsed.data.currency)) {
+    return { error: "That currency isn't available in your region." };
   }
 
-  // Authoritative check, at the moment money is about to move. resolveCurrency
-  // already refuses a region-mismatched cookie, but this is the line that
-  // actually protects local pricing, so it re-derives rather than trusting
-  // anything carried in from the page that rendered the form.
-  const country = await detectCountry();
-  const currency = await resolveCurrency();
-  if (!isCurrencyAllowed(currency, country)) {
-    return { ok: false as const, error: "currency_not_available" };
+  const ip = (await headers()).get("x-forwarded-for") ?? "local";
+  if (!rateLimit(`checkout:${ip}`, 10, 600)) return { error: "Too many attempts. Try again in a few minutes." };
+  if (!adminConfigured() || !flutterwaveConfigured()) {
+    return { error: "Payments are being set up. Email hello@vowfound.com and we'll invoice you directly." };
   }
 
-  const provider = providerFor(currency);
+  const { name, email, currency } = parsed.data;
+  const { amount } = await amountDue(product.slug, currency, email);
+  const txRef = `vf_${product.slug}_${crypto.randomUUID().slice(0, 18)}`;
+  const user = await getUser().catch(() => null);
 
-  if (!provider.isConfigured()) {
-    return { ok: false as const, error: "provider_not_configured" };
+  const { error } = await createAdminClient().from("orders").insert({
+    member_id: user?.id ?? null,
+    email,
+    product: product.slug,
+    currency,
+    amount_minor: toMinor(amount),
+    tx_ref: txRef,
+  });
+  if (error) {
+    console.error("[checkout] order insert failed", error);
+    return { error: "We couldn't start checkout. Please try again." };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let session;
+  let link: string;
   try {
-    session = await provider.createCheckout({
-      productSlug: product.slug,
-      productName: product.name,
-      amountMinor: toMinorUnits(priceFor(product, currency), currency),
+    link = await createPaymentLink({
+      txRef,
+      amount,
       currency,
-      email: parsed.data.email,
-      userId: user?.id,
-      successUrl: `${SITE_URL}/checkout/${product.slug}/confirmation`,
-      cancelUrl: `${SITE_URL}/checkout/${product.slug}`,
+      email,
+      name,
+      title: product.name,
+      redirectUrl: `${SITE_URL}/checkout/done`,
     });
-  } catch (error) {
-    console.error("[checkout] provider failed", error);
-    return { ok: false as const, error: "provider_failed" };
+  } catch (e) {
+    console.error("[checkout] flutterwave failed", e);
+    return { error: "The payment provider didn't respond. Please try again." };
   }
-
-  // Record the attempt before sending anyone to pay, so a webhook always has
-  // a row to reconcile against.
-  if (supabaseConfigured()) {
-    const db = createAdminClient();
-    await db.from("payments").upsert(
-      {
-        user_id: user?.id ?? null,
-        provider: provider.name,
-        provider_reference: session.reference,
-        status: "pending",
-        currency,
-        amount_minor: toMinorUnits(priceFor(product, currency), currency),
-        email: parsed.data.email,
-      },
-      { onConflict: "provider,provider_reference" },
-    );
-  }
-
-  redirect(session.url);
+  redirect(link);
 }

@@ -1,79 +1,24 @@
-import { Container, Section } from "@/components/ui/layout";
-import { PageHeader } from "@/components/site/page-header";
-import { Reveal } from "@/components/ui/reveal";
-import { Paper } from "@/components/ui/paper";
-import { ContactForm } from "@/components/site/contact-form";
-import { CONTACT_EMAIL, PRIVACY_EMAIL } from "@/lib/brand";
-import { ALL_SERVICES } from "@/content/services";
-import { createPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+import { Block, PageHero, Wrap } from "@/components/ui/kit";
+import { ContactForm } from "@/components/site/forms";
+import { Sun } from "@/components/art/shapes";
+import { CONTACT_EMAIL } from "@/lib/brand";
 
-export const metadata = createPageMetadata({
-  title: "Contact",
-  description: "Ask a question. A person reads and answers it.",
-  path: "/contact",
-});
+export const metadata: Metadata = { title: "Contact", description: "Write to a real person at VowFound." };
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ service?: string }>;
-}) {
-  const requested = (await searchParams).service;
-  const defaultService = ALL_SERVICES.some((service) => service.id === requested)
-    ? requested
-    : undefined;
+export default function ContactPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="Contact"
-        title="Ask the question you actually want to ask."
-        standfirst="A person reads these. If your question belongs on the FAQ page, we will answer you and then add it there."
-      />
-
-      <Section>
-        <Container width="default">
-          <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
-            <Reveal className="lg:col-span-7">
-              <Paper className="p-7 md:p-9">
-                <ContactForm defaultService={defaultService} />
-              </Paper>
-            </Reveal>
-
-            <Reveal delay={80} className="lg:col-span-4 lg:col-start-9 lg:mt-14">
-              <aside className="border-y border-hairline py-8">
-                <p className="engraved text-rose">Direct addresses</p>
-                <h2 className="display-md mt-5 text-onink">Or write directly.</h2>
-                <ul className="mt-6 space-y-5">
-                  <li>
-                    <p className="engraved text-onink-faint">General</p>
-                    <a
-                      href={`mailto:${CONTACT_EMAIL}`}
-                      className="mt-1.5 block text-[16px] text-onink underline decoration-onink-faint underline-offset-4"
-                    >
-                      {CONTACT_EMAIL}
-                    </a>
-                  </li>
-                  <li>
-                    <p className="engraved text-onink-faint">Privacy and deletion</p>
-                    <a
-                      href={`mailto:${PRIVACY_EMAIL}`}
-                      className="mt-1.5 block text-[16px] text-onink underline decoration-onink-faint underline-offset-4"
-                    >
-                      {PRIVACY_EMAIL}
-                    </a>
-                  </li>
-                </ul>
-                <hr className="hairline my-7" />
-                <p className="text-[15px] leading-relaxed text-onink-dim">
-                  If something has gone wrong with another member, do not use
-                  this form. Report it from inside your account so it reaches a
-                  safety reviewer directly.
-                </p>
-              </aside>
-            </Reveal>
+      <PageHero eyebrow="Contact" field="butter" title={<>Write to a <span className="say font-normal">person.</span></>} body="Not a bot, not a ticket queue. Ask anything — including whether we're right for you at all." art={<Sun fill="tomato" />} />
+      <Block field="paper">
+        <Wrap className="grid gap-12 lg:grid-cols-[0.7fr_1.3fr]">
+          <div>
+            <p className="label">Or email</p>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="h3 mt-3 block break-words underline decoration-2 underline-offset-4 hover:text-tomato">{CONTACT_EMAIL}</a>
           </div>
-        </Container>
-      </Section>
+          <ContactForm />
+        </Wrap>
+      </Block>
     </>
   );
 }

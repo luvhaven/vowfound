@@ -1,153 +1,120 @@
 export type Currency = "NGN" | "USD";
 
 /**
- * The two prices are independent, not converted. Naira pricing reflects what
- * the work is worth in that economy, which is why ₦75,000 is not ₦200,000 —
- * it is a local price, deliberately set.
+ * The offer. Five steps, each the smallest useful next one.
  *
- * How the October 2026 fees were set:
- *  - Clarity Audit: an hour of a qualified coach plus a written map is
- *    roughly two hours of skilled time. $79 did not cover it, and a price that
- *    cannot pay the coach quietly becomes a sales call. $129 can.
- *  - Ready in 90: six one-to-ones alone are $900+ at market coaching rates;
- *    twelve cohort sessions and written feedback sit on top. About $112 a week.
- *  - Match: boutique matchmaking commonly starts at $5,000–$15,000 for the
- *    search alone. Nine months of a named matchmaker plus the full programme
- *    at $4,500 is deliberately below that, about $115 a week.
- *  - Concierge: hands-on principal time, travel and discreet outreach; capped
- *    cohort, application only.
+ * Fees are set per economy rather than converted: the naira price is a local
+ * price, available to buyers in Nigeria only, and the server re-checks region
+ * at the moment of charge.
  *
- * That only holds if the local price stays local. Which currency a person may
- * buy in is decided server-side from their region, never from a cookie or a
- * form field, and is re-checked at the moment of charge.
+ * Why these numbers:
+ *  - The Read ($49): a written report plus 30 minutes with a coach is about an
+ *    hour of skilled time. Priced to be an easy yes, and to pay the coach.
+ *  - Ready ($1,200, 12 weeks): six one-to-ones alone are $900+ at market
+ *    coaching rates; cohort sessions and written feedback sit on top. ~$100/wk.
+ *  - Matched ($3,900, 6 months): boutique matchmaking commonly starts at
+ *    $5,000–$15,000 for the search alone. This includes the coaching. ~$150/wk.
+ *  - Private (from $15,000, 12 months): principal-led, discreet, capped.
  */
 export interface Product {
   slug: string;
   name: string;
-  shape: string;
-  summary: string;
+  /** One line, said the way a friend would describe it. */
+  hook: string;
+  forWho: string;
   price: Record<Currency, number>;
+  weeks: number | null;
   includes: readonly string[];
   applicationOnly?: boolean;
-  /** Length of the engagement, so a fee can be read as a weekly cost. Null
-   *  where the work is a single sitting or open-ended. */
-  weeks: number | null;
-  /** Used by the readiness map to recommend a starting point. */
-  band: "audit" | "programme" | "match" | "concierge";
+  colour: "butter" | "bubble" | "cobalt" | "tomato" | "moss";
 }
 
 export const PRODUCTS: readonly Product[] = [
   {
-    slug: "clarity-audit",
-    name: "The Clarity Audit",
-    shape: "Assessment, a 60-minute diagnostic, and a written readiness map",
-    summary:
-      "The honest reading. What is working, what is in the way, and what to do first.",
-    price: { NGN: 75_000, USD: 129 },
+    slug: "the-read",
+    name: "The Read",
+    hook: "Your readiness report, read with you by a real coach.",
+    forWho: "You want an honest second opinion before you spend real money.",
+    price: { NGN: 25_000, USD: 49 },
     weeks: null,
-    band: "audit",
+    colour: "butter",
     includes: [
-      "The full readiness assessment",
-      "A 60-minute diagnostic call with a coach",
-      "Your written readiness map",
-      "One first action per obstacle",
+      "Your full written readiness report",
+      "A 30-minute video call with a coach",
+      "Your top three moves, in writing",
+      "Credit toward Ready or Matched if you continue within 30 days",
     ],
   },
   {
-    slug: "ready-in-90",
-    name: "Ready in 90",
-    shape: "A 90-day readiness programme, group work plus fortnightly one-to-one",
-    summary:
-      "For people who want to understand recurring patterns and practise the skills a committed partnership needs.",
-    price: { NGN: 495_000, USD: 1_450 },
-    weeks: 13,
-    band: "programme",
+    slug: "ready",
+    name: "Ready",
+    hook: "Twelve weeks of coaching for the person you'll be in a marriage.",
+    forWho: "You keep meeting the wrong people, or keep leaving the right ones.",
+    price: { NGN: 450_000, USD: 1_200 },
+    weeks: 12,
+    colour: "bubble",
     includes: [
-      "Everything in the Clarity Audit",
-      "Six fortnightly one-to-one sessions",
-      "Weekly group work with a small cohort",
+      "Everything in The Read",
+      "Six one-to-one coaching sessions",
+      "Weekly small-group sessions (max 8 people)",
       "Exercises with written feedback",
-      "Honest feedback on how you present",
+      "A dating profile and story rewrite",
     ],
   },
   {
-    slug: "match",
-    name: "VowFound Match",
-    shape: "The readiness programme plus curated introductions, nine months",
-    summary:
-      "Readiness first, then a search run by a person who can explain every name they send you.",
-    price: { NGN: 1_650_000, USD: 4_500 },
-    weeks: 39,
-    band: "match",
+    slug: "matched",
+    name: "Matched",
+    hook: "Coaching plus a matchmaker who hand-picks every introduction.",
+    forWho: "You're ready, and your pool isn't. You want people who want marriage.",
+    price: { NGN: 1_450_000, USD: 3_900 },
+    weeks: 26,
+    colour: "cobalt",
     includes: [
-      "Everything in Ready in 90",
-      "Verification and a private matchmaking profile",
-      "An assigned matchmaker for nine months",
-      "An agreed number of qualified introductions",
-      "A structured debrief after every meeting",
+      "Everything in Ready",
+      "A verified, private profile nobody can browse",
+      "A named matchmaker for six months",
+      "Introductions with a written reason why",
+      "A debrief after every date",
     ],
   },
   {
-    slug: "private-concierge",
-    name: "VowFound Private Concierge",
-    shape: "Private, hands-on, application only, capped cohort",
-    summary:
-      "For clients whose situation is unusual, public, or complicated enough that a standard search will not work.",
-    price: { NGN: 4_750_000, USD: 12_500 },
-    weeks: null,
-    band: "concierge",
+    slug: "private",
+    name: "Private",
+    hook: "A principal-led search for people who need total discretion.",
+    forWho: "Public profile, complicated life, or a very specific brief.",
+    price: { NGN: 6_000_000, USD: 15_000 },
+    weeks: 52,
+    colour: "tomato",
     applicationOnly: true,
     includes: [
-      "Everything in VowFound Match",
-      "A named principal on your search",
-      "Off-platform, discreet outreach",
-      "Direct scheduling and travel coordination",
-      "A strictly capped cohort, so places are genuinely limited",
+      "Everything in Matched, for twelve months",
+      "A named principal leading your search",
+      "Discreet, off-platform outreach",
+      "Travel and scheduling handled",
+      "Strictly limited places",
     ],
   },
 ] as const;
 
-export function productBySlug(slug: string): Product | undefined {
+export function productBySlug(slug: string) {
   return PRODUCTS.find((p) => p.slug === slug);
 }
 
-/** The only way a price should be read. */
-export function priceFor(product: Product, currency: Currency): number {
+export function priceFor(product: Product, currency: Currency) {
   return product.price[currency];
 }
 
-/**
- * Which currencies a region may transact in.
- *
- * Naira is available to Nigeria only. Everywhere else pays in dollars and has
- * no switcher at all, because the naira price is a local price rather than a
- * discount anyone may opt into.
- *
- * Nigeria keeps both: plenty of clients hold dollar cards, and offering only
- * naira would strand them.
- */
-export function allowedCurrencies(countryCode: string | null): Currency[] {
-  return countryCode?.toUpperCase() === "NG" ? ["NGN", "USD"] : ["USD"];
+export function formatPrice(amount: number, currency: Currency) {
+  return currency === "NGN" ? `₦${amount.toLocaleString("en-NG")}` : `$${amount.toLocaleString("en-US")}`;
 }
 
-export function isCurrencyAllowed(
-  currency: Currency,
-  countryCode: string | null,
-): boolean {
-  return allowedCurrencies(countryCode).includes(currency);
+export function toMinor(amount: number) {
+  return Math.round(amount * 100);
 }
 
-/* Never render both currencies on the same screen. */
-export function formatPrice(amount: number, currency: Currency): string {
-  if (currency === "NGN") {
-    return `₦${amount.toLocaleString("en-NG")}`;
-  }
-  return `$${amount.toLocaleString("en-US")}`;
+/** Naira is a local price: Nigeria only. Nigeria may also pay in dollars. */
+export function allowedCurrencies(country: string | null): Currency[] {
+  return country?.toUpperCase() === "NG" ? ["NGN", "USD"] : ["USD"];
 }
 
 export const CURRENCY_COOKIE = "vf_currency";
-
-/** NGN routes to Paystack, USD routes to Stripe. */
-export function providerForCurrency(currency: Currency): "paystack" | "stripe" {
-  return currency === "NGN" ? "paystack" : "stripe";
-}

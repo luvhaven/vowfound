@@ -1,190 +1,81 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Container, Section } from "@/components/ui/layout";
-import { Paper, PaperInset } from "@/components/ui/paper";
-import { Guarantee } from "@/components/site/guarantee";
-import { CurrencySwitch } from "@/components/site/currency-switch";
+import { notFound, redirect } from "next/navigation";
+import { PRODUCTS, productBySlug, formatPrice, priceFor } from "@/lib/products";
+import { currencyOptions, resolveCurrency } from "@/lib/currency.server";
+import { getMember } from "@/lib/supabase/server";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
-import { CurrencyAmount } from "@/components/ui/currency-amount";
-import { productBySlug, priceFor, PRODUCTS } from "@/lib/products";
-import { resolveCurrency, currencyOptions } from "@/lib/currency.server";
-import { VowMark } from "@/components/ui/ornament";
-import { providerFor } from "@/lib/payments";
+import { HUE, Overlap } from "@/components/art/shapes";
+import { Tick, Wrap } from "@/components/ui/kit";
+
+export const metadata: Metadata = { title: "Checkout", robots: { index: false, follow: false } };
 
 export function generateStaticParams() {
   return PRODUCTS.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const product = productBySlug(slug);
-  return {
-    title: product ? product.name : "Not found",
-    robots: { index: false, follow: false },
-  };
-}
-
-export default async function CheckoutPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function CheckoutPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = productBySlug(slug);
   if (!product) notFound();
+  if (product.applicationOnly) redirect("/private#apply");
 
-  const [currency, options] = await Promise.all([
+  const [currency, options, member] = await Promise.all([
     resolveCurrency(),
     currencyOptions(),
+    getMember().catch(() => null),
   ]);
-  const provider = providerFor(currency);
-  const checkoutAvailable =
-    Boolean(product.applicationOnly) || provider.isConfigured();
-
-  if (!checkoutAvailable && process.env.NODE_ENV === "production") {
-    // A buyer reached a paid programme and cannot pay. In development that is
-    // expected locally; in production it means a key is missing or expired
-    // and every sale is being lost. Keep the production diagnostic, but do
-    // not turn an intentionally unconfigured local checkout into a Next.js
-    // console-error overlay.
-    console.error(
-      `[checkout] ${provider.name} is not configured for ${currency} — ` +
-        `"${product.name}" cannot be paid for online.`,
-    );
-  }
+  const dark = product.colour === "cobalt" || product.colour === "moss";
 
   return (
-    <Section>
-      <Container width="wide">
-        {/* Checkout had no way out. Somebody who picked the wrong programme,
-            or who wanted the other currency, could only use the browser's back
-            button — and the header is stripped down on this route, so there
-            was no navigation at all. */}
-        <Link
-          href="/plans"
-          className="engraved inline-flex items-center gap-2 text-onink-faint transition-colors hover:text-onink"
-        >
-          <span aria-hidden>&larr;</span> All programmes and fees
-        </Link>
-
-        <div className="mt-8 grid gap-8 border-b border-hairline pb-10 md:grid-cols-[1fr_auto] md:items-end">
-          <div>
-            <p className="engraved text-rose">
-              {product.applicationOnly ? "Private application" : "Secure enrolment"}
-            </p>
-            <h1 className="display-lg mt-5 max-w-3xl text-onink">{product.name}</h1>
-            <p className="measure mt-5 text-onink-dim">{product.summary}</p>
-          </div>
-          <div className="flex items-center gap-4 md:flex-col md:items-end">
-            <VowMark size={72} className="shrink-0" />
-            <p className="engraved text-onink-faint">Confidential / encrypted</p>
-          </div>
+    <section className="py-12 md:py-20">
+      <Wrap className="grid gap-10 lg:grid-cols-2 lg:items-start">
+        <div className="sticker p-8 md:p-10" style={{ background: HUE[product.colour], color: dark ? "#fff6e9" : "#1a1410" }}>
+          <p className="label opacity-80">You&apos;re choosing</p>
+          <h1 className="h1 mt-4">{product.name}</h1>
+          <p className="mt-4 text-[18px] font-medium">{product.hook}</p>
+          <p className="num mt-8 font-display text-6xl font-extrabold tracking-[-0.05em]">
+            {formatPrice(priceFor(product, currency), currency)}
+          </p>
+          <ul className="mt-8 grid gap-3 border-t-2 border-current/30 pt-6">
+            {product.includes.map((line) => (
+              <li key={line} className="flex gap-3 font-semibold">
+                <Tick />
+                {line}
+              </li>
+            ))}
+          </ul>
+          <Overlap a="paper" b="butter" lens="bubble" className="mt-10 w-32" />
         </div>
-
-        <div className="mt-10 grid min-w-0 gap-7 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-start xl:gap-10">
-          <Paper className="min-w-0 p-7 md:p-9">
+        <div className="lg:pt-6">
+          <h2 className="h2">Almost there.</h2>
+          <p className="mt-4 max-w-md text-[17px] font-medium text-ink-soft">
+            Payment is handled securely by Flutterwave
+            {currency === "NGN" ? " — card, bank transfer or USSD" : ""}. Then a person from VowFound emails you to
+            book your first session.
+          </p>
+          <div className="mt-8">
             <CheckoutForm
               slug={product.slug}
-              applicationOnly={product.applicationOnly ?? false}
-              checkoutAvailable={checkoutAvailable}
+              currency={currency}
+              options={options}
+              defaultEmail={member?.email}
+              defaultName={member?.full_name ?? undefined}
             />
-          </Paper>
-
-          <div className="min-w-0 lg:sticky lg:top-24">
-            <Paper className="p-7">
-              <p className="engraved text-slate">
-                {product.applicationOnly ? "Programme under consideration" : "What you are buying"}
-              </p>
-              <p className="display-md mt-4 text-ink">{product.name}</p>
-              <p className="mt-2 text-[15px] text-slate">{product.shape}</p>
-
-              <hr className="hairline-stock my-6" />
-
-              <ul className="space-y-2.5">
-                {product.includes.map((line) => (
-                  <li key={line} className="flex gap-3 text-[15px] text-ink">
-                    <span
-                      aria-hidden
-                      className="mt-[0.6em] h-px w-4 shrink-0 bg-stone"
-                    />
-                    {line}
-                  </li>
-                ))}
-              </ul>
-
-              <hr className="hairline-stock my-6" />
-
-              <div className="flex items-baseline justify-between">
-                <p className="engraved text-slate">
-                  {product.applicationOnly ? "Published fee" : "Total"}
-                </p>
-                <p className="numeral display-md text-ink">
-                  <CurrencyAmount
-                    amount={priceFor(product, currency)}
-                    currency={currency}
-                  />
-                </p>
-              </div>
-
-              <div className="mt-5">
-                <CurrencySwitch current={currency} options={options} />
-              </div>
-
-              <PaperInset className="mt-6">
-                <p className="text-[14px] leading-relaxed text-slate">
-                  {product.applicationOnly ? (
-                    <>
-                      No payment is taken with this application. Fees are
-                      discussed only after a private review and fit call.
-                    </>
-                  ) : (
-                    <>
-                      {/* At these amounts the method decides whether the sale
-                          completes: card limits are the usual reason a payment
-                          this size fails, so transfer is named first. */}
-                      {currency === "NGN" ? (
-                        <>
-                          Pay by <strong className="text-ink">bank transfer</strong>,
-                          card or USSD. Transfer is usually the simplest for an
-                          amount like this, and avoids card limits.
-                        </>
-                      ) : (
-                        <>
-                          Pay by <strong className="text-ink">card</strong> or
-                          bank transfer.
-                        </>
-                      )}{" "}
-                      Handled securely by Flutterwave. We never see or store
-                      your card details.
-                    </>
-                  )}
-                </p>
-              </PaperInset>
-            </Paper>
-
           </div>
+          <p className="mt-8 text-[14px] text-ink-mute">
+            Not sure?{" "}
+            <Link href="/check" className="font-bold underline">
+              Take the free check first
+            </Link>
+            . See our{" "}
+            <Link href="/legal/refunds" className="font-bold underline">
+              refund terms
+            </Link>
+            .
+          </p>
         </div>
-
-        <div className="mt-8">
-          <Guarantee />
-        </div>
-
-        <p className="mt-6 text-center text-[13px] leading-relaxed text-onink-faint">
-          By continuing you agree to the{" "}
-          <Link
-            href="/legal/terms"
-            className="underline decoration-onink-faint underline-offset-4"
-          >
-            terms
-          </Link>{" "}
-          and confirm you are 18 or over.
-        </p>
-      </Container>
-    </Section>
+      </Wrap>
+    </section>
   );
 }
