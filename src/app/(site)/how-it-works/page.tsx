@@ -3,6 +3,7 @@ import { CtaButton, PageHero } from "@/components/ui/kit";
 import { CardRun, Split } from "@/components/site/story";
 import { FinalCta } from "@/components/site/final-cta";
 import { Overlap } from "@/components/art/shapes";
+import { TeamSection } from "@/components/site/team";
 
 export const metadata: Metadata = {
   title: "How it works",
@@ -44,6 +45,7 @@ export default function HowItWorksPage() {
         list={["Why this person, and why now", "Which of your must-haves they meet", "Where you differ — said plainly", "A good first question to ask them"]}
       />
 
+      <TeamSection />
       <FinalCta />
     </>
   );

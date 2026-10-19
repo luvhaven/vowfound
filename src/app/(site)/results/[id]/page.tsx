@@ -16,7 +16,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 
   const { data } = await createAdminClient()
     .from("readiness_checks")
-    .select("scores, recommended, first_name")
+    .select("scores, recommended, first_name, email")
     .eq("id", id)
     .maybeSingle();
   if (!data) notFound();
@@ -27,6 +27,8 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
       recommended={data.recommended}
       firstName={data.first_name}
       currency={await resolveCurrency()}
+      checkId={id}
+      hasEmail={Boolean(data.email)}
     />
   );
 }

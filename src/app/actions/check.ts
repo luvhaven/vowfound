@@ -61,3 +61,37 @@ export async function saveCheck(input: unknown): Promise<{ ok: true; id: string 
 
   return { ok: true, id: data.id };
 }
+
+const emailSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().trim().email().max(320),
+  firstName: z.string().trim().max(80).optional(),
+});
+
+export type EmailResultsState = { ok?: boolean; error?: string } | undefined;
+
+/** For people who skipped the email step: attach an address to a check that
+ *  has none, and send the private link. Never overwrites an existing email. */
+export async function emailMyResults(_: EmailResultsState, form: FormData): Promise<EmailResultsState> {
+  const parsed = emailSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: "Enter a valid email address." };
+  const ip = (await headers()).get("x-forwarded-for") ?? "local";
+  if (!rateLimit(`email-results:${ip}`, 5, 3600)) return { error: "Too many attempts. Try again later." };
+  if (!adminConfigured()) return { error: "Email isn't available right now." };
+
+  const { data, error } = await createAdminClient()
+    .from("readiness_checks")
+    .update({ email: parsed.data.email, first_name: parsed.data.firstName || undefined })
+    .eq("id", parsed.data.id)
+    .is("email", null)
+    .select("id")
+    .maybeSingle();
+  if (error || !data) return { error: "These results already have an email attached." };
+
+  await sendEmail(
+    parsed.data.email,
+    "Your VowFound Readiness Check results",
+    `Your results are here: ${SITE_URL}/results/${data.id}\n\nKeep this link private — anyone with it can see your results.\n\n— VowFound`,
+  );
+  return { ok: true };
+}

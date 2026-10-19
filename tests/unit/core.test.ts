@@ -117,3 +117,23 @@ describe("non-negotiables", () => {
     expect(files.filter((f) => /most popular/i.test(readFileSync(f, "utf8")))).toEqual([]);
   });
 });
+
+describe("follow-up emails", async () => {
+  const { followupEmail, FOLLOWUP_DAYS } = await import("@/lib/followup");
+  const input = {
+    firstName: "Sam",
+    scores: score(Object.fromEntries(STATEMENTS.map((s) => [s.id, 3]))),
+    recommended: "the-read",
+    resultsUrl: "https://x/results/1",
+    unsubscribeUrl: "https://x/unsubscribe/1",
+    planUrl: "https://x/checkout/the-read",
+  };
+
+  it("every email in the sequence carries an unsubscribe link", () => {
+    FOLLOWUP_DAYS.forEach((_, i) => expect(followupEmail(i, input).text).toContain(input.unsubscribeUrl));
+  });
+
+  it("never quotes a price, so it can't show the wrong currency", () => {
+    FOLLOWUP_DAYS.forEach((_, i) => expect(followupEmail(i, input).text).not.toMatch(/[$₦]\s?\d/));
+  });
+});

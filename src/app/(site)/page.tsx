@@ -4,6 +4,8 @@ import { PriceCards } from "@/components/site/price-cards";
 import { Faq } from "@/components/site/faq";
 import { FinalCta } from "@/components/site/final-cta";
 import { DimensionPeek } from "@/components/site/dimension-peek";
+import { TeamSection } from "@/components/site/team";
+import { Stories } from "@/components/site/stories";
 import { FAQ, NOT_AN_APP, PROMISES, STEPS } from "@/lib/content";
 import { resolveCurrency } from "@/lib/currency.server";
 
@@ -184,6 +186,9 @@ export default async function HomePage() {
           </div>
         </Wrap>
       </Block>
+
+      <Stories />
+      <TeamSection />
 
       {/* --- Pricing ---------------------------------------------------- */}
       <Block field="paper-deep" id="pricing" className="scroll-mt-24 border-y-2 border-ink">

@@ -3,6 +3,7 @@ import { BAND_LABEL, DIMENSIONS, bandFor, firstPriority, type Scores } from "@/l
 import { productBySlug, formatPrice, priceFor, type Currency } from "@/lib/products";
 import { HUE, Burst } from "@/components/art/shapes";
 import { CtaButton, Tick, Wrap } from "@/components/ui/kit";
+import { EmailResults } from "@/components/check/email-results";
 
 const WHY: Record<string, string> = {
   "the-read": "You've got real strengths and one or two things worth a closer look. A coach reading this with you for 30 minutes will tell you which matter — and whether you need more than that.",
@@ -15,11 +16,15 @@ export function ResultsView({
   recommended,
   firstName,
   currency,
+  checkId,
+  hasEmail = true,
 }: {
   scores: Scores;
   recommended: string;
   firstName?: string | null;
   currency: Currency;
+  checkId?: string;
+  hasEmail?: boolean;
 }) {
   const first = DIMENSIONS.find((d) => d.key === firstPriority(scores))!;
   const product = productBySlug(recommended)!;
@@ -39,6 +44,14 @@ export function ResultsView({
           </p>
         </Wrap>
       </section>
+
+      {checkId && !hasEmail && (
+        <div className="pt-10">
+          <Wrap>
+            <EmailResults id={checkId} />
+          </Wrap>
+        </div>
+      )}
 
       <section className="py-16 md:py-20">
         <Wrap className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
