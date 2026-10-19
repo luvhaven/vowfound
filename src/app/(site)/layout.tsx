@@ -1,6 +1,8 @@
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { getUser } from "@/lib/supabase/server";
+import { Analytics } from "@/components/site/analytics";
+import { MobileCta } from "@/components/site/mobile-cta";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser().catch(() => null);
@@ -11,6 +13,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         {children}
       </main>
       <Footer />
+      <MobileCta />
+      <Analytics />
     </>
   );
 }

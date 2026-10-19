@@ -7,6 +7,7 @@ import { DIMENSIONS, SCALE, STATEMENTS } from "@/lib/readiness";
 import { HUE } from "@/components/art/shapes";
 import { saveCheck } from "@/app/actions/check";
 import { cn } from "@/lib/utils";
+import { track } from "@/lib/track";
 
 export const LOCAL_KEY = "vf.check.local";
 
@@ -33,6 +34,7 @@ export function CheckRunner() {
   const onDark = !atDetails && (dim.colour === "cobalt" || dim.colour === "moss");
 
   function answer(value: number) {
+    if (step === 0 && !answers[current.id]) track("check_start");
     setAnswers((a) => ({ ...a, [current.id]: value }));
     window.setTimeout(() => setStep((s) => s + 1), reduce ? 0 : 180);
   }
@@ -45,6 +47,7 @@ export function CheckRunner() {
         firstName: skip ? undefined : firstName,
         email: skip ? undefined : email,
       });
+      track("check_complete", { gave_email: !skip && Boolean(email) });
       if (result.ok) {
         router.push(`/results/${result.id}`);
         return;

@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { startCheckout, chooseCurrency, type CheckoutState } from "@/app/actions/checkout";
 import type { Currency } from "@/lib/products";
+import { track } from "@/lib/track";
 
 export function CheckoutForm({
   slug,
@@ -23,8 +24,12 @@ export function CheckoutForm({
   const [switching, startSwitch] = React.useTransition();
   const other = options.find((c) => c !== currency);
 
+  React.useEffect(() => {
+    track("checkout_view", { plan: slug, currency });
+  }, [slug, currency]);
+
   return (
-    <form action={action} className="grid gap-5">
+    <form action={action} onSubmit={() => track("checkout_submit", { plan: slug, currency })} className="grid gap-5">
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="currency" value={currency} />
       <label className="grid gap-2">

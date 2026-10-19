@@ -4,6 +4,7 @@ import { settleOrder } from "@/lib/orders.server";
 import { productBySlug } from "@/lib/products";
 import { Burst, Pair } from "@/components/art/shapes";
 import { Wrap } from "@/components/ui/kit";
+import { TrackOnMount } from "@/components/site/track-on-mount";
 
 export const metadata: Metadata = { title: "Payment", robots: { index: false, follow: false } };
 
@@ -32,6 +33,7 @@ export default async function DonePage({ searchParams }: { searchParams: Promise
 
   return (
     <section className={paid ? "bg-moss py-20 text-paper md:py-28" : "bg-paper-deep py-20 md:py-28"}>
+      {paid && <TrackOnMount event="purchase" props={{ plan: product ?? "" }} />}
       <Wrap className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
         <div>
           <h1 className="mega">{paid ? "You're in." : "Not quite."}</h1>

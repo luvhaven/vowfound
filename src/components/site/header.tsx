@@ -69,7 +69,7 @@ export function Header({ signedIn }: { signedIn: boolean }) {
           <Link href={signedIn ? "/account" : "/sign-in"} className="hidden whitespace-nowrap rounded-full px-4 py-2 text-[15px] font-semibold hover:bg-butter md:block">
             {signedIn ? "My account" : "Sign in"}
           </Link>
-          <Link href="/check" className="btn hidden min-h-12 bg-tomato px-5 text-[15px] text-ink shadow-[3px_3px_0_#1a1410] sm:inline-flex">
+          <Link href="/check" className={cn("btn hidden min-h-12 bg-tomato px-5 text-[15px] text-ink shadow-[3px_3px_0_#1a1410] sm:inline-flex", pathname.startsWith("/check") && "sm:hidden")}>
             Free Readiness Check
           </Link>
           <button

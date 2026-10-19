@@ -29,9 +29,9 @@ export function PriceCards({ currency }: { currency: Currency }) {
             id={p.slug}
             className={cn("sticker sticker-hover relative flex scroll-mt-28 flex-col p-7", TONE[p.colour], TILT[i], featured && "xl:-translate-y-4")}
           >
-            {featured && (
-              <span className="label absolute -top-4 right-6 rotate-3 rounded-full border-2 border-ink bg-butter px-3 py-1.5 text-ink">
-                The full thing
+            {(featured || p.slug === "the-read") && (
+              <span className={cn("label absolute -top-4 right-6 rotate-3 rounded-full border-2 border-ink px-3 py-1.5 text-ink", featured ? "bg-butter" : "bg-paper")}>
+                {featured ? "The full thing" : "Start here"}
               </span>
             )}
             <p className="label opacity-75">

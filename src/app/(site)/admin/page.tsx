@@ -3,6 +3,29 @@ import { notFound, redirect } from "next/navigation";
 import { createClient, getMember } from "@/lib/supabase/server";
 import { productBySlug, formatPrice, type Currency } from "@/lib/products";
 import { Block, Wrap } from "@/components/ui/kit";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+const FUNNEL = [
+  ["page_view", "Page views"],
+  ["check_start", "Started the check"],
+  ["check_complete", "Finished the check"],
+  ["checkout_view", "Opened checkout"],
+  ["checkout_submit", "Went to pay"],
+  ["purchase", "Paid"],
+] as const;
+
+/** Event counts for the last 30 days. Staff-only page, so the service client
+ *  is used here rather than widening RLS on the analytics table. */
+async function funnel() {
+  const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
+  const db = createAdminClient();
+  return Promise.all(
+    FUNNEL.map(async ([event, label]) => {
+      const { count } = await db.from("analytics_events").select("id", { count: "exact", head: true }).eq("event_name", event).gte("created_at", since);
+      return { label, count: count ?? 0 };
+    }),
+  );
+}
 
 export const metadata: Metadata = { title: "Admin", robots: { index: false } };
 
@@ -25,6 +48,7 @@ export default async function AdminPage() {
     db.from("readiness_checks").select("id, email, first_name, recommended, created_at").order("created_at", { ascending: false }).limit(50),
     db.from("members").select("id", { count: "exact", head: true }),
   ]);
+  const steps = await funnel().catch(() => []);
 
   const paid = (orders.data ?? []).filter((o) => o.status === "paid");
   const revenue = (c: Currency) => paid.filter((o) => o.currency === c).reduce((s, o) => s + Number(o.amount_minor) / 100, 0);
@@ -56,6 +80,21 @@ export default async function AdminPage() {
 
       <Block field="paper" className="py-12">
         <Wrap className="grid gap-10">
+          <section>
+            <h2 className="h3">Funnel · last 30 days</h2>
+            <ol className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {steps.map((s, i) => {
+                const prev = i > 0 ? steps[i - 1].count : 0;
+                return (
+                  <li key={s.label} className="sticker bg-butter p-5 shadow-[4px_4px_0_#1a1410]">
+                    <p className="label">{s.label}</p>
+                    <p className="num mt-2 font-display text-3xl font-extrabold">{s.count.toLocaleString()}</p>
+                    {i > 0 && <p className="mt-1 text-[13px] font-bold">{prev ? `${Math.round((s.count / prev) * 100)}% of previous` : "—"}</p>}
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
           <Table
             title="Orders"
             head={["When", "Email", "Plan", "Amount", "Status", "Reference"]}

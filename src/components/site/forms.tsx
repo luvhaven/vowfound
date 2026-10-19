@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { applyPrivate, sendEnquiry, type FormState } from "@/app/actions/forms";
+import { TrackOnMount } from "@/components/site/track-on-mount";
 
 function Honeypot() {
   return (
@@ -22,7 +23,7 @@ function Done({ title, body }: { title: string; body: string }) {
 
 export function ApplyForm() {
   const [state, action, pending] = React.useActionState<FormState, FormData>(applyPrivate, undefined);
-  if (state?.ok) return <Done title="Application received." body="A principal reads every one personally. You'll hear back within a week." />;
+  if (state?.ok) return <><TrackOnMount event="apply_submit" /><Done title="Application received." body="A principal reads every one personally. You'll hear back within a week." /></>;
   return (
     <form action={action} className="grid gap-5">
       <Honeypot />
@@ -52,7 +53,7 @@ export function ApplyForm() {
 
 export function ContactForm() {
   const [state, action, pending] = React.useActionState<FormState, FormData>(sendEnquiry, undefined);
-  if (state?.ok) return <Done title="Sent." body="A real person will reply, usually within two working days." />;
+  if (state?.ok) return <><TrackOnMount event="contact_submit" /><Done title="Sent." body="A real person will reply, usually within two working days." /></>;
   return (
     <form action={action} className="grid gap-5">
       <Honeypot />

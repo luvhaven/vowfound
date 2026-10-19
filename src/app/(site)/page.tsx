@@ -16,11 +16,11 @@ export default async function HomePage() {
     <>
       {/* --- Hero ------------------------------------------------------- */}
       <Block field="paper" className="pb-10 pt-8 md:pb-16 md:pt-14">
-        <Wrap className="relative grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+        <Wrap className="relative grid items-center gap-10 lg:grid-cols-[1.3fr_0.7fr]">
           <div className="relative z-10">
             <Eyebrow className="pop-in bg-butter">Matchmaking + coaching, for people who mean it</Eyebrow>
-            <h1 className="mega pop-in mt-7" style={{ "--d": "80ms" } as React.CSSProperties}>
-              Less swiping.
+            <h1 className="mega hero-mega pop-in-solid mt-7" style={{ "--d": "80ms" } as React.CSSProperties}>
+              <span className="lg:whitespace-nowrap">Less swiping.</span>
               <br />
               More <span className="say relative inline-block font-normal text-tomato">
                 forever.
@@ -40,6 +40,13 @@ export default async function HomePage() {
             <p className="pop-in mt-6 text-[14px] font-semibold text-ink-mute" style={{ "--d": "320ms" } as React.CSSProperties}>
               Free · 10 minutes · Results instantly · No card
             </p>
+            <ul className="pop-in mt-8 flex flex-wrap gap-2" style={{ "--d": "380ms" } as React.CSSProperties} aria-label="What you can count on">
+              {["ID-verified members", "Both say yes first", "Every price published", "Delete your data any time"].map((t) => (
+                <li key={t} className="rounded-full border-2 border-ink bg-paper px-3 py-1.5 text-[13px] font-bold">
+                  {t}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="relative mx-auto aspect-square w-full max-w-[34rem]">

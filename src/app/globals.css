@@ -66,6 +66,9 @@ p {
   text-wrap: pretty;
 }
 
+/* Component classes live in the components layer so Tailwind utilities
+   (hidden, sm:inline-flex, shadow-none…) can always override them. */
+@layer components {
 /* --- Type --------------------------------------------------------------- */
 
 .mega {
@@ -212,6 +215,8 @@ button.sticker:active {
   color: var(--color-ink-mute);
 }
 
+}
+
 /* --- Motion ---------------------------------------------------------------- */
 
 .marquee {
@@ -310,5 +315,27 @@ button.sticker:active {
 @media print {
   .no-print {
     display: none !important;
+  }
+}
+
+/* The hero headline is the largest paint on the page, so it moves in but is
+   never invisible: transform only, no opacity. */
+.pop-in-solid {
+  animation: pop-in-solid 700ms var(--ease-pop) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes pop-in-solid {
+  from {
+    transform: translateY(24px) rotate(-1.5deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@layer components {
+  .hero-mega {
+    font-size: clamp(3.2rem, 7.6vw, 7.75rem);
   }
 }

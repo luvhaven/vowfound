@@ -30,7 +30,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ slug:
   return (
     <section className="py-12 md:py-20">
       <Wrap className="grid gap-10 lg:grid-cols-2 lg:items-start">
-        <div className="sticker p-8 md:p-10" style={{ background: HUE[product.colour], color: dark ? "#fff6e9" : "#1a1410" }}>
+        <div className="sticker order-2 p-8 md:p-10 lg:order-1" style={{ background: HUE[product.colour], color: dark ? "#fff6e9" : "#1a1410" }}>
           <p className="label opacity-80">You&apos;re choosing</p>
           <h1 className="h1 mt-4">{product.name}</h1>
           <p className="mt-4 text-[18px] font-medium">{product.hook}</p>
@@ -47,7 +47,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ slug:
           </ul>
           <Overlap a="paper" b="butter" lens="bubble" className="mt-10 w-32" />
         </div>
-        <div className="lg:pt-6">
+        <div className="order-1 lg:order-2 lg:pt-6">
           <h2 className="h2">Almost there.</h2>
           <p className="mt-4 max-w-md text-[17px] font-medium text-ink-soft">
             Payment is handled securely by Flutterwave
@@ -63,6 +63,20 @@ export default async function CheckoutPage({ params }: { params: Promise<{ slug:
               defaultName={member?.full_name ?? undefined}
             />
           </div>
+          <ol className="mt-10 grid gap-3 border-t-2 border-ink pt-8">
+            {[
+              ["Pay securely", "Handled by Flutterwave. We never see your card."],
+              ["Hear from a person", "A named coach emails you to book your first session."],
+              ["Change your mind?", "The Read is refundable until your call; programmes within 14 days."],
+            ].map(([t, b], i) => (
+              <li key={t} className="flex gap-4">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-ink bg-butter text-[14px] font-extrabold">{i + 1}</span>
+                <p className="text-[15px] font-medium leading-snug">
+                  <span className="font-extrabold">{t}.</span> {b}
+                </p>
+              </li>
+            ))}
+          </ol>
           <p className="mt-8 text-[14px] text-ink-mute">
             Not sure?{" "}
             <Link href="/check" className="font-bold underline">
