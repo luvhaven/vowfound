@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/layout";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
-import { Rings } from "@/components/ui/ornament";
+import { KineticTitle } from "@/components/ui/kinetic";
 
 export function PageHeader({
   eyebrow,
@@ -16,27 +16,35 @@ export function PageHeader({
   children?: React.ReactNode;
 }) {
   return (
-    <header className="page-header relative overflow-hidden border-b border-hairline">
-      <div className="page-header-glow" aria-hidden />
+    <header className="page-header hero-2027 relative overflow-hidden border-b border-hairline">
+      <div className="aurora opacity-70" aria-hidden>
+        <span />
+        <span />
+        <span />
+      </div>
       <Container
         width="wide"
-        className="relative z-10 py-12 md:py-16 lg:py-20"
+        className="relative z-10 py-14 md:py-20 lg:py-24"
       >
         <div className="max-w-4xl">
           <div className="flex items-center gap-3 text-[13px]">
             <Link href="/" className="text-onink-faint transition-colors hover:text-onink">VowFound</Link>
             <span aria-hidden className="text-onink-faint">›</span>
-            <p className="font-medium text-rose">{eyebrow}</p>
+            <p className="engraved text-rose">{eyebrow}</p>
           </div>
-          <h1 className="page-title display-xl mt-6 text-onink">
-            {title}
+          <h1 className="page-title display-xl mt-7 text-onink">
+            <KineticTitle text={title} />
           </h1>
           {standfirst && (
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-onink-dim md:text-lg">
+            <p className="fade-up mt-7 max-w-2xl text-base leading-relaxed text-onink-dim md:text-lg" style={{ "--d": "450ms" } as React.CSSProperties}>
               {standfirst}
             </p>
           )}
-          {children && <div className="mt-10">{children}</div>}
+          {children && (
+            <div className="fade-up mt-10" style={{ "--d": "600ms" } as React.CSSProperties}>
+              {children}
+            </div>
+          )}
         </div>
 
       </Container>
@@ -67,25 +75,23 @@ export function PageCta({
     <section className="page-cta border-t border-hairline py-16 md:py-24 lg:py-28">
       <Container width="wide">
         <Reveal>
-          <div className="paper relative overflow-hidden rounded-[24px] px-7 py-10 text-ink shadow-[0_34px_100px_rgba(7,4,10,0.3)] md:px-12 md:py-14 lg:px-16 lg:py-16">
-            <Rings
-              size={250}
-              className="pointer-events-none absolute -right-10 -top-2 opacity-[0.1]"
-            />
-            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12">
+          <div className="foil-ring relative overflow-hidden rounded-[32px] bg-[radial-gradient(120%_90%_at_0%_100%,rgba(156,47,89,0.35),transparent_55%),linear-gradient(160deg,#1f1823,#141117)] px-7 py-12 shadow-[0_40px_120px_rgba(4,3,8,0.45)] md:px-12 md:py-16 lg:px-16 lg:py-20">
+            <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-16">
               <div>
-                <h2 className="display-lg max-w-3xl text-ink">{title}</h2>
-                <p className="mt-6 max-w-xl text-slate">{body}</p>
+                <h2 className="display-lg max-w-3xl text-onink">{title}</h2>
+                <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-onink-dim">{body}</p>
               </div>
               <div className="flex flex-col items-stretch gap-4 sm:items-start lg:items-stretch">
                 <Button asChild size="lg">
-                  <Link href="/assessment">Begin your plan</Link>
+                  <Link href="/assessment" data-analytics-event="cta_click" data-analytics-label="begin_assessment" data-analytics-placement="page_cta">
+                    Get my free readiness map
+                  </Link>
                 </Button>
-                <Link href="/book" className="text-center text-sm font-medium text-slate underline decoration-stone underline-offset-4 transition-colors hover:text-ink lg:text-left">Talk to a practitioner</Link>
+                <Link href="/book" className="text-center text-sm font-medium text-onink-dim underline decoration-onink-faint/50 underline-offset-4 transition-colors hover:text-onink lg:text-left">Talk to a practitioner</Link>
                 {plan && (
                   <Link
                     href={`/plans#${plan.slug}`}
-                    className="engraved mt-1 text-center text-slate underline decoration-stone underline-offset-4 transition-colors hover:text-ink lg:text-left"
+                    className="engraved mt-1 text-center text-rose underline decoration-rose/40 underline-offset-4 transition-colors hover:text-onink lg:text-left"
                   >
                     {plan.label}
                   </Link>

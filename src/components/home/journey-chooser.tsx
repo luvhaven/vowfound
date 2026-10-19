@@ -20,7 +20,7 @@ const PATHS = [
       "A recommended way forward",
     ],
     href: "/assessment",
-    cta: "Begin your plan",
+    cta: "Get my free readiness map",
   },
   {
     id: "patterns",

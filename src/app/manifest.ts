@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "A private marriage-readiness, coaching, and curated-matchmaking practice.",
     start_url: "/",
     display: "standalone",
-    background_color: "#111218",
-    theme_color: "#111218",
+    background_color: "#121016",
+    theme_color: "#121016",
     orientation: "portrait-primary",
     categories: ["lifestyle", "social"],
     icons: [

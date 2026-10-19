@@ -58,7 +58,7 @@ export function Footer() {
 
           <div className="lg:col-span-3 lg:col-start-10 lg:justify-self-end">
             <Button asChild size="lg">
-              <Link href="/assessment">Begin your plan</Link>
+              <Link href="/assessment">Get my free readiness map</Link>
             </Button>
             <a
               href={`mailto:${CONTACT_EMAIL}`}

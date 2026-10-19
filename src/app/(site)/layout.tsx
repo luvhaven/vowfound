@@ -19,6 +19,7 @@ export default function SiteLayout({
 }) {
   return (
     <>
+      <div className="scroll-thread" aria-hidden />
       <Header />
       <main id="main" className="flex-1">
         {children}

@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     address: false,
   },
   other: {
-    "theme-color": "#111218",
+    "theme-color": "#121016",
     "color-scheme": "dark",
   },
   keywords: [

@@ -74,7 +74,7 @@ export function SectionIntro({
   return (
     <div className={cn("max-w-3xl", className)}>
       <div className="max-w-3xl">
-        <p className="text-sm font-medium text-rose">{eyebrow}</p>
+        <p className="engraved text-rose">{eyebrow}</p>
         <h2 className="display-lg mt-5 text-onink">{title}</h2>
         {body && (
           <p className="measure mt-6 text-[17px] leading-relaxed text-onink-dim">

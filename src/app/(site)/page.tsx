@@ -6,6 +6,7 @@ import { Container, Section } from "@/components/ui/layout";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight";
+import { Kinetic } from "@/components/ui/kinetic";
 import { SaveTheDate } from "@/components/home/save-the-date";
 import { HeroReading } from "@/components/home/hero-reading";
 import { PulseCheck } from "@/components/home/pulse-check";
@@ -31,22 +32,6 @@ const PRINCIPLES = [
   "Export or delete your data any time",
 ] as const;
 
-/** Splits a line into words that rise one after another. */
-function Kinetic({ text, offset = 0, className }: { text: string; offset?: number; className?: string }) {
-  return (
-    <>
-      {text.split(" ").map((word, i) => (
-        <span key={`${word}-${i}`} className="kinetic">
-          <span className={className} style={{ "--i": offset + i } as React.CSSProperties}>
-            {word}
-          </span>
-          {" "}
-        </span>
-      ))}
-    </>
-  );
-}
-
 export default async function HomePage() {
   // Every editable string on this page resolves through t(). A key with no
   // override falls back to the default in the registry, so the page renders
@@ -67,8 +52,6 @@ export default async function HomePage() {
 
   return (
     <>
-      <div className="scroll-thread" aria-hidden />
-
       {/* --- Hero ---------------------------------------------------------- */}
       <section className="hero-2027 overflow-hidden" data-analytics-section="hero">
         <div className="aurora" aria-hidden>
